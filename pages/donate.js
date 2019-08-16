@@ -1,8 +1,8 @@
+import DonateTable from '../components/donateTable'
+
 function Donate() {
     return (
-        <div>{/*
-            <style jsx>{styles}</style> */}
-        </div>
+        <DonateTable />
     )
 }
 export default Donate

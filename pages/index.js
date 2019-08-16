@@ -3,19 +3,25 @@ import styles from './styles/main'
 import Link from 'next/link'
 import Router from 'next/router'
 import Modal from 'react-modal'
+import Login from '../components/login'
+import Register from '../components/register'
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 
 const customStyles = {
-    content : {
-      top                   : '50%',
-      left                  : '50%',
-      right                 : 'auto',
-      bottom                : 'auto',
-      marginRight           : '-50%',
-      transform             : 'translate(-50%, -50%)'
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+        borderRadius: '30px',
+        padding: '0px',
+        border: '0px'
     }
-  };
+};
 
 const navigateTo = (page, params) => {
     Router.push({
@@ -24,40 +30,32 @@ const navigateTo = (page, params) => {
     })
 }
 
-const toggleModal = (modalStatus, modalSetter) => {
-    modalSetter(!modalStatus);
+const toggleModal = (modalStatus, modalSetter, type) => {
+    modalSetter({ type, open: !modalStatus.open });
 }
 
 
 function MainPage() {
-    let [isModalOpen, setModal] = useState(false);
+    let [modalStatus, setModalStatus] = useState({ type: 'Login', open: false });
     return (
         <div>
             <div className="header">
                 <div>MoreTrees</div>
                 <div className="userEntry">
-                    <div onClick={() => toggleModal(isModalOpen,setModal)}>Login</div>/
-                    <div>Register</div>
+                    <div onClick={() => toggleModal(modalStatus, setModalStatus, 'Login')}>Login</div>/
+                    <div onClick={() => toggleModal(modalStatus, setModalStatus, 'Register')}>Register</div>
                 </div>
             </div>
 
-            <Modal
-                isOpen={isModalOpen}
-                onAfterOpen={()=> {}}
-                onRequestClose={()=> setModal(false)}
+            <Modal isOpen={modalStatus.open}
+                onAfterOpen={() => { }}
+                onRequestClose={() => toggleModal(modalStatus, setModalStatus, modalStatus.type)}
                 style={customStyles}
-                contentLabel="Example Modal"
+                contentLabel={modalStatus.type}
             >
+                {(modalStatus.type === "Login") && <Login />}
+                {(modalStatus.type === "Register") && <Register />}
 
-                <button onClick={() => toggleModal(isModalOpen,setModal)}>close</button>
-                <div>I am a modal</div>
-                <form>
-                    <input />
-                    <button>tab navigation</button>
-                    <button>stays</button>
-                    <button>inside</button>
-                    <button>the modal</button>
-                </form>
             </Modal>
 
 
