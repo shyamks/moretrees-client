@@ -1,8 +1,8 @@
-import DonateTable from '../components/donateTable'
+import DonateItems from '../components/donateItems'
 
 function Donate() {
     return (
-        <DonateTable />
+        <DonateItems />
     )
 }
 export default Donate

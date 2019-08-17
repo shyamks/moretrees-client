@@ -18,6 +18,10 @@
     "react-bootstrap": "^1.0.0-beta.11",
     "react-dom": "^16.9.0",
     "react-modal": "^3.9.1",
+    "styled-components": "^4.3.2",
     "styled-jsx": "^3.2.1"
+  },
+  "devDependencies": {
+    "babel-plugin-styled-components": "^1.10.6"
   }
 }
