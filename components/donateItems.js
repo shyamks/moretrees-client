@@ -1,8 +1,10 @@
 // import { Table } from 'react-bootstrap';
 
 import styled from 'styled-components'
-import {useState} from 'react'
+import { useState } from 'react'
 
+import Input from './Input';
+import Button from './Button';
 import ItemCounter from './counter'
 
 let items = [
@@ -22,14 +24,12 @@ let items = [
     }
 ]
 const Donate = styled.div`
-
+    text-align: center;
 `
 
 const DonateTrees = styled.div`
 
 `
-
-
 
 const Or = styled.div`
     text-align: center;
@@ -44,10 +44,6 @@ const DonateMoney = styled.div`
 
 const MoneyLine = styled.div`
 
-`
-const MoneyInput = styled.input`
-    width: 40px;
-    margin: 5px;
 `
 
 const DonateItem = styled.div`
@@ -81,10 +77,9 @@ const Subtotal = styled.div`
     flex-direction: row-reverse;
 `
 
-
 function getDonateItems(items, checkoutCostChanger) {
     let donateItems = [];
-    
+
     for (let item of items) {
         donateItems.push(
             <DonateItem key={item.id}>
@@ -95,7 +90,7 @@ function getDonateItems(items, checkoutCostChanger) {
                     <ItemName>{item.name}</ItemName>
                     <ItemCost> Rs {item.cost}</ItemCost>
                 </ItemDetail>
-                <ItemCounter itemCost={(itemChangeCost) => checkoutCostChanger(itemChangeCost)} cost={item.cost}/>
+                <ItemCounter itemCost={(itemChangeCost) => checkoutCostChanger(itemChangeCost)} cost={item.cost} />
             </DonateItem>
         )
     }
@@ -103,8 +98,8 @@ function getDonateItems(items, checkoutCostChanger) {
 }
 
 function DonateItems() {
-    function checkoutCostChanger(val){
-        setSubTotalCheckoutCost(subTotalCheckoutCost + val );
+    function checkoutCostChanger(val) {
+        setSubTotalCheckoutCost(subTotalCheckoutCost + val);
     }
     let [subTotalCheckoutCost, setSubTotalCheckoutCost] = useState(0);
     return (
@@ -113,17 +108,19 @@ function DonateItems() {
                 <div>
                     {getDonateItems(items, checkoutCostChanger)}
                 </div>
-                 <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
+                <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
             </DonateTrees>
-                <Or>
-                    OR
+            <Or>
+                OR
                 </Or>
             <DonateMoney>
-                 <MoneyLine>You could choose the amount you want to donate.</MoneyLine>
-                 <MoneyInput type="number" defaultValue={0} onChange={(event)=> {
-                     let val = parseInt(event.target.value) || 0;
-                     checkoutCostChanger(val)}}/>
+                <MoneyLine>You could choose the amount you want to donate.</MoneyLine>
+                <Input numberInputWidth={'50px'} type="number" defaultValue={0}/>
             </DonateMoney>
+
+            <Button onClick={()=>{}}>
+                Donate
+            </Button>
         </Donate>
     )
 }

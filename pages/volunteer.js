@@ -1,14 +1,11 @@
+import Header from '../components/Header'
+import VolunteerChoices from '../components/volunteerChoices'
 function Volunteer() {
     return (
-        <div>
-            <div className="header">
-                <div>MoreTrees</div>
-                <div className="userEntry">
-                    <div>Login</div>/
-                    <div>Register</div>
-                </div>
-            </div>
-        </div>
+        <React.Fragment>
+            <Header/>
+            <VolunteerChoices />
+        </React.Fragment>
     )
 }
 export default Volunteer

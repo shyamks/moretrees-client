@@ -1,28 +1,24 @@
 import { useState } from 'react'
 import styled from 'styled-components'
+import Input from './Input'
 
 const MIN = 0
 const MAX = 9
 
 let CounterContainer = styled.div`
-    margin: 30px;
     display: flex;
     flex-direction: horizontal;
 `
 let Minus = styled.span`
+    margin: 30px 5px 0 0;
     height: 20px;
     &:hover {
         cursor: pointer
     }
 `
-let Input = styled.input`
-    width: 8px;
-    height: 15px;
-    text-align: center;
-    margin: 0px 5px 0px 7px;
-    white-space: nowrap;
-`
+
 let Plus = styled.span`
+    margin: 30px 0 0 5px;
     height: 20px;
     &:hover {
         cursor: pointer
@@ -30,14 +26,12 @@ let Plus = styled.span`
 `
 
 let TotalCost = styled.div`
-    margin: 0px 60px 00px 60px;
+    margin: 30px 60px 00px 60px;
     font-family: "Trebuchet MS", Helvetica, sans-serif;
     white-space:nowrap;
 `
 
-function Counter(props) {
-    let cost = props.cost;
-    let itemCost = props.itemCost;
+function Counter({ cost, itemCost }) {
     function chgCounter(val) {
         let counterVal = count + val
         if (counterVal >= MIN && counterVal <= MAX) {
@@ -52,7 +46,7 @@ function Counter(props) {
     return (
         <CounterContainer>
             <Minus onClick={() => chgCounter(-1)}> - </Minus>
-            <Input value={count}></Input>
+            <Input numberInputWidth={'12px'} value={count}></Input>
             <Plus onClick={() => chgCounter(1)}> + </Plus>
             <TotalCost> Rs {totalCost}</TotalCost>
         </CounterContainer>
