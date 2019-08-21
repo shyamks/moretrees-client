@@ -101,8 +101,8 @@ function VolunteerChoices() {
                     <OptionList>
                         {
                             volunteerOptions.map(item => (
-                                <Option>
-                                    <OptionLabel key={item.key}>
+                                <Option key={item.key}>
+                                    <OptionLabel>
                                         {item.label}
                                     </OptionLabel>
                                     <Checkbox
