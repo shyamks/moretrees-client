@@ -7,9 +7,13 @@ import { useState, useEffect } from 'react'
 import Login from './login'
 import Register from './register'
 import useDataApi from './hooks/useDataApi'
+import useLoginApi from './hooks/useLoginApi'
 import useLocalStorage from './hooks/useLocalStorage'
 import UserAvatar from './UserAvatar'
 import { GRAPHQL_ENDPOINT, POST } from '../constants'
+
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 
 const LOGIN = 'Login'
 const REGISTER = 'Register'
@@ -26,7 +30,7 @@ const customStyles = {
         padding: '0px',
         border: '0px'
     }
-};
+}
 
 const Header = styled.div`
     display: flex;
@@ -50,46 +54,86 @@ const TitleLogo = styled.div`
 `
 
 
-function SiteHeader() {
-    let [modalStatus, setModalStatus] = useState({ type: LOGIN, open: false });
+function SiteHeader({ onRegistered }) {
+    let [modalStatus, setModalStatus] = useState({ type: LOGIN, open: false })
 
-    let [loggedInUserFromStore, setUser] = useLocalStorage('loggedInUser', null)
+    let [loggedInUserFromStore, setUserInStore] = useLocalStorage('loggedInUser', null)
 
     const toggleModal = (modalStatus, modalSetter, type) => {
-        modalSetter({ type, open: !modalStatus.open });
+        modalSetter({ type, open: !modalStatus.open })
     }
 
-    const onLogin = (data) => {
-        let email = data.email
-        let password = data.password
+    const onLogin = ({ email, password }) => {
+        setDetails({ email, password })
+        toggleModal(modalStatus, setModalStatus, LOGIN)
+    }
 
-        const LOGIN_QUERY = `{
-            loginUser(email: "${email}", password: "${password}") {
-              email
-              accessToken
-              message
-              error
-            }
-        }`
+    const onRegister = ({ email, userName, password }) => {
 
-        setUrl({ url: GRAPHQL_ENDPOINT, query: LOGIN_QUERY, method: POST })
+        // const REGISTER_MUTATION = `mutation registerUser {
+        //     registerUser(userName: "${userName}", email: "${email}", password:"${password}") {
+        //       userName
+        //       email
+        //       error
+        //       message
+        //     }
+        //   }`
+
+        // setUrl({ url: GRAPHQL_ENDPOINT, query: REGISTER_MUTATION, method: POST })
         toggleModal(modalStatus, setModalStatus, REGISTER)
+        // onRegistered() show a toast message on user registration
     }
 
     const onLogout = () => {
-        setData(null)
-        setUser(null)
+        setLoginData(null)
+        setUserInStore(null)
     }
 
-    const gotFromApiAndNotInLocalStorage = (data, loggedInUserFromStore) => {
-        return (data && data.data.loginUser) && !loggedInUserFromStore
-    }
 
-    const [{ data, isLoading, isError }, setUrl, setData] = useDataApi(GRAPHQL_ENDPOINT)
-    let loggedInUser = (data && data.data.loginUser) || loggedInUserFromStore
-    if (gotFromApiAndNotInLocalStorage(data, loggedInUserFromStore))
-        setUser(loggedInUser)
-    console.log(data, isLoading, isError, loggedInUser, 'data');
+
+    // const onResponseFromRegisterApi = (data, isError) => {
+    //     const errorInRegisterUser = (data && data.data.registerUser && data.data.registerUser.error) || isError
+    //     const registerUser = (data && data.data.registerUser)
+    //     if (errorInRegisterUser){
+    //         // show a toast if register returns error
+    //     }
+    //     return {registerUser, errorInRegisterUser}
+    // }
+
+
+
+    const LOGIN_QUERY = gql`
+    query loginUser($email: String!, $password: String!){
+        loginUser(email: $email, password: $password) {
+          username
+          email
+          accessToken
+          message
+          error
+        }
+    }`
+
+    const gotFromApiAndNotInLocalStorage = (loggedInUser, loggedInUserFromStore) => {
+        return loggedInUser && !loggedInUserFromStore
+    }
+    const onResponseFromLoginApi = (data, isError) => {
+        if (!data) return { loggedInUser: null, errorInLoginUser: null }
+        let loginUser = data.loginUser
+        const errorInLoginUser = (loginUser && loginUser.error) || isError
+        const loggedInUser = loginUser || loggedInUserFromStore
+        if (!errorInLoginUser) {
+            if (gotFromApiAndNotInLocalStorage(loggedInUser, loggedInUserFromStore))
+                setUserInStore(loggedInUser)
+        }
+        else {
+            // Show a toast if login returns error 
+        }
+        return { loggedInUser, errorInLoginUser }
+    }
+    const [loginData, loading, error, setDetails, setLoginData] = useLoginApi()
+    const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, error)
+    console.log(loading, loginData, error, 'LOGIN')
+
     return (
         <Header>
             <TitleLogo>MoreTrees</TitleLogo>
@@ -99,7 +143,7 @@ function SiteHeader() {
                         (<UserAvatar userInfo={loggedInUser} onLogout={onLogout} />) :
                         (<React.Fragment>
                             <LoginHeader onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>/
-                        <RegisterHeader onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
+                            <RegisterHeader onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
                         </React.Fragment>)
 
                 }
@@ -111,10 +155,9 @@ function SiteHeader() {
                 contentLabel={modalStatus.type}
             >
                 {(modalStatus.type === LOGIN) && <Login onSubmit={(data) => onLogin(data)} />}
-                {(modalStatus.type === REGISTER) && <Register />}
+                {(modalStatus.type === REGISTER) && <Register onSubmit={(data) => onRegister(data)} />}
             </Modal>
         </Header>
     )
 }
-
 export default SiteHeader

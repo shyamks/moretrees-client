@@ -1,33 +1,38 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import styled from 'styled-components'
 
 import Checkbox from './Checkbox'
 import PriorityList from './PriorityList'
+import Input from './Input'
 import Button from './Button';
-import IndividualInfo from './IndividualInfo'
+import useDataApi from './hooks/useDataApi';
+import { GRAPHQL_ENDPOINT, POST } from '../constants';
 
-const volunteerOptions = [
-    {
-        name: 'check-box-1',
-        key: 'plant1',
-        label: 'Plant trees',
-    },
-    {
-        name: 'check-box-2',
-        key: 'plant2',
-        label: 'Pick location to plant trees',
-    },
-    {
-        name: 'check-box-3',
-        key: 'plant3',
-        label: 'Help locate the areas where more trees could be planted',
-    },
-    {
-        name: 'check-box-4',
-        key: 'plant4',
-        label: 'Work with us in the organization in a broader capacity',
-    },
-];
+const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoeWFtLmtvZG1hZEBnbWFpbC5jb20iLCJpYXQiOjE1NjY0OTkxNDR9.dPrO7F3ZG8-4LqHICYrrRCbal7JBlCOsiwU7_K1oNeU"
+const email = "shyam.kodmad@gmail.com"
+
+// const volunteerOptions = [
+//     {
+//         id: 'plant1',
+//         optionText: 'Plant trees',
+//         status: "ACTIVE"
+//     },
+//     {
+//         id: 'plant2',
+//         optionText: 'Pick location to plant trees',
+//         status: "ACTIVE"
+//     },
+//     {
+//         id: 'plant3',
+//         optionText: 'Help locate the areas where more trees could be planted',
+//         status: "ACTIVE"
+//     },
+//     {
+//         id: 'plant4',
+//         optionText: 'Work with us in the organization in a broader capacity',
+//         status: "ACTIVE"
+//     },
+// ];
 
 const volunteerTimings = [
     {
@@ -73,11 +78,26 @@ const OptionLabel = styled.span`
     word-wrap: break-word;
 `
 
+
 function VolunteerChoices() {
     let [selectedOption, setOption] = useState({ checkedItems: new Map(), checkedPriority: [] })
-    const handleChange = (e) => {
+    let industryRef = useRef(null)
+    let roleRef = useRef(null)
+    const GET_VOLUNTEER_QUERY = `{
+        getVolunteerOptions(email: "${email}", status: "ACTIVE", accessToken: "${accessToken}") {
+          optionText
+          status
+          id
+        }
+      }`
+    const [volunteerData, isLoading, isError, setUrl, setData] = useDataApi({ initialUrl: GRAPHQL_ENDPOINT, method: POST, query: GET_VOLUNTEER_QUERY }, true)
+    const [updateUserData, isUpdateUserDataLoading, isUpdateUserDataError, updateUserDataUrl, updateUserDataMethod] = useDataApi({ initialUrl: GRAPHQL_ENDPOINT })
+    const volunteerOptions = volunteerData && volunteerData.data.getVolunteerOptions
+
+    console.log(updateUserData, isUpdateUserDataLoading, isUpdateUserDataError, 'getVolunteerOptions')
+    const handleChange = (e, volunteerOptions) => {
         const itemName = e.target.name
-        const item = volunteerOptions.filter(checkbox => checkbox.name == itemName)[0]
+        const item = volunteerOptions.filter(checkbox => checkbox.id == itemName)[0]
         const isChecked = e.target.checked
         let prevCheckedPriority = selectedOption.checkedPriority
         if (isChecked) {
@@ -92,6 +112,34 @@ function VolunteerChoices() {
         setOption(prevState => ({ checkedItems: prevState.checkedItems.set(itemName, isChecked), checkedPriority: prevCheckedPriority }))
         console.log(selectedOption, 'selectedOption')
     }
+
+    const onSubmitVolunteerOptions = () => {
+        console.log(selectedOption,industryRef.current.value, roleRef.current.value, 'selectedOption')
+        let priorityList = selectedOption.checkedPriority
+        let industry = industryRef.current.value
+        let role = roleRef.current.value
+        let input = {role, industry, volunteerOptions: priorityList, email, accessToken }
+        let UPDATE_USER_MUTATION = `
+        mutation updateUser {
+            updateUser(input: ${JSON.stringify(input)}){
+              username
+              email
+              bio
+              phone
+              accessToken
+              error
+              message
+              volunteerOptions {
+                optionText
+                id
+                status
+              }
+            }
+          }`
+          console.log(UPDATE_USER_MUTATION,'mutatuion')
+          updateUserDataUrl({ url: GRAPHQL_ENDPOINT, method: POST, query: UPDATE_USER_MUTATION })
+    }
+
     return (
         <div>
             <div> There is nothing better than doing it.</div>
@@ -100,24 +148,28 @@ function VolunteerChoices() {
                 <ListContainer>
                     <OptionList>
                         {
-                            volunteerOptions.map(item => (
-                                <Option key={item.key}>
+                            volunteerOptions && volunteerOptions.map(item => (
+                                <Option key={item.id}>
                                     <OptionLabel>
-                                        {item.label}
+                                        {item.optionText}
                                     </OptionLabel>
                                     <Checkbox
-                                        name={item.name}
-                                        checked={selectedOption.checkedItems.get(item.name)}
-                                        onChange={handleChange}
+                                        name={item.id}
+                                        checked={selectedOption.checkedItems.get(item.id)}
+                                        onChange={(e)=>handleChange(e, volunteerOptions)}
                                     />
                                 </Option>
                             ))
                         }
                     </OptionList>
-                    <PriorityList items={selectedOption.checkedPriority}/>
+                    <PriorityList items={selectedOption.checkedPriority} />
                 </ListContainer>
-                <IndividualInfo/>
-                <Button onClick={()=>{}}> Submit </Button>
+                <div>
+                    <div> What do you do?</div>
+                    <Input ref={industryRef} placeholder={'Industry'} />
+                    <Input ref={roleRef} placeholder={'Role'} />
+                </div>
+                <Button onClick={onSubmitVolunteerOptions}> Submit </Button>
             </React.Fragment>
         </div>
     )

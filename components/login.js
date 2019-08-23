@@ -4,12 +4,18 @@ import {useRef} from 'react'
 function Login({ onSubmit }) {
     const emailRef = useRef(null)
     const passRef = useRef(null)
+    
+    const validDetails = ({email, password}) =>{
+        return email && password && email.length && password.length
+    }
+
     const onLogin = () => {
         let email = emailRef.current.value
         let password = passRef.current.value
-        if(email && password && email.length && password.length )
+        if(validDetails({email, password}))
             onSubmit({email, password});
     }
+
     return (
         <div className="login-container">
             <section className="login" id="login">

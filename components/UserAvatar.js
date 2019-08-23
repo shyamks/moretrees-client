@@ -1,9 +1,7 @@
-import store from 'store'
-
 function UserAvatar({ userInfo, onLogout }) {
     return (
         <React.Fragment>
-            <div>{userInfo.email}</div>
+            <div>{userInfo.username || userInfo.email}</div>
             <div onClick={onLogout}>Logout</div>
         </React.Fragment>
     )

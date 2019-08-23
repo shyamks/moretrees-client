@@ -17,7 +17,7 @@ function PriorityList({ items }) {
         <List>
             {items.map((item, index) => {
                 let itemNumber = `${(index + 1)}.`
-                let text = `${item.label}`;
+                let text = `${item.optionText}`;
                 return (
                     <ListItem id={item.key}>
                        <div>{itemNumber}</div>

@@ -1,9 +1,11 @@
 import React, { Fragment, useState, useEffect } from 'react'
 import axios from 'axios'
 
-const useDataApi = (initialUrl, initialData) => {
+const useDataApi = ({ initialUrl, method, query }, auto = false, initialData) => {
+    if (auto && !(initialUrl && method && query))
+        throw Error("Auto is true but all arguments not present")
     const [data, setData] = useState(initialData);
-    const [url, setUrl] = useState({url: initialUrl, method: null, data: {query: {}}});
+    const [url, setUrl] = useState({ url: initialUrl, method, data: { query } });
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
 
@@ -13,8 +15,8 @@ const useDataApi = (initialUrl, initialData) => {
             setIsLoading(true);
 
             try {
-                const result = await axios({url: url.url, method: url.method, data:{query: url.query}});
-                console.log(result,'result')
+                const result = await axios({ url: url.url || initialUrl, method: url.method || method, data: { query: url.query || query } });
+                console.log(result, 'result')
                 setData(result.data);
             } catch (error) {
                 setIsError(true);
@@ -22,11 +24,11 @@ const useDataApi = (initialUrl, initialData) => {
 
             setIsLoading(false);
         };
-        if (url.method)
+        if (auto || url.url)
             fetchData();
     }, [url]);
 
-    return [{ data, isLoading, isError }, setUrl, setData];
+    return [ data, isLoading, isError, setUrl, setData];
 }
-  
+
 export default useDataApi

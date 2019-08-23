@@ -6,7 +6,7 @@ const CheckboxInput = styled.input`
 `
 function Checkbox({ type = 'checkbox', name, checked = false, onChange }){
     return (
-        <CheckboxInput type={type} name={name} checked={checked} onChange={onChange} />
+        <CheckboxInput type={type} name={name} checked={checked} onChange={(e)=>{e.persist();onChange(e)}} />
     );
 }
 
