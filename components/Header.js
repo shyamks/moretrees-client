@@ -6,17 +6,37 @@ import { useState, useEffect } from 'react'
 
 import Login from './login'
 import Register from './register'
-import useDataApi from './hooks/useDataApi'
-import useLoginApi from './hooks/useLoginApi'
 import useLocalStorage from './hooks/useLocalStorage'
 import UserAvatar from './UserAvatar'
 import { GRAPHQL_ENDPOINT, POST } from '../constants'
 
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import useLazyQueryApi from './hooks/useLazyQueryApi';
+import useMutationApi from './hooks/useMutationApi';
 
 const LOGIN = 'Login'
 const REGISTER = 'Register'
+
+const REGISTER_MUTATION = `
+    mutation registerUser($username: String!, $email: String!, $password: String!) {
+        registerUser(username: $username", email: $email, password: $password) {
+            username
+            email
+            error
+            message
+        }
+    }`
+
+const LOGIN_QUERY = gql`
+    query loginUser($email: String!, $password: String!){
+        loginUser(email: $email, password: $password) {
+          username
+          email
+          accessToken
+          message
+          error
+        }
+    }`
 
 const customStyles = {
     content: {
@@ -64,20 +84,13 @@ function SiteHeader({ onRegistered }) {
     }
 
     const onLogin = ({ email, password }) => {
-        setDetails({ email, password })
+        setLoginVariables({ email, password })
         toggleModal(modalStatus, setModalStatus, LOGIN)
     }
 
     const onRegister = ({ email, userName, password }) => {
 
-        // const REGISTER_MUTATION = `mutation registerUser {
-        //     registerUser(userName: "${userName}", email: "${email}", password:"${password}") {
-        //       userName
-        //       email
-        //       error
-        //       message
-        //     }
-        //   }`
+
 
         // setUrl({ url: GRAPHQL_ENDPOINT, query: REGISTER_MUTATION, method: POST })
         toggleModal(modalStatus, setModalStatus, REGISTER)
@@ -91,27 +104,18 @@ function SiteHeader({ onRegistered }) {
 
 
 
-    // const onResponseFromRegisterApi = (data, isError) => {
-    //     const errorInRegisterUser = (data && data.data.registerUser && data.data.registerUser.error) || isError
-    //     const registerUser = (data && data.data.registerUser)
-    //     if (errorInRegisterUser){
-    //         // show a toast if register returns error
-    //     }
-    //     return {registerUser, errorInRegisterUser}
-    // }
-
-
-
-    const LOGIN_QUERY = gql`
-    query loginUser($email: String!, $password: String!){
-        loginUser(email: $email, password: $password) {
-          username
-          email
-          accessToken
-          message
-          error
+    const onResponseFromRegisterApi = (data, isError) => {
+        const errorInRegisterUser = (data && data.data.registerUser && data.data.registerUser.error) || isError
+        const registerUser = data && data.data.registerUser
+        if (errorInRegisterUser) {
+            // show a toast if register returns error
         }
-    }`
+        return { registerUser, errorInRegisterUser }
+    }
+
+
+
+
 
     const gotFromApiAndNotInLocalStorage = (loggedInUser, loggedInUserFromStore) => {
         return loggedInUser && !loggedInUserFromStore
@@ -125,21 +129,35 @@ function SiteHeader({ onRegistered }) {
             if (gotFromApiAndNotInLocalStorage(loggedInUser, loggedInUserFromStore))
                 setUserInStore(loggedInUser)
         }
-        else {
-            // Show a toast if login returns error 
-        }
         return { loggedInUser, errorInLoginUser }
     }
-    const [loginData, loading, error, setDetails, setLoginData] = useLoginApi()
-    const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, error)
-    console.log(loading, loginData, error, 'LOGIN')
+    const onResponseFromRegisterApi = (data, isError) => {
+        const errorInRegisterUser = (data && data.data.registerUser && data.data.registerUser.error) || isError
+        const registerUser = data && data.data.registerUser
+        if (errorInRegisterUser) {
+            // show a toast if register returns error
+        }
+        return { registerUser, errorInRegisterUser }
+    }
+    const [loginData, loginLoading, loginError, setLoginVariables, setLoginData] = useLazyQueryApi(LOGIN_QUERY)
+    const [registerData, registerLoading, registerError, setRegisterVariables, setRegisterData] = useMutationApi(REGISTER_MUTATION)
+    const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
+    const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
+    useEffect(() => {
+        // Show a toast if login returns error         
+    }, [errorInLoginUser])
+
+    useEffect(() => {
+        // Show a toast if register returns error         
+    }, [errorInRegisterUser])
+    console.log(loginLoading, loginData, loginError, 'LOGIN')
 
     return (
         <Header>
             <TitleLogo>MoreTrees</TitleLogo>
             <AppHeader>
                 {
-                    loggedInUser ?
+                    (loggedInUser && !errorInLoginUser) ?
                         (<UserAvatar userInfo={loggedInUser} onLogout={onLogout} />) :
                         (<React.Fragment>
                             <LoginHeader onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>/
