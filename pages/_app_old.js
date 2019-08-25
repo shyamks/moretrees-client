@@ -1,12 +1,13 @@
 import React from 'react';
 import App, { Container } from 'next/app';
 import Head from 'next/head';
+// import '../style.css'
 // import { ThemeProvider } from '@material-ui/styles';
 // import CssBaseline from '@material-ui/core/CssBaseline';
 // import { GlobalStyle } from '../css/global';
 // import theme from '../css/theme';
 
-export default class MyApp extends App {
+class MyApp extends App {
   componentDidMount () {
     const jssStyles = document.querySelector ('#jss-server-side');
 

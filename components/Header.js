@@ -3,6 +3,8 @@
 import styled from 'styled-components'
 import Modal from 'react-modal'
 import { useState, useEffect } from 'react'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Login from './login'
 import Register from './register'
@@ -17,9 +19,9 @@ import useMutationApi from './hooks/useMutationApi';
 const LOGIN = 'Login'
 const REGISTER = 'Register'
 
-const REGISTER_MUTATION = `
+const REGISTER_MUTATION = gql`
     mutation registerUser($username: String!, $email: String!, $password: String!) {
-        registerUser(username: $username", email: $email, password: $password) {
+        registerUser(username: $username, email: $email, password: $password) {
             username
             email
             error
@@ -88,10 +90,10 @@ function SiteHeader({ onRegistered }) {
         toggleModal(modalStatus, setModalStatus, LOGIN)
     }
 
-    const onRegister = ({ email, userName, password }) => {
+    const onRegister = ({ email, username, password }) => {
 
 
-
+        setRegisterVariables({ email, username, password })
         // setUrl({ url: GRAPHQL_ENDPOINT, query: REGISTER_MUTATION, method: POST })
         toggleModal(modalStatus, setModalStatus, REGISTER)
         // onRegistered() show a toast message on user registration
@@ -101,21 +103,6 @@ function SiteHeader({ onRegistered }) {
         setLoginData(null)
         setUserInStore(null)
     }
-
-
-
-    const onResponseFromRegisterApi = (data, isError) => {
-        const errorInRegisterUser = (data && data.data.registerUser && data.data.registerUser.error) || isError
-        const registerUser = data && data.data.registerUser
-        if (errorInRegisterUser) {
-            // show a toast if register returns error
-        }
-        return { registerUser, errorInRegisterUser }
-    }
-
-
-
-
 
     const gotFromApiAndNotInLocalStorage = (loggedInUser, loggedInUserFromStore) => {
         return loggedInUser && !loggedInUserFromStore
@@ -134,9 +121,6 @@ function SiteHeader({ onRegistered }) {
     const onResponseFromRegisterApi = (data, isError) => {
         const errorInRegisterUser = (data && data.data.registerUser && data.data.registerUser.error) || isError
         const registerUser = data && data.data.registerUser
-        if (errorInRegisterUser) {
-            // show a toast if register returns error
-        }
         return { registerUser, errorInRegisterUser }
     }
     const [loginData, loginLoading, loginError, setLoginVariables, setLoginData] = useLazyQueryApi(LOGIN_QUERY)
@@ -144,10 +128,14 @@ function SiteHeader({ onRegistered }) {
     const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
     const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
     useEffect(() => {
-        // Show a toast if login returns error         
+        // Show a toast if login returns error  
+        if (errorInLoginUser)
+            toast("Login failed!");       
     }, [errorInLoginUser])
 
     useEffect(() => {
+        if (errorInRegisterUser)
+            toast("Registration failed!");
         // Show a toast if register returns error         
     }, [errorInRegisterUser])
     console.log(loginLoading, loginData, loginError, 'LOGIN')

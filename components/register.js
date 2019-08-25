@@ -3,20 +3,20 @@ import {useRef} from 'react'
 
 function Register({ onSubmit }) {
     let emailRef = useRef(null)
-    let userNameRef = useRef(null)
+    let usernameRef = useRef(null)
     let passwordRef = useRef(null)
 
-    const validDetails = ({emailId, userName, password}) =>{
-        return emailId && userName && password && emailId.length && userName.length && password.length
+    const validDetails = ({email, username, password}) =>{
+        return email && username && password && email.length && username.length && password.length
     }
     
     const onRegister = () => {
-        let emailId = emailRef.current.value
-        let userName = userNameRef.current.value
+        let email = emailRef.current.value
+        let username = usernameRef.current.value
         let password = passwordRef.current.value
-        console.log({emailId, userName, password},'register')
-        if (validDetails({emailId, userName, password}))
-            onSubmit({emailId, userName, password})
+        console.log({email, username, password},'register')
+        if (validDetails({email, username, password}))
+            onSubmit({email, username, password})
     }
     
     return (
@@ -24,7 +24,7 @@ function Register({ onSubmit }) {
             <section className="login" id="login">
                 <div className="login-form">
                     <input ref={emailRef} type="text" className="login-input" placeholder="Email" required autoFocus />
-                    <input ref={userNameRef} type="name" className="login-input" placeholder="Username" required />
+                    <input ref={usernameRef} type="name" className="login-input" placeholder="Username" required />
                     <input ref={passwordRef} type="password" className="login-input" placeholder="Password" required />
                     <button onClick={onRegister} type="submit" className="login-button">Register</button>
                 </div>

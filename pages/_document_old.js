@@ -4,7 +4,7 @@ import Document, { Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 import flush from 'styled-jsx/server';
 
-export default class MyDocument extends Document {
+class MyDocument extends Document {
   static async getInitialProps (ctx) {
     const sheet = new ServerStyleSheet ();
     // const sheets = new ServerStyleSheets ();
