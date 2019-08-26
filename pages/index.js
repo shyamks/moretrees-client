@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import Router from 'next/router'
 import styled from 'styled-components'
-  
+
 import Header from '../components/Header'
 import Login from '../components/login'
 import Register from '../components/register'
@@ -16,13 +16,13 @@ import ApolloClient from 'apollo-client';
 
 import { GRAPHQL_ENDPOINT } from '../constants';
 
-const client = new ApolloClient({
-    link: createHttpLink({
-      uri: GRAPHQL_ENDPOINT,
-      fetch: fetch,
-    }),
-    cache: new InMemoryCache(),
-  })
+// const client = new ApolloClient({
+//     link: createHttpLink({
+//       uri: GRAPHQL_ENDPOINT,
+//       fetch: fetch,
+//     }),
+//     cache: new InMemoryCache(),
+//   })
 
 const DonateAndVolunteer = styled.div`
     margin: 10%;
@@ -47,18 +47,18 @@ const onNewUserRegistration = () => {
 function MainPage() {
     return (
 
-        <ApolloProvider client={client}>
-            <Header onRegistered={onNewUserRegistration}/>
-            
+        <div>
+            <Header onRegistered={onNewUserRegistration} />
+
             <DonateAndVolunteer>
                 <Button height="40px" onClick={() => navigateTo('donate')}>
                     Donate
                 </Button>
-                <Button height="40px"  width="120px" onClick={() => navigateTo('volunteer')}>
+                <Button height="40px" width="120px" onClick={() => navigateTo('volunteer')}>
                     Volunteer
                 </Button>
             </DonateAndVolunteer>
-        </ApolloProvider>
+        </div>
     )
 }
 

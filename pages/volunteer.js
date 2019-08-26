@@ -1,11 +1,14 @@
 import Header from '../components/Header'
 import VolunteerChoices from '../components/volunteerChoices'
+
+import { ApolloProvider } from '@apollo/react-hooks';
+
 function Volunteer() {
     return (
-        <React.Fragment>
-            <Header/>
+        <div>
+            <Header />
             <VolunteerChoices />
-        </React.Fragment>
+        </div>
     )
 }
 export default Volunteer

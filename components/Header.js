@@ -108,7 +108,7 @@ function SiteHeader({ onRegistered }) {
         return loggedInUser && !loggedInUserFromStore
     }
     const onResponseFromLoginApi = (data, isError) => {
-        if (!data) return { loggedInUser: null, errorInLoginUser: null }
+        if (!data) return { loggedInUser: loggedInUserFromStore, errorInLoginUser: null }
         let loginUser = data.loginUser
         const errorInLoginUser = (loginUser && loginUser.error) || isError
         const loggedInUser = loginUser || loggedInUserFromStore
