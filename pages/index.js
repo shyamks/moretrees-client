@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 
 import Router from 'next/router'
 import styled from 'styled-components'
+import { toast }from 'react-toastify'
 
 import Header from '../components/Header'
 import Login from '../components/login'
 import Register from '../components/register'
 import Button from '../components/Button'
+
+toast.configure()
 
 const DonateAndVolunteer = styled.div`
     margin: 10%;
