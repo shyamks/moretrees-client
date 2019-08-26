@@ -10,7 +10,6 @@ import Login from './login'
 import Register from './register'
 import useLocalStorage from './hooks/useLocalStorage'
 import UserAvatar from './UserAvatar'
-import { GRAPHQL_ENDPOINT, POST } from '../constants'
 
 import gql from 'graphql-tag';
 import useLazyQueryApi from './hooks/useLazyQueryApi';

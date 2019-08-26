@@ -8,22 +8,6 @@ import Login from '../components/login'
 import Register from '../components/register'
 import Button from '../components/Button'
 
-import fetch from 'node-fetch'
-import { createHttpLink } from 'apollo-link-http'
-import { InMemoryCache } from 'apollo-cache-inmemory'
-import { ApolloProvider } from '@apollo/react-hooks';
-import ApolloClient from 'apollo-client';
-
-import { GRAPHQL_ENDPOINT } from '../constants';
-
-// const client = new ApolloClient({
-//     link: createHttpLink({
-//       uri: GRAPHQL_ENDPOINT,
-//       fetch: fetch,
-//     }),
-//     cache: new InMemoryCache(),
-//   })
-
 const DonateAndVolunteer = styled.div`
     margin: 10%;
     display: flex;
@@ -46,8 +30,7 @@ const onNewUserRegistration = () => {
 
 function MainPage() {
     return (
-
-        <div>
+        <>
             <Header onRegistered={onNewUserRegistration} />
 
             <DonateAndVolunteer>
@@ -58,7 +41,7 @@ function MainPage() {
                     Volunteer
                 </Button>
             </DonateAndVolunteer>
-        </div>
+        </>
     )
 }
 
