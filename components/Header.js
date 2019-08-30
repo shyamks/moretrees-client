@@ -2,7 +2,7 @@
 
 import styled from 'styled-components'
 import Modal from 'react-modal'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,6 +14,7 @@ import UserAvatar from './UserAvatar'
 import gql from 'graphql-tag';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
 import useMutationApi from './hooks/useMutationApi';
+import UserContext from './UserContext';
 
 const LOGIN = 'Login'
 const REGISTER = 'Register'
@@ -31,11 +32,20 @@ const REGISTER_MUTATION = gql`
 const LOGIN_QUERY = gql`
     query loginUser($email: String!, $password: String!){
         loginUser(email: $email, password: $password) {
-          username
-          email
-          accessToken
-          message
-          error
+            username
+            email
+            phone
+            bio
+            industry
+            role
+            volunteerOptions {
+              optionText
+              id
+              status
+            }
+            accessToken
+            message
+            error
         }
     }`
 
@@ -78,7 +88,9 @@ const TitleLogo = styled.div`
 function SiteHeader({ onRegistered }) {
     let [modalStatus, setModalStatus] = useState({ type: LOGIN, open: false })
 
-    let [loggedInUserFromStore, setUserInStore] = useLocalStorage('loggedInUser', null)
+    const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
+
+    // let [token, setAuthToken] = useLocalStorage('token', null)
 
     const toggleModal = (modalStatus, modalSetter, type) => {
         modalSetter({ type, open: !modalStatus.open })
@@ -99,21 +111,25 @@ function SiteHeader({ onRegistered }) {
     }
 
     const onLogout = () => {
+        removeUserInContext()
         setLoginData(null)
-        setUserInStore(null)
     }
 
-    const gotFromApiAndNotInLocalStorage = (loggedInUser, loggedInUserFromStore) => {
-        return loggedInUser && !loggedInUserFromStore
+    const gotFromApiAndNotInLocalStorage = (loggedInUser, userInContext) => {
+        return loggedInUser && !userInContext
     }
     const onResponseFromLoginApi = (data, isError) => {
-        if (!data) return { loggedInUser: loggedInUserFromStore, errorInLoginUser: null }
+        // console.log(data,isError,'hellll')
+        if (!data) return { loggedInUser: contextUser, errorInLoginUser: null }
         let loginUser = data.loginUser
         const errorInLoginUser = (loginUser && loginUser.error) || isError
-        const loggedInUser = loginUser || loggedInUserFromStore
+        const loggedInUser = loginUser || contextUser
+        // console.log(loggedInUser,errorInLoginUser,'pls help')
         if (!errorInLoginUser) {
-            if (gotFromApiAndNotInLocalStorage(loggedInUser, loggedInUserFromStore))
-                setUserInStore(loggedInUser)
+            // console.log('asdasasdasdfassadfasfsfs')
+            if (gotFromApiAndNotInLocalStorage(loggedInUser, contextUser)) {
+                storeUserInContext(loggedInUser)
+            }
         }
         return { loggedInUser, errorInLoginUser }
     }
@@ -129,7 +145,7 @@ function SiteHeader({ onRegistered }) {
     useEffect(() => {
         // Show a toast if login returns error  
         if (errorInLoginUser)
-            toast("Login failed!");       
+            toast("Login failed!");
     }, [errorInLoginUser])
 
     useEffect(() => {
@@ -137,7 +153,8 @@ function SiteHeader({ onRegistered }) {
             toast("Registration failed!");
         // Show a toast if register returns error         
     }, [errorInRegisterUser])
-    console.log(loginLoading, loginData, loginError, 'LOGIN')
+    // console.log(loginLoading, loginData, loginError, 'LOGIN')
+    // console.log(contextUser, authToken, 'contextUser')
 
     return (
         <Header>

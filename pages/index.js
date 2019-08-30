@@ -29,8 +29,6 @@ const onNewUserRegistration = () => {
     NotificationManager.success('Success message', 'New User Registered');
 }
 
-
-
 function MainPage() {
     return (
         <>

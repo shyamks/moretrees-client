@@ -19,7 +19,7 @@ function PriorityList({ items }) {
                 let itemNumber = `${(index + 1)}.`
                 let text = `${item.optionText}`;
                 return (
-                    <ListItem id={item.key}>
+                    <ListItem key={item.id}>
                        <div>{itemNumber}</div>
                        <div>{text}</div>
                     </ListItem>

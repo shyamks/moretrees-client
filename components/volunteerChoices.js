@@ -1,15 +1,63 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useContext } from 'react'
 import styled from 'styled-components'
 
 import Checkbox from './Checkbox'
 import PriorityList from './PriorityList'
 import Input from './Input'
 import Button from './Button';
-import useDataApi from './hooks/useDataApi';
-import { GRAPHQL_ENDPOINT, POST } from '../constants';
+import gql from 'graphql-tag';
+import useQueryApi from './hooks/useQueryApi';
+import useLocalStorage from './hooks/useLocalStorage';
+import useMutationApi from './hooks/useMutationApi';
+import useLazyQueryApi from './hooks/useLazyQueryApi';
+import UserContext from './UserContext';
+import { getUserFromLocalStorage } from '../utils';
 
-const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoeWFtLmtvZG1hZEBnbWFpbC5jb20iLCJpYXQiOjE1NjY0OTkxNDR9.dPrO7F3ZG8-4LqHICYrrRCbal7JBlCOsiwU7_K1oNeU"
-const email = "shyam.kodmad@gmail.com"
+const GET_VOLUNTEER_QUERY = gql`
+    query getVolunteerOptions($email: String!){
+        getVolunteerOptions(email: $email, status: "ACTIVE") {
+            optionText
+            status
+            id
+        }
+  }`
+
+const UPDATE_USER_MUTATION = gql`
+    mutation updateUser($userInput: UserInput!) {
+      updateUser(input: $userInput){
+        username
+        email
+        bio
+        phone
+        industry
+        volunteerOptions {
+          optionText
+          id
+          status
+        }
+        error
+        message
+      }
+    }`
+
+const GET_USER_QUERY = gql`
+    query getUser($email: String!) {
+      getUser(email: $email){
+        username
+        email
+        bio
+        phone
+        industry
+        volunteerOptions {
+          optionText
+          id
+          status
+        }
+        error
+        message
+      }
+    }`
+
 
 // const volunteerOptions = [
 //     {
@@ -80,22 +128,45 @@ const OptionLabel = styled.span`
 
 
 function VolunteerChoices() {
-    let [selectedOption, setOption] = useState({ checkedItems: new Map(), checkedPriority: [] })
-    let industryRef = useRef(null)
-    let roleRef = useRef(null)
-    const GET_VOLUNTEER_QUERY = `{
-        getVolunteerOptions(email: "${email}", status: "ACTIVE", accessToken: "${accessToken}") {
-          optionText
-          status
-          id
+    const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
+    const getCheckedItemsFromStore = (user) => {
+        let selectedVolunteerOptions = (user && user.volunteerOptions || [])
+        // console.log(user,'heli eega')
+        let userCheckedItems = new Map()
+        if (selectedVolunteerOptions) {
+            for (let item of selectedVolunteerOptions) {
+                userCheckedItems.set(item.id, true)
+            }
         }
-      }`
-    const [volunteerData, isLoading, isError, setUrl, setData] = useDataApi({ initialUrl: GRAPHQL_ENDPOINT, method: POST, query: GET_VOLUNTEER_QUERY }, true)
-    const [updateUserData, isUpdateUserDataLoading, isUpdateUserDataError, updateUserDataUrl, updateUserDataMethod] = useDataApi({ initialUrl: GRAPHQL_ENDPOINT })
-    const volunteerOptions = volunteerData && volunteerData.data.getVolunteerOptions
+        // console.log(userCheckedItems, selectedVolunteerOptions, 'cmon')
+        return [userCheckedItems, selectedVolunteerOptions]
+    }
 
-    console.log(updateUserData, isUpdateUserDataLoading, isUpdateUserDataError, 'getVolunteerOptions')
+    const jsonEqual = (a, b) => {
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
+    const differentFromLocalStorage = (object, objectFromStore) => {
+        return !jsonEqual(object, objectFromStore)
+    }
+
+    const onResponseFromUpdateUser = (updateData, isError) => {
+        if (!updateData) return { loggedInUser: contextUser, errorInLoginUser: null }
+        let data = updateData.data
+        // console.log(data, isError, 'onResponseFromUpdateUser')
+        let updateUser = data.updateUser
+        const errorInUpdateUser = (updateUser && updateUser.error) || isError
+        const loggedInUser = updateUser || contextUser
+        console.log(loggedInUser, errorInUpdateUser, 'now')
+        if (!errorInUpdateUser) {
+            if (differentFromLocalStorage(loggedInUser, contextUser)) {
+                storeUserInContext(loggedInUser)
+            }
+        }
+        return { loggedInUser, errorInUpdateUser }
+    }
+
     const handleChange = (e, volunteerOptions) => {
+        console.log(e, volunteerOptions, 'what hapd')
         const itemName = e.target.name
         const item = volunteerOptions.filter(checkbox => checkbox.id == itemName)[0]
         const isChecked = e.target.checked
@@ -104,41 +175,69 @@ function VolunteerChoices() {
             prevCheckedPriority.push(item)
         }
         else {
-            let index = prevCheckedPriority.indexOf(item)
+            let index = prevCheckedPriority.findIndex((arrayItem) => arrayItem.optionText == item.optionText)
+            console.log(index, item, 'indes')
             if (index > -1) {
                 prevCheckedPriority.splice(index, 1);
             }
         }
         setOption(prevState => ({ checkedItems: prevState.checkedItems.set(itemName, isChecked), checkedPriority: prevCheckedPriority }))
-        console.log(selectedOption, 'selectedOption')
     }
 
     const onSubmitVolunteerOptions = () => {
-        console.log(selectedOption,industryRef.current.value, roleRef.current.value, 'selectedOption')
+        let { email } = contextUser || {}
         let priorityList = selectedOption.checkedPriority
+        let inputVolunteerList = priorityList.map((item) => {
+            let { optionText, status, id } = item
+            return { optionText, status, id }
+        })
         let industry = industryRef.current.value
         let role = roleRef.current.value
-        let input = {role, industry, volunteerOptions: priorityList, email, accessToken }
-        let UPDATE_USER_MUTATION = `
-        mutation updateUser {
-            updateUser(input: ${JSON.stringify(input)}){
-              username
-              email
-              bio
-              phone
-              accessToken
-              error
-              message
-              volunteerOptions {
-                optionText
-                id
-                status
-              }
-            }
-          }`
-          console.log(UPDATE_USER_MUTATION,'mutatuion')
-          updateUserDataUrl({ url: GRAPHQL_ENDPOINT, method: POST, query: UPDATE_USER_MUTATION })
+        let input = { role, industry, volunteerOptions: inputVolunteerList, email }
+        setUpdateUserVariables({ userInput: input })
+        //   updateUserDataUrl({ url: GRAPHQL_ENDPOINT, method: POST, query: UPDATE_USER_MUTATION })
     }
+
+    let { email } = contextUser || {}
+
+    const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(UPDATE_USER_MUTATION)
+    const [userData, userLoading, userError, setUserVariables, setUserData] = useLazyQueryApi(GET_USER_QUERY)
+
+
+    useEffect(() => {
+        console.log(updateUserData, 'useEffect updateUserData')
+        if (updateUserData) {
+            let updateUser = updateUserData.data.updateUser
+            let [checkedItems, checkedPriority] = getCheckedItemsFromStore(updateUser)
+            setOption({ checkedItems, checkedPriority })
+            storeUserInContext(updateUser)
+        }
+    }, [updateUserData])
+
+    useEffect(() => {
+        console.log(userData, 'useEffect userData')
+        if (userData) {
+            let getUser = userData.data.getUser
+            let [checkedItems, checkedPriority] = getCheckedItemsFromStore(getUser)
+            setOption({ checkedItems, checkedPriority })
+            storeUserInContext(getUser)
+        }
+    }, [userData])
+    const [volunteerOptionsData, isGetVolunteerOptionsLoading, isGetVolunteerOptionsError, refetchVolunteerOptionsData] = useQueryApi(GET_VOLUNTEER_QUERY, { email })
+    const { loggedInUser, errorInUpdateUser } = onResponseFromUpdateUser(updateUserData, updateUserError)
+    const volunteerOptions = volunteerOptionsData && volunteerOptionsData.getVolunteerOptions
+
+    const [selectedOption, setOption] = useState(() => {
+        let userFromStore = getUserFromLocalStorage()
+        let [checkedItems, checkedPriority] = getCheckedItemsFromStore(userFromStore)
+        return { checkedItems, checkedPriority }
+    })
+
+    let industryRef = useRef(null)
+    let roleRef = useRef(null)
+    // console.log(contextUser, selectedOption, 'contextUser')
+
+    // console.log(getVolunteerOptionsData, isGetVolunteerOptionsLoading, isGetVolunteerOptionsError, 'getVolunteerOptions')
 
     return (
         <div>
@@ -148,27 +247,29 @@ function VolunteerChoices() {
                 <ListContainer>
                     <OptionList>
                         {
-                            volunteerOptions && volunteerOptions.map(item => (
-                                <Option key={item.id}>
-                                    <OptionLabel>
-                                        {item.optionText}
-                                    </OptionLabel>
-                                    <Checkbox
-                                        name={item.id}
-                                        checked={selectedOption.checkedItems.get(item.id)}
-                                        onChange={(e)=>handleChange(e, volunteerOptions)}
-                                    />
-                                </Option>
-                            ))
+                            volunteerOptions && volunteerOptions.map(item => {
+                                return (
+                                    <Option key={item.id}>
+                                        <OptionLabel>
+                                            {item.optionText}
+                                        </OptionLabel>
+                                        <Checkbox
+                                            name={item.id}
+                                            checked={selectedOption.checkedItems.get(item.id)}
+                                            onChange={(e) => handleChange(e, volunteerOptions)}
+                                        />
+                                    </Option>
+                                )
+                            })
                         }
                     </OptionList>
                     <PriorityList items={selectedOption.checkedPriority} />
                 </ListContainer>
-                <div>
+                <>
                     <div> What do you do?</div>
                     <Input ref={industryRef} placeholder={'Industry'} />
                     <Input ref={roleRef} placeholder={'Role'} />
-                </div>
+                </>
                 <Button onClick={onSubmitVolunteerOptions}> Submit </Button>
             </React.Fragment>
         </div>
