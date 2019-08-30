@@ -7,15 +7,13 @@ import Input from './Input'
 import Button from './Button';
 import gql from 'graphql-tag';
 import useQueryApi from './hooks/useQueryApi';
-import useLocalStorage from './hooks/useLocalStorage';
 import useMutationApi from './hooks/useMutationApi';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
 import UserContext from './UserContext';
-import { getUserFromLocalStorage } from '../utils';
 
 const GET_VOLUNTEER_QUERY = gql`
-    query getVolunteerOptions($email: String!){
-        getVolunteerOptions(email: $email, status: "ACTIVE") {
+    query getVolunteerOptions($status: String){
+        getVolunteerOptions(status: $status) {
             optionText
             status
             id
@@ -198,8 +196,6 @@ function VolunteerChoices() {
         //   updateUserDataUrl({ url: GRAPHQL_ENDPOINT, method: POST, query: UPDATE_USER_MUTATION })
     }
 
-    let { email } = contextUser || {}
-
     const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(UPDATE_USER_MUTATION)
     const [userData, userLoading, userError, setUserVariables, setUserData] = useLazyQueryApi(GET_USER_QUERY)
 
@@ -223,16 +219,19 @@ function VolunteerChoices() {
             storeUserInContext(getUser)
         }
     }, [userData])
-    
-    const [volunteerOptionsData, isGetVolunteerOptionsLoading, isGetVolunteerOptionsError, refetchVolunteerOptionsData] = useQueryApi(GET_VOLUNTEER_QUERY, { email })
+
+    useEffect(() => {
+        console.log(contextUser, 'useEffect contextUser')
+        let [checkedItems, checkedPriority] = getCheckedItemsFromStore(contextUser)
+        setOption({ checkedItems, checkedPriority })
+    }, [contextUser])
+
+    const [volunteerOptionsData, isGetVolunteerOptionsLoading, isGetVolunteerOptionsError, refetchVolunteerOptionsData] = useQueryApi(GET_VOLUNTEER_QUERY, {status: "ACTIVE"})
     const { loggedInUser, errorInUpdateUser } = onResponseFromUpdateUser(updateUserData, updateUserError)
     const volunteerOptions = volunteerOptionsData && volunteerOptionsData.getVolunteerOptions
 
-    const [selectedOption, setOption] = useState(() => {
-        let userFromStore = getUserFromLocalStorage()
-        let [checkedItems, checkedPriority] = getCheckedItemsFromStore(userFromStore)
-        return { checkedItems, checkedPriority }
-    })
+    const [selectedOption, setOption] = useState({ checkedItems: new Map(), checkedPriority: [] })
+
 
     let industryRef = useRef(null)
     let roleRef = useRef(null)
