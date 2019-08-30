@@ -223,6 +223,7 @@ function VolunteerChoices() {
             storeUserInContext(getUser)
         }
     }, [userData])
+    
     const [volunteerOptionsData, isGetVolunteerOptionsLoading, isGetVolunteerOptionsError, refetchVolunteerOptionsData] = useQueryApi(GET_VOLUNTEER_QUERY, { email })
     const { loggedInUser, errorInUpdateUser } = onResponseFromUpdateUser(updateUserData, updateUserError)
     const volunteerOptions = volunteerOptionsData && volunteerOptionsData.getVolunteerOptions
