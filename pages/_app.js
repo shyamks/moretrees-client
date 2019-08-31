@@ -2,6 +2,7 @@ import App, { Container } from "next/app"
 import React from "react"
 import withApolloClient from "../lib/with-apollo-client"
 import { ApolloProvider } from "@apollo/react-hooks"
+
 import UserContext from '../components/UserContext'
 import { STORE_TOKEN, STORE_USER } from "../constants";
 
@@ -11,7 +12,7 @@ class MyApp extends App {
     authToken: null
   };
 
-  setLocalStorageItem = (key, value) =>{
+  setLocalStorageItem = (key, value) => {
     localStorage.setItem(key, JSON.stringify(value))
   }
 
@@ -53,10 +54,10 @@ class MyApp extends App {
       <Container>
         <UserContext.Provider value={userContextValue}>
           <ApolloProvider client={apolloClient}>
+          <script src="https://js.stripe.com/v3/"></script>
             <Component {...pageProps} />
           </ApolloProvider>
         </UserContext.Provider>
-
       </Container>
     )
   }

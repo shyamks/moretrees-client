@@ -1,11 +1,14 @@
 // import { Table } from 'react-bootstrap';
 
 import styled from 'styled-components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { StripeProvider } from 'react-stripe-elements-universal';
 
 import Input from './Input';
 import Button from './Button';
 import ItemCounter from './counter'
+import { STRIPE_PUBLIC_KEY } from '../constants';
+import Checkout from './checkout/Checkout';
 
 let items = [
     {
@@ -23,6 +26,21 @@ let items = [
         number: 1
     }
 ]
+
+const customStyles = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+        borderRadius: '30px',
+        padding: '0px',
+        border: '0px'
+    }
+}
+
 const Donate = styled.div`
     text-align: center;
 `
@@ -98,30 +116,36 @@ function getDonateItems(items, checkoutCostChanger) {
 }
 
 function DonateItems() {
+    let [modalStatus, setModalStatus] = useState(false)
+    // let [client, setClient] = useState(null)
+    // useEffect(() => {
+    // setClient(!client)
+    // },[client])
+
     function checkoutCostChanger(val) {
         setSubTotalCheckoutCost(subTotalCheckoutCost + val);
     }
     let [subTotalCheckoutCost, setSubTotalCheckoutCost] = useState(0);
     return (
-        <Donate>
-            <DonateTrees>
-                <div>
-                    {getDonateItems(items, checkoutCostChanger)}
-                </div>
-                <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
-            </DonateTrees>
-            <Or>
-                OR
+        <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
+            <Donate>
+                <DonateTrees>
+                    <div>
+                        {getDonateItems(items, checkoutCostChanger)}
+                    </div>
+                    <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
+                </DonateTrees>
+                <Or>
+                    OR
                 </Or>
-            <DonateMoney>
-                <MoneyLine>You could choose the amount you want to donate.</MoneyLine>
-                <Input numberInputWidth={'50px'} type="number" defaultValue={0}/>
-            </DonateMoney>
+                <DonateMoney>
+                    <MoneyLine>You could choose the amount you want to donate.</MoneyLine>
+                    <Input numberInputWidth={'50px'} type="number" defaultValue={0} />
+                </DonateMoney>
+                <Checkout />
+            </Donate>
+        </StripeProvider>
 
-            <Button onClick={()=>{}}>
-                Donate
-            </Button>
-        </Donate>
     )
 }
 
