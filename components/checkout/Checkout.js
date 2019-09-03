@@ -1,8 +1,10 @@
 // MyStoreCheckout.js
 import React from 'react';
-import { CardElement,
+import {
+  CardElement,
   Elements,
-  injectStripe,} from 'react-stripe-elements-universal';
+  injectStripe
+} from 'react-stripe-elements-universal';
 import './checkout.css'
 
 class _CardForm extends React.Component {
@@ -10,7 +12,7 @@ class _CardForm extends React.Component {
     return (
       <form onSubmit={() => this.props.stripe.createToken().then(payload => console.log(payload))}>
         <CardElement />
-        <button>Donate</button>
+        <button className="stripeButton">Donate</button>
       </form>
     )
   }

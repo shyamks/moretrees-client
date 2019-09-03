@@ -64,11 +64,15 @@ const customStyles = {
 }
 
 const Header = styled.div`
+    padding: 35px;
     display: flex;
     flex-direction: horizontal;
     justify-content: space-between;
-    margin: 1%;
-`
+    border-bottom: 3px solid rgba(0,0,0,0.09);
+    margin-left: -8px;
+    margin-right: -8px;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.09);
+    `
 
 const AppHeader = styled.div`
     display: flex;
