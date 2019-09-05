@@ -25,7 +25,7 @@ const Input = styled.input`
     transition: border-color 0.3s ease-in-out;
 
     &:focus {
-        border-color: green;
+        border-color: #60bc0f;
         transition: border-color 0.3s ease-in-out;
 
         ${({ error }) => error && `

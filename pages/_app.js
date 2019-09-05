@@ -1,4 +1,4 @@
-import App, { Container } from "next/app"
+import App from "next/app"
 import React from "react"
 import withApolloClient from "../lib/with-apollo-client"
 import { ApolloProvider } from "@apollo/react-hooks"
@@ -13,7 +13,12 @@ class MyApp extends App {
   };
 
   setLocalStorageItem = (key, value) => {
-    localStorage.setItem(key, JSON.stringify(value))
+    try{
+      localStorage.setItem(key, JSON.stringify(value))
+    }
+    catch(e){
+      console.log(e,'localStorage error')
+    }
   }
 
   storeUserInContext = (user) => {
@@ -51,14 +56,12 @@ class MyApp extends App {
     const [user, authToken] = this.getUserAndToken()
     let userContextValue = { user, storeUserInContext: this.storeUserInContext, removeUserInContext: this.removeUserInContext, authToken }
     return (
-      <Container>
         <UserContext.Provider value={userContextValue}>
           <ApolloProvider client={apolloClient}>
-          <script src="https://js.stripe.com/v3/"></script>
+            <script src="https://js.stripe.com/v3/"></script>
             <Component {...pageProps} />
           </ApolloProvider>
         </UserContext.Provider>
-      </Container>
     )
   }
 }

@@ -165,7 +165,7 @@ html {
   
   .login-input:focus {
     outline: none;
-    border-bottom: 2px solid green;
+    border-bottom: 2px solid #60bc0f;
   }
   
   
@@ -188,7 +188,7 @@ html {
     font-family: 'Roboto', sans-serif;
     font-size: 0.9rem;
     font-weight: 500;
-    color: green;
+    color: #60bc0f;
     cursor: pointer;
     opacity: 1;
     animation: input_opacity 0.8s cubic-bezier(.55, 0, .1, 1);
@@ -198,7 +198,7 @@ html {
   .login-button.raised {
     padding: 5px 10px;
     color: #FAFAFA;
-    background: green;
+    background: #60bc0f;
     box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.137255),
                 0px 1px 5px 0px rgba(0, 0, 0, 0.117647),
                 0px 3px 1px -2px rgba(0, 0, 0, 0.2);

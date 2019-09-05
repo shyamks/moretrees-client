@@ -71,7 +71,7 @@ const Header = styled.div`
     border-bottom: 3px solid rgba(0,0,0,0.09);
     margin-left: -8px;
     margin-right: -8px;
-    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.09);
+    background-color: #454f48;
     `
 
 const AppHeader = styled.div`
@@ -79,10 +79,23 @@ const AppHeader = styled.div`
     flex-direction: horizontal;
 `
 
+const Separator = styled.div`
+    border-right: 1px solid green;
+    height: 20px;
+    margin-right: 20px;
+`
+
 const LoginHeader = styled.div`
+    margin-right: 20px;
+    &: hover{
+        cursor: pointer;
+    }
 `
 
 const RegisterHeader = styled.div`
+    &: hover{
+        cursor: pointer;
+    }
 `
 
 const TitleLogo = styled.div`
@@ -168,7 +181,8 @@ function SiteHeader({ onRegistered }) {
                     (loggedInUser && !errorInLoginUser) ?
                         (<UserAvatar userInfo={loggedInUser} onLogout={onLogout} />) :
                         (<React.Fragment>
-                            <LoginHeader onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>/
+                            <LoginHeader onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
+                            <Separator/>
                             <RegisterHeader onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
                         </React.Fragment>)
 

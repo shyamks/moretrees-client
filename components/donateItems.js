@@ -63,7 +63,10 @@ const DonateMoney = styled.div`
 const MoneyLine = styled.div`
 
 `
-
+const DonateItemsContainer = styled.div`
+    width: 50%;
+    margin: 40px auto auto auto;
+`
 const DonateItem = styled.div`
     display: flex;
     flex-direction: horizontal;
@@ -90,9 +93,8 @@ const ItemCost = styled.div`
 `
 
 const Subtotal = styled.div`
-    display: flex;
     width: 50%;
-    flex-direction: row-reverse;
+    margin: auto;
 `
 
 function getDonateItems(items, checkoutCostChanger) {
@@ -127,25 +129,24 @@ function DonateItems() {
     }
     let [subTotalCheckoutCost, setSubTotalCheckoutCost] = useState(0);
     return (
-        <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
-            <Donate>
-                <DonateTrees>
-                    <div>
-                        {getDonateItems(items, checkoutCostChanger)}
-                    </div>
-                    <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
-                </DonateTrees>
-                <Or>
-                    OR
+        <Donate>
+            <DonateTrees>
+                <DonateItemsContainer>
+                    {getDonateItems(items, checkoutCostChanger)}
+                </DonateItemsContainer>
+                <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
+            </DonateTrees>
+            <Or>
+                OR
                 </Or>
-                <DonateMoney>
-                    <MoneyLine>You could choose the amount you want to donate.</MoneyLine>
-                    <Input numberInputWidth={'50px'} type="number" defaultValue={0} />
-                </DonateMoney>
+            <DonateMoney>
+                <MoneyLine>You could choose the amount you want to donate.</MoneyLine>
+                <Input numberInputWidth={'50px'} type="number" defaultValue={0} />
+            </DonateMoney>
+            <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
                 <Checkout />
-            </Donate>
-        </StripeProvider>
-
+            </StripeProvider>
+        </Donate >
     )
 }
 
