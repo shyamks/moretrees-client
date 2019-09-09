@@ -20,7 +20,7 @@ function Login({ onSubmit }) {
         <div className="login-container">
             <section className="login" id="login">
                 <div className="login-form">
-                    <input ref={emailRef} type="text" className="login-input" placeholder="User" required autoFocus />
+                    <input ref={emailRef} type="text" className="login-input" placeholder="Email" required autoFocus />
                     <input ref={passRef} type="password" className="login-input" placeholder="Password" required />
                     <button onClick={onLogin} type="submit" className="login-button">SIGN IN</button>
                 </div>

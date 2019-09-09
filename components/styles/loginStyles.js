@@ -167,7 +167,12 @@ html {
     outline: none;
     border-bottom: 2px solid #60bc0f;
   }
-  
+
+  .login-input.error {
+    border-bottom: 2px solid red;
+    // margin: 0 0 12px 0;
+  }
+
   
   /* Submit Button */
   .submit-container {
@@ -194,6 +199,8 @@ html {
     animation: input_opacity 0.8s cubic-bezier(.55, 0, .1, 1);
     transition: background 0.2s ease-in-out;
   }
+
+  
   
   .login-button.raised {
     padding: 5px 10px;

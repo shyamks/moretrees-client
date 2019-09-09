@@ -1,5 +1,5 @@
 import { STORE_USER } from './constants'
-
+import { toast } from 'react-toastify'
 
 export const getUserFromLocalStorage = () => {
     try {
@@ -10,4 +10,33 @@ export const getUserFromLocalStorage = () => {
         console.log(e)
         return null
     }
+}
+
+export const showToast = (text, type) => {
+    toast[type](text, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+    })
+}
+
+let apiCalledStatus = {
+    type: '',
+    status: false
+}
+
+export const apiCallbackStatus = () => {
+    
+    function setCalledStatus(status, type) {
+        apiCalledStatus = { type, status }
+    }
+
+    function checkCalledStatus(type) {
+        return apiCalledStatus.type == type && apiCalledStatus.status
+    }
+
+    return [setCalledStatus, checkCalledStatus]
 }

@@ -6,7 +6,7 @@ const Username = styled.div`
 
 const Container =  styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: horizontal;
 `
 
 const Separator = styled.div`
@@ -22,11 +22,11 @@ const Logout = styled.div`
 `
 function UserAvatar({ userInfo, onLogout }) {
     return (
-        <Container>
+        <>
             <Username>{userInfo.username || userInfo.email}</Username>
             <Separator/>
             <Logout onClick={onLogout}>Logout</Logout>
-        </Container>
+        </>
     )
 }
 

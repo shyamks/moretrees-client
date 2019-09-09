@@ -2,9 +2,12 @@ import App from "next/app"
 import React from "react"
 import withApolloClient from "../lib/with-apollo-client"
 import { ApolloProvider } from "@apollo/react-hooks"
+import { toast } from 'react-toastify';
 
 import UserContext from '../components/UserContext'
 import { STORE_TOKEN, STORE_USER } from "../constants";
+
+toast.configure()
 
 class MyApp extends App {
   state = {

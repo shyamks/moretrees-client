@@ -3,7 +3,6 @@
 import styled from 'styled-components'
 import Modal from 'react-modal'
 import { useState, useEffect, useContext } from 'react'
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Login from './login'
@@ -15,6 +14,7 @@ import gql from 'graphql-tag';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
 import useMutationApi from './hooks/useMutationApi';
 import UserContext from './UserContext';
+import { showToast, apiCallbackStatus } from '../utils';
 
 const LOGIN = 'Login'
 const REGISTER = 'Register'
@@ -102,11 +102,11 @@ const TitleLogo = styled.div`
 `
 
 
+
 function SiteHeader({ onRegistered }) {
     let [modalStatus, setModalStatus] = useState({ type: LOGIN, open: false })
-
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
-
+    const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
     // let [token, setAuthToken] = useLocalStorage('token', null)
 
     const toggleModal = (modalStatus, modalSetter, type) => {
@@ -115,16 +115,14 @@ function SiteHeader({ onRegistered }) {
 
     const onLogin = ({ email, password }) => {
         setLoginVariables({ email, password })
+        setCalledStatus(true, LOGIN)
         toggleModal(modalStatus, setModalStatus, LOGIN)
     }
 
     const onRegister = ({ email, username, password }) => {
-
-
         setRegisterVariables({ email, username, password })
-        // setUrl({ url: GRAPHQL_ENDPOINT, query: REGISTER_MUTATION, method: POST })
+        setCalledStatus(true, REGISTER)
         toggleModal(modalStatus, setModalStatus, REGISTER)
-        // onRegistered() show a toast message on user registration
     }
 
     const onLogout = () => {
@@ -160,18 +158,27 @@ function SiteHeader({ onRegistered }) {
     const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
     const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
     useEffect(() => {
-        // Show a toast if login returns error  
-        if (errorInLoginUser)
-            toast("Login failed!");
-    }, [errorInLoginUser])
+        const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
+        if (checkCalledStatus(LOGIN)) {
+        console.log(loggedInUser,errorInLoginUser)
+            if (errorInLoginUser)
+                showToast("Login failed!", 'error');
+            if (loggedInUser)
+                showToast(`Logged in ${loggedInUser.username} !`, 'success')
+            setCalledStatus(false)
+        }
+    }, [loginData, loginError])
 
     useEffect(() => {
-        if (errorInRegisterUser)
-            toast("Registration failed!");
-        // Show a toast if register returns error         
-    }, [errorInRegisterUser])
-    // console.log(loginLoading, loginData, loginError, 'LOGIN')
-    // console.log(contextUser, authToken, 'contextUser')
+        const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
+        if (checkCalledStatus(REGISTER)) {
+            if (errorInRegisterUser)
+                showToast("Registration failed!", 'error');
+            if (registerUser && registerUser.username)
+                showToast('Registration completed!', 'success')
+            setCalledStatus(false)
+        }
+    }, [registerData, registerError])
 
     return (
         <Header>
@@ -180,11 +187,11 @@ function SiteHeader({ onRegistered }) {
                 {
                     (loggedInUser && !errorInLoginUser) ?
                         (<UserAvatar userInfo={loggedInUser} onLogout={onLogout} />) :
-                        (<React.Fragment>
+                        (<>
                             <LoginHeader onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
-                            <Separator/>
+                            <Separator />
                             <RegisterHeader onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
-                        </React.Fragment>)
+                        </>)
 
                 }
             </AppHeader>
@@ -200,4 +207,5 @@ function SiteHeader({ onRegistered }) {
         </Header>
     )
 }
+
 export default SiteHeader
