@@ -117,7 +117,7 @@ function getDonateItems(items, checkoutCostChanger) {
                     <ItemName>{name}</ItemName>
                     <ItemCost> Rs {cost}</ItemCost>
                 </ItemDetail>
-                <ItemCounter itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                <ItemCounter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
             </DonateItem>
         )
     }

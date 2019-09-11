@@ -31,10 +31,12 @@ let TotalCost = styled.div`
     white-space:nowrap;
 `
 
-function Counter({ cost, itemCost }) {
+function Counter({ maximumCount, cost, itemCost }) {
+    let finalMaxCount = Math.min(maximumCount, MAX)
+    
     function chgCounter(val) {
         let counterVal = count + val
-        if (counterVal >= MIN && counterVal <= MAX) {
+        if (counterVal >= MIN && counterVal <= finalMaxCount) {
             setCount(counterVal)
             setTotalCost(counterVal * cost)
             itemCost(counterVal, val * cost);

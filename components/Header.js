@@ -75,7 +75,11 @@ const Header = styled.div`
     background-color: #454f48;
     `
 
-const AppHeader = styled.div`
+const AppLeftHeader = styled.div`
+    display: flex;
+    flex-direction: horizontal;
+`
+const AppRightHeader = styled.div`
     display: flex;
     flex-direction: horizontal;
 `
@@ -100,9 +104,25 @@ const RegisterHeader = styled.div`
 `
 
 const TitleLogo = styled.div`
+    margin-right: 20px;
+    &: hover{
+        cursor: pointer;
+    }
 `
 
+const DonationLink = styled.div`
+    margin-right: 20px;
+    &: hover{
+        cursor: pointer;
+    }
+`
 
+const VolunteerLink = styled.div`
+    margin-right: 20px;
+    &: hover{
+        cursor: pointer;
+    }
+`
 
 function SiteHeader({ onRegistered }) {
     let [modalStatus, setModalStatus] = useState({ type: LOGIN, open: false })
@@ -185,8 +205,15 @@ function SiteHeader({ onRegistered }) {
     const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
     return (
         <Header>
-            <TitleLogo>MoreTrees</TitleLogo>
-            <AppHeader>
+            <AppLeftHeader>
+                <TitleLogo>MoreTrees</TitleLogo>
+                <Separator />
+                
+                <DonationLink> Donate </DonationLink>
+                <Separator />
+                <VolunteerLink> Volunteer </VolunteerLink>
+            </AppLeftHeader>
+            <AppRightHeader>
                 {
                     (loggedInUser && !errorInLoginUser) ?
                         (<UserAvatar userInfo={loggedInUser} onLogout={onLogout} />) :
@@ -197,7 +224,7 @@ function SiteHeader({ onRegistered }) {
                         </>)
 
                 }
-            </AppHeader>
+            </AppRightHeader>
             <Modal isOpen={modalStatus.open}
                 onAfterOpen={() => { }}
                 onRequestClose={() => toggleModal(modalStatus, setModalStatus, modalStatus.type)}
