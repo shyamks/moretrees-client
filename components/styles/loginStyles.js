@@ -46,7 +46,6 @@ html {
     position: relative;
     width: 340px;
     height: auto;
-    padding: 5px;
     box-sizing: border-box;
   }
   
@@ -70,7 +69,6 @@ html {
     position: relative;
     width: 100%;
     padding: 10px;
-    margin: 0 0 10px 0;
     box-sizing: border-box;
     border-radius: 3px;
     background: #FAFAFA;

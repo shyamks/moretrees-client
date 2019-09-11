@@ -2,7 +2,7 @@
 
 import styled from 'styled-components'
 import Modal from 'react-modal'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useContext, useRef } from 'react'
 import { StripeProvider } from 'react-stripe-elements-universal';
 import lodash from 'lodash'
 
@@ -16,6 +16,7 @@ import gql from 'graphql-tag';
 import useMutationApi from './hooks/useMutationApi';
 import useQueryApi from './hooks/useQueryApi';
 import { showToast } from '../utils';
+import UserContext from './UserContext';
 
 const customStyles = {
     content: {
@@ -26,9 +27,18 @@ const customStyles = {
         marginRight: '-50%',
         transform: 'translate(-50%, -50%)',
         borderRadius: '30px',
-        padding: '0px',
-        border: '0px'
-    }
+        padding: '20px 20px 0 20px',
+        border: '0px',
+        boxShadow: '3px 3px 5px 6px #ccc'
+    },
+    overlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)'
+      }
 }
 
 const Donate = styled.div`
@@ -149,7 +159,7 @@ function DonateItems() {
 
     const getPaymentInfo = () => {
         let donateAmount = donateStatus.donateAmount
-        let email = contextUser.email
+        let email = (contextUser && contextUser.email) || ""
         let items = Object.values(itemCheckoutList).map((item) => lodash.pick(item, ['id', 'count', 'saplingName']))
         let input = { email, amount: subTotalCheckoutCost, donationAmount: donateAmount, items }
         return { input, totalAmount: subTotalCheckoutCost + donateAmount }
@@ -176,7 +186,7 @@ function DonateItems() {
             showToast('Card info incorrect', 'error')
             return
         }
-        let email = contextUser.email
+        let email = (contextUser && contextUser.email) || ''
         let { input } = getPaymentInfo()
         input = { ...input, email, token: token.id }
         console.log(input, 'input')

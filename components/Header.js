@@ -59,7 +59,8 @@ const customStyles = {
         transform: 'translate(-50%, -50%)',
         borderRadius: '30px',
         padding: '0px',
-        border: '0px'
+        border: '0px',
+        boxShadow: '3px 3px 5px 6px #ccc'
     }
 }
 
