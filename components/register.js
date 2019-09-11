@@ -5,23 +5,26 @@ function Register({ onSubmit }) {
     let emailRef = useRef(null)
     let usernameRef = useRef(null)
     let passwordRef = useRef(null)
+    let mobileRef = useRef(null)
 
     const [validRegister, setValidityOfRegister] = useState({
         email: { status: false, errorText: null },
         username: { status: false, errorText: null },
-        password: { status: false, errorText: null }
+        password: { status: false, errorText: null },
+        mobile: { status: false, errorText: null }
     })
-    const validDetails = ({ email, username, password }) => {
-        return validity(email, 'email').status && validity(username, 'username').status && validity(password, 'password').status
+    const validDetails = ({ email, username, password , mobile}) => {
+        return validity(email, 'email').status && validity(username, 'username').status && validity(password, 'password').status && validity(mobile,'mobile').status
     }
 
     const onRegister = () => {
         let email = emailRef.current.value
         let username = usernameRef.current.value
         let password = passwordRef.current.value
-        console.log({ emailRef, usernameRef, passwordRef }, 'register')
-        if (validDetails({ email, username, password }))
-            onSubmit({ email, username, password })
+        let mobile = mobileRef.current.value
+        console.log({ emailRef, usernameRef, passwordRef, mobileRef }, 'register')
+        if (validDetails({ email, username, password, mobile }))
+            onSubmit({ email, username, password, mobile })
     }
 
     const validity = (value, type) => {
@@ -36,6 +39,8 @@ function Register({ onSubmit }) {
                     return value.length > 4 && usernameRegex.test(value)
                 case 'password':
                     return value.length > 7
+                case 'mobile':
+                    return value.length > 9
                 default:
                     return false
             }
@@ -46,11 +51,15 @@ function Register({ onSubmit }) {
                 case 'email':
                     return 'Not of email type'
                 case 'username':
-                    if (!value.length > 4)
+                    if (value.length <= 4)
                         return 'More than 4 characters'
                     return 'Can contain a-Z 0-9'
                 case 'password':
                     return 'More than 7 characters'
+                case 'mobile':
+                    if (value.length <= 9)
+                        return 'More than 9 characters'
+                    return 'Error in mobile'
                 default:
                     return 'Problem with entered text'
             }
@@ -102,6 +111,11 @@ function Register({ onSubmit }) {
                     <input ref={passwordRef} type="password" className="login-input" placeholder="Password" required
                         onFocus={(e) => handleChange(e, 'focus', 'password')}
                         onBlur={(e) => handleChange(e, 'blur', 'password')} />
+                    {/* {!validRegister.password.status && <label className="form-label" for="password">{validRegister.password.errorText}</label>} */}
+
+                    <input ref={mobileRef} type="mobile" className="login-input" placeholder="Mobile" required
+                        onFocus={(e) => handleChange(e, 'focus', 'mobile')}
+                        onBlur={(e) => handleChange(e, 'blur', 'mobile')} />
                     {/* {!validRegister.password.status && <label className="form-label" for="password">{validRegister.password.errorText}</label>} */}
 
                     <input ref={emailRef} type="email" className="login-input" placeholder="Email" required 

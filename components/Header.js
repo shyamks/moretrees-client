@@ -7,7 +7,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import Login from './login'
 import Register from './register'
-import useLocalStorage from './hooks/useLocalStorage'
 import UserAvatar from './UserAvatar'
 
 import gql from 'graphql-tag';
@@ -15,9 +14,11 @@ import useLazyQueryApi from './hooks/useLazyQueryApi';
 import useMutationApi from './hooks/useMutationApi';
 import UserContext from './UserContext';
 import { showToast, apiCallbackStatus } from '../utils';
+import Link from 'next/link'
 
 const LOGIN = 'Login'
 const REGISTER = 'Register'
+const ERROR = 'Error'
 
 const REGISTER_MUTATION = gql`
     mutation registerUser($username: String!, $email: String!, $password: String!) {
@@ -49,19 +50,26 @@ const LOGIN_QUERY = gql`
         }
     }`
 
-const customStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-        borderRadius: '30px',
-        padding: '0px',
-        border: '0px',
-        boxShadow: '3px 3px 5px 6px #ccc'
+const customStyles = (caseForStyle) => {
+    let customPadding = '0px'
+    if (caseForStyle === ERROR)
+        customPadding = '20px'
+    let style = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            borderRadius: '30px',
+            padding: customPadding,
+            border: '0px',
+            boxShadow: '3px 3px 5px 6px #ccc'
+        }
     }
+    return style
+
 }
 
 const Header = styled.div`
@@ -123,15 +131,21 @@ const VolunteerLink = styled.div`
         cursor: pointer;
     }
 `
+const navigateTo = (page, params) => {
 
-function SiteHeader({ onRegistered }) {
-    let [modalStatus, setModalStatus] = useState({ type: LOGIN, open: false })
+}
+
+const noop = () => { }
+function SiteHeader(props) {
+
+    // const navigateNow = props.navigate ? props.navigate : noop
+    let [modalStatus, setModalStatus] = useState({ type: LOGIN, data: null, open: false })
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
     // let [token, setAuthToken] = useLocalStorage('token', null)
 
-    const toggleModal = (modalStatus, modalSetter, type) => {
-        modalSetter({ type, open: !modalStatus.open })
+    const toggleModal = (modalStatus, modalSetter, type, data) => {
+        modalSetter({ type, data, open: !modalStatus.open })
     }
 
     const onLogin = ({ email, password }) => {
@@ -140,8 +154,8 @@ function SiteHeader({ onRegistered }) {
         toggleModal(modalStatus, setModalStatus, LOGIN)
     }
 
-    const onRegister = ({ email, username, password }) => {
-        setRegisterVariables({ email, username, password })
+    const onRegister = ({ email, username, password, mobile }) => {
+        setRegisterVariables({ email, username, password, mobile })
         setCalledStatus(true, REGISTER)
         toggleModal(modalStatus, setModalStatus, REGISTER)
     }
@@ -166,7 +180,7 @@ function SiteHeader({ onRegistered }) {
                 storeUserInContext(loggedInUser)
             }
         }
-        console.log(loggedInUser,errorInLoginUser,'pls help')
+        console.log(loggedInUser, errorInLoginUser, 'pls help')
 
         return { loggedInUser, errorInLoginUser }
     }
@@ -177,26 +191,34 @@ function SiteHeader({ onRegistered }) {
     }
     const [loginData, loginLoading, loginError, setLoginVariables, setLoginData] = useLazyQueryApi(LOGIN_QUERY)
     const [registerData, registerLoading, registerError, setRegisterVariables, setRegisterData] = useMutationApi(REGISTER_MUTATION)
-    
+
     useEffect(() => {
         if (loginData && loginData.loginUser && checkCalledStatus(LOGIN)) {
-            const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
-            console.log(loggedInUser,errorInLoginUser, loginData, loginError, 'wtf')
-            if (errorInLoginUser)
+            let loginUser = loginData.loginUser
+            // const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
+            console.log(loginData, loginError, 'wtf loginError')
+            if (loginUser.error || loginError) {
                 showToast("Login failed!", 'error');
-            if (!errorInLoginUser && loggedInUser)
+            }
+            else if (loginUser.username)
                 showToast(`Logged in ${loggedInUser.username} !`, 'success')
             setCalledStatus(false)
         }
     }, [loginData, loginError])
 
     useEffect(() => {
-        if ( registerUser && registerUser.data && checkCalledStatus(REGISTER)) {
-            const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
-            if (errorInRegisterUser)
+        console.log(registerData, 'out')
+        if (registerData && registerData.data && checkCalledStatus(REGISTER)) {
+            // const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
+            console.log(registerData, 'inside')
+
+            let registerUser = registerData.data.registerUser
+            if (registerUser.error || registerError) {
                 showToast("Registration failed!", 'error');
-            if (!errorInRegisterUser && registerUser && registerUser.username)
-                showToast('Registration completed!', 'success')
+                toggleModal(modalStatus, setModalStatus, ERROR, registerUser.error)
+            }
+            else if (registerUser && registerUser.username)
+                showToast(`${registerUser.username} is registered!`, 'success')
             setCalledStatus(false)
         }
     }, [registerData, registerError])
@@ -208,10 +230,26 @@ function SiteHeader({ onRegistered }) {
             <AppLeftHeader>
                 <TitleLogo>MoreTrees</TitleLogo>
                 <Separator />
-                
-                <DonationLink> Donate </DonationLink>
+
+                {/* <DonationLink onClick={navigateTo('donate')}> Donate </DonationLink>
                 <Separator />
-                <VolunteerLink> Volunteer </VolunteerLink>
+                <VolunteerLink onClick={navigateTo('volunteer')}> Volunteer </VolunteerLink>
+                {(loggedInUser && !errorInLoginUser) && 
+                    <>
+                        <Separator/>
+                        <VolunteerLink onClick={navigateTo('volunteer')}> My Donations </VolunteerLink>
+                    </>
+                } */}
+
+                <Link href='/donate'> Donate </Link>
+                <Separator />
+                <Link href='/volunteer'> Volunteer </Link>
+                {(loggedInUser && !errorInLoginUser) &&
+                    <>
+                        <Separator />
+                        <Link href='/myDonations'> My Donations </Link>
+                    </>
+                }
             </AppLeftHeader>
             <AppRightHeader>
                 {
@@ -228,14 +266,19 @@ function SiteHeader({ onRegistered }) {
             <Modal isOpen={modalStatus.open}
                 onAfterOpen={() => { }}
                 onRequestClose={() => toggleModal(modalStatus, setModalStatus, modalStatus.type)}
-                style={customStyles}
+                style={customStyles(modalStatus.type)}
                 contentLabel={modalStatus.type}
             >
                 {(modalStatus.type === LOGIN) && <Login onSubmit={(data) => onLogin(data)} />}
                 {(modalStatus.type === REGISTER) && <Register onSubmit={(data) => onRegister(data)} />}
+                {(modalStatus.type === ERROR) && <ShowError message={modalStatus.data} />}
             </Modal>
         </Header>
     )
+}
+
+function ShowError({ message }) {
+    return <div>{message}</div>
 }
 
 export default SiteHeader

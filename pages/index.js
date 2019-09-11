@@ -4,7 +4,7 @@ import Router from 'next/router'
 import styled from 'styled-components'
 // import { toast } from 'react-toastify'
 
-import Header from '../components/Header'
+import SiteHeader from '../components/Header'
 import Login from '../components/login'
 import Register from '../components/register'
 import Button from '../components/Button'
@@ -48,7 +48,7 @@ const onNewUserRegistration = () => {
 function MainPage() {
     return (
         <>
-            <Header onRegistered={onNewUserRegistration} />
+            <SiteHeader navigate={(page)=> navigateTo(page)} onRegistered={onNewUserRegistration} />
             <BannerOfTrees>
                 <DonateAndVol>
                     <Button height="50px" width="150px" onClick={() => navigateTo('donate')}>

@@ -2,7 +2,7 @@
 
 import styled from 'styled-components'
 import Modal from 'react-modal'
-import { useState, useContext, useRef } from 'react'
+import { useState, useContext, useEffect, useRef } from 'react'
 import { StripeProvider } from 'react-stripe-elements-universal';
 import lodash from 'lodash'
 
@@ -11,34 +11,48 @@ import Button from './Button';
 import ItemCounter from './counter'
 import { STRIPE_PUBLIC_KEY } from '../constants';
 import Checkout from './checkout/Checkout';
-import useLazyQueryApi from './hooks/useLazyQueryApi';
 import gql from 'graphql-tag';
 import useMutationApi from './hooks/useMutationApi';
 import useQueryApi from './hooks/useQueryApi';
-import { showToast } from '../utils';
+import { showToast, apiCallbackStatus } from '../utils';
 import UserContext from './UserContext';
 
-const customStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-        borderRadius: '30px',
-        padding: '20px 20px 0 20px',
-        border: '0px',
-        boxShadow: '3px 3px 5px 6px #ccc'
-    },
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.95)'
-      }
+const DONATION = 'donation'
+
+const PAYMENT_CONFIRMATION = 'paymentConfirmation'
+const PAYMENT_SUCCESS = 'paymentSuccess'
+
+const MIN_DONATION_VALUE = 50
+
+const customStyle = (caseForStyle) => {
+    let customPadding = '20px 20px 0 20px'
+    if (caseForStyle === PAYMENT_SUCCESS)
+        customPadding = '20px'
+    let style = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            borderRadius: '30px',
+            padding: customPadding,
+            border: '0px',
+            boxShadow: '3px 3px 5px 6px #ccc'
+        },
+        overlay: {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255, 255, 255, 0.95)'
+        }
+    }
+
+    return style
+
 }
 
 const Donate = styled.div`
@@ -124,11 +138,12 @@ function getDonateItems(items, checkoutCostChanger) {
     return donateItems;
 }
 
-const PAYMENT_MUTATION = gql`
+const DONATION_MUTATION = gql`
 mutation makeDonation($donationInput : DonationPaymentInput) {
     makeDonation(input: $donationInput){
       status
       error
+      referenceId
     }
 }`
 
@@ -148,12 +163,13 @@ let itemCheckoutList = {}
 
 function DonateItems() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
+    const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
 
     let [donateStatus, setDonateStatus] = useState({ status: false, donateAmount: 0 })
-    let [modalStatus, setModalStatus] = useState({ status: false, getToken: null })
+    let [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
     let donateRef = useRef(null)
 
-    const [paymentData, paymentDataLoading, paymentDataError, setPaymentDataVariables, setPaymentData] = useMutationApi(PAYMENT_MUTATION)
+    const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(DONATION_MUTATION)
     const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(GET_SAPLING_OPTIONS, { status: "ACTIVE" })
     const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
 
@@ -168,15 +184,15 @@ function DonateItems() {
     const makePaymentFromToken = async (getToken) => {
         let { totalAmount } = getPaymentInfo()
         if (totalAmount)
-            setModalStatus({ status: true, getToken })
+            setModalStatus({ status: true, type: PAYMENT_CONFIRMATION, data: totalAmount, getToken })
         else
             showToast('Make some selection', 'error')
     }
 
     const doIt = () => {
         const finalAmount = parseInt(donateRef.current.value);
-        if (finalAmount >= 20)
-            setDonateStatus({ status: true, donateAmount: finalAmount })
+        if (finalAmount >= MIN_DONATION_VALUE)
+            setDonateStatus({ status: true, type: PAYMENT_CONFIRMATION, donateAmount: finalAmount })
     }
 
     const finalPayment = async () => {
@@ -184,15 +200,34 @@ function DonateItems() {
         let token = await getToken()
         if (!token) {
             showToast('Card info incorrect', 'error')
+            closeModal()
             return
         }
         let email = (contextUser && contextUser.email) || ''
         let { input } = getPaymentInfo()
         input = { ...input, email, token: token.id }
-        console.log(input, 'input')
-        setPaymentDataVariables({ donationInput: input })
-        setModalStatus({ status: false, getToken: null })
+        console.log(input, 'input finalPayment')
+        setDonationDataVariables({ donationInput: input })
+        setCalledStatus(true, DONATION)
+        closeModal()
     }
+
+    const closeModal = () => {
+        setModalStatus({ status: false, data: null, getToken: null })
+    }
+
+    useEffect(() => {
+        if (donationData && donationData.data && checkCalledStatus(DONATION)) {
+            console.log(donationData, 'wtf payment')
+            let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
+            let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
+            if (!error && referenceId)
+                setModalStatus({ type: PAYMENT_SUCCESS, status: true, data: referenceId })
+            else{
+                showToast('Problem occured while donating', 'error')
+            }
+        }
+    }, [donationData, donationDataError])
 
     function checkoutCostChanger(count, val, item) {
         itemCheckoutList[item.saplingName] = { ...item, count }
@@ -204,21 +239,6 @@ function DonateItems() {
 
     return (
         <Donate>
-            <Modal isOpen={modalStatus.status}
-                onAfterOpen={() => { }}
-                onRequestClose={() => setModalStatus({ status: false, getToken: null })}
-                style={customStyles}
-                contentLabel={'Hey Man'}
-            >
-                <div>
-                    <ModalText>
-                        Lets make a total donation of Rs {getPaymentInfo().totalAmount}
-                    </ModalText>
-                    <Button onClick={() => finalPayment()}>Go ahead</Button>
-
-                </div>
-            </Modal>
-            
             <DonateTrees>
                 <DonateItemsContainer>
                     {getDonateItems(saplingsArray, checkoutCostChanger)}
@@ -237,7 +257,7 @@ function DonateItems() {
                         </> :
                         <>
                             <MoneyLine>You could choose the amount you want to donate.</MoneyLine>
-                            <Input ref={donateRef} numberInputWidth={'50px'} type="number" defaultValue={20} />
+                            <Input ref={donateRef} numberInputWidth={'50px'} type="number" defaultValue={MIN_DONATION_VALUE} />
                             <Button onClick={() => { doIt() }}> Lets do it! </Button>
                         </>
                 }
@@ -245,6 +265,27 @@ function DonateItems() {
             <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
                 <Checkout onSubmit={(getToken) => makePaymentFromToken(getToken)} />
             </StripeProvider>
+            <Modal isOpen={modalStatus.status}
+                onAfterOpen={() => { }}
+                onRequestClose={() => closeModal()}
+                style={customStyle(modalStatus.type)}
+                contentLabel={'Hey Man'}
+            >
+                {modalStatus.type === PAYMENT_CONFIRMATION && <div>
+                    <ModalText>
+                        Lets make a total donation of Rs {modalStatus.data}
+                    </ModalText>
+                    <Button onClick={() => finalPayment()}>Go ahead</Button>
+
+                </div>}
+
+                {modalStatus.type === PAYMENT_SUCCESS && <div>
+                    <ModalText>
+                        Thanks for donating for such a cause.
+                        Please note the referenceId for further queries. (Ref id: {modalStatus.data})
+                    </ModalText>
+                </div>}
+            </Modal>
         </Donate >
     )
 }
