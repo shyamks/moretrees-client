@@ -123,6 +123,9 @@ const OptionLabel = styled.span`
     width: 400px;
     word-wrap: break-word;
 `
+const Wrapper = styled.div`
+    margin: 30px;
+`
 
 
 function VolunteerChoices() {
@@ -240,10 +243,10 @@ function VolunteerChoices() {
     // console.log(getVolunteerOptionsData, isGetVolunteerOptionsLoading, isGetVolunteerOptionsError, 'getVolunteerOptions')
 
     return (
-        <div>
+        <Wrapper>
             <div> There is nothing better than doing it.</div>
             <div> What would you like to do ?</div>
-            <React.Fragment>
+            <>
                 <ListContainer>
                     <OptionList>
                         {
@@ -271,8 +274,8 @@ function VolunteerChoices() {
                     <Input ref={roleRef} placeholder={'Role'} />
                 </>
                 <Button onClick={onSubmitVolunteerOptions}> Submit </Button>
-            </React.Fragment>
-        </div>
+            </>
+        </Wrapper>
     )
 }
 

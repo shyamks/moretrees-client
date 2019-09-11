@@ -7,13 +7,23 @@ import {
 } from 'react-stripe-elements-universal';
 import './checkout.css'
 
+
 class _CardForm extends React.Component {
+
+  submit = async (ev) => {
+    const callback = async () => {
+      let {token} = await this.props.stripe.createToken();
+      return token
+    }
+    this.props.onSubmit(callback);
+  }
+
   render() {
     return (
-      <form onSubmit={() => this.props.stripe.createToken().then(payload => console.log(payload))}>
+      <div>
         <CardElement />
-        <button className="stripeButton">Donate</button>
-      </form>
+        <button className="stripeButton" onClick={this.submit}>Donate</button>
+      </div>
     )
   }
 }
@@ -24,7 +34,7 @@ class Checkout extends React.Component {
     return (
       <div className="Checkout">
         <Elements>
-          <CardForm />
+          <CardForm onSubmit={this.props.onSubmit}/>
         </Elements>
       </div>
     )

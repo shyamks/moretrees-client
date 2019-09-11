@@ -139,13 +139,14 @@ function SiteHeader({ onRegistered }) {
         let loginUser = data.loginUser
         const errorInLoginUser = (loginUser && loginUser.error) || isError
         const loggedInUser = loginUser || contextUser
-        // console.log(loggedInUser,errorInLoginUser,'pls help')
         if (!errorInLoginUser) {
             // console.log('asdasasdasdfassadfasfsfs')
             if (gotFromApiAndNotInLocalStorage(loggedInUser, contextUser)) {
                 storeUserInContext(loggedInUser)
             }
         }
+        console.log(loggedInUser,errorInLoginUser,'pls help')
+
         return { loggedInUser, errorInLoginUser }
     }
     const onResponseFromRegisterApi = (data, isError) => {
@@ -155,31 +156,32 @@ function SiteHeader({ onRegistered }) {
     }
     const [loginData, loginLoading, loginError, setLoginVariables, setLoginData] = useLazyQueryApi(LOGIN_QUERY)
     const [registerData, registerLoading, registerError, setRegisterVariables, setRegisterData] = useMutationApi(REGISTER_MUTATION)
-    const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
-    const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
+    
     useEffect(() => {
-        const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
-        if (checkCalledStatus(LOGIN)) {
-        console.log(loggedInUser,errorInLoginUser)
+        if (loginData && loginData.loginUser && checkCalledStatus(LOGIN)) {
+            const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
+            console.log(loggedInUser,errorInLoginUser, loginData, loginError, 'wtf')
             if (errorInLoginUser)
                 showToast("Login failed!", 'error');
-            if (loggedInUser)
+            if (!errorInLoginUser && loggedInUser)
                 showToast(`Logged in ${loggedInUser.username} !`, 'success')
             setCalledStatus(false)
         }
     }, [loginData, loginError])
 
     useEffect(() => {
-        const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
-        if (checkCalledStatus(REGISTER)) {
+        if ( registerUser && registerUser.data && checkCalledStatus(REGISTER)) {
+            const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
             if (errorInRegisterUser)
                 showToast("Registration failed!", 'error');
-            if (registerUser && registerUser.username)
+            if (!errorInRegisterUser && registerUser && registerUser.username)
                 showToast('Registration completed!', 'success')
             setCalledStatus(false)
         }
     }, [registerData, registerError])
 
+    const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
+    const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
     return (
         <Header>
             <TitleLogo>MoreTrees</TitleLogo>

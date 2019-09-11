@@ -37,7 +37,7 @@ function Counter({ cost, itemCost }) {
         if (counterVal >= MIN && counterVal <= MAX) {
             setCount(counterVal)
             setTotalCost(counterVal * cost)
-            itemCost(val * cost);
+            itemCost(counterVal, val * cost);
         }
     }
     let [count, setCount] = useState(0)
