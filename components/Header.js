@@ -207,11 +207,8 @@ function SiteHeader(props) {
     }, [loginData, loginError])
 
     useEffect(() => {
-        console.log(registerData, 'out')
         if (registerData && registerData.data && checkCalledStatus(REGISTER)) {
             // const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
-            console.log(registerData, 'inside')
-
             let registerUser = registerData.data.registerUser
             if (registerUser.error || registerError) {
                 showToast("Registration failed!", 'error');
@@ -231,19 +228,9 @@ function SiteHeader(props) {
                 <TitleLogo>MoreTrees</TitleLogo>
                 <Separator />
 
-                {/* <DonationLink onClick={navigateTo('donate')}> Donate </DonationLink>
+                <DonationLink><Link href='/donate'> Donate </Link></DonationLink>
                 <Separator />
-                <VolunteerLink onClick={navigateTo('volunteer')}> Volunteer </VolunteerLink>
-                {(loggedInUser && !errorInLoginUser) && 
-                    <>
-                        <Separator/>
-                        <VolunteerLink onClick={navigateTo('volunteer')}> My Donations </VolunteerLink>
-                    </>
-                } */}
-
-                <Link href='/donate'> Donate </Link>
-                <Separator />
-                <Link href='/volunteer'> Volunteer </Link>
+                <VolunteerLink><Link href='/volunteer'> Volunteer </Link></VolunteerLink>
                 {(loggedInUser && !errorInLoginUser) &&
                     <>
                         <Separator />
