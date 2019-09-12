@@ -10,7 +10,6 @@ import useQueryApi from '../components/hooks/useQueryApi';
 import Table from 'rc-table';
 import 'rc-table/assets/index.css';
 
-
 const GET_MY_DONATIONS = gql`
     query myDonations($email: String){
         myDonations(email: $email){
@@ -32,26 +31,25 @@ const columns = [
     {
         title: 'Reciept No', dataIndex: 'receiptNo', width: 100,
         render: (value, row, index) => {
-
             return <TableRow>{value}</TableRow>
         },
     },
     {
         title: 'Donated Saplings', dataIndex: 'donatedSaplings', width: 200,
         render(value, row, index) {
-            return <TableRow >{value}</TableRow>;
+            return <TableRow>{value}</TableRow>;
         },
     },
     {
         title: 'Donated on', dataIndex: 'donatedOn', width: 200,
         render(value, row, index) {
-            return <TableRow >{value}</TableRow>;
+            return <TableRow>{value}</TableRow>;
         },
     },
     {
         title: 'Total Amount', dataIndex: 'totalAmount', width: 200,
         render(value, row, index) {
-            return <TableRow >{value}</TableRow>;
+            return <TableRow>{value}</TableRow>;
         },
     },
 ];
@@ -133,7 +131,6 @@ function MyDonations() {
                         Thank You for the Donations.
                     </Message>
                 </>
-
             }
             {contextUser && myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length == 0 &&
                 <Message>

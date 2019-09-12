@@ -1,38 +1,41 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import Router from 'next/router'
 import styled from 'styled-components'
-// import { toast } from 'react-toastify'
 
 import SiteHeader from '../components/Header'
-import Login from '../components/login'
-import Register from '../components/register'
-import Button from '../components/Button'
-import Footer from '../components/Footer';
+import ResponsiveImage from '../components/ResponsiveImage';
 
 
-const treeImage = '/static/images/noah-buscher-x8ZStukS2PM-unsplash.jpg'
+const bannerImage = '/static/images/moretrees-back.jpg'
+const volunteerImage = '/static/images/volunteer.jpg'
+const donateImage = '/static/images/donate.jpg'
+const buyPlantsImage = '/static/images/buy-plants.jpg'
 
-const BannerOfTrees = styled.main`
-    display: flex;
-    height: 100%;
-    background-image: url('${treeImage}');
-    background-repeat: no-repeat;
-    background-size: 100% 90%;
-`
 
 const DonateAndVol = styled.div`
-    width: 100%;
-    margin: 35% auto 0 auto;
+    margin-top: 20px
     display: flex;
     flex-direction: row;
     justify-content: space-around;
 `
 
-const Image = styled.img`
-  height: 100px;
-  width: 100px;
-`;
+const ImageContainer = styled.div`
+`
+
+const Donate = styled.div`
+    margin: 10px;
+    &: hover{
+        cursor: pointer;
+    }
+`
+
+const Volunteer = styled.div`
+    margin: 10px;
+    &: hover{
+        cursor: pointer;
+    }
+`
 
 const navigateTo = (page, params) => {
     Router.push({
@@ -41,6 +44,11 @@ const navigateTo = (page, params) => {
     })
 }
 
+const Image = styled.img`
+    width: 80%;
+    height: auto;
+`
+
 const onNewUserRegistration = () => {
     NotificationManager.success('Success message', 'New User Registered');
 }
@@ -48,17 +56,24 @@ const onNewUserRegistration = () => {
 function MainPage() {
     return (
         <>
-            <SiteHeader navigate={(page)=> navigateTo(page)} onRegistered={onNewUserRegistration} />
-            <BannerOfTrees>
-                <DonateAndVol>
-                    <Button height="50px" width="150px" onClick={() => navigateTo('donate')}>
-                        Donate
-                    </Button>
-                    <Button height="50px" width="150px" onClick={() => navigateTo('volunteer')}>
-                        Volunteer
-                    </Button>
-                </DonateAndVol>
-            </BannerOfTrees>
+            <SiteHeader navigate={(page) => navigateTo(page)} onRegistered={onNewUserRegistration} />
+            <ImageContainer>
+                <ResponsiveImage
+                    src={bannerImage}
+                // width={400}
+                // height={300} 
+                />
+            </ImageContainer>
+            <DonateAndVol>
+                <Donate onClick={() => navigateTo('donate')}>
+                    <Image src={donateImage} />
+
+                </Donate>
+                <Volunteer onClick={() => navigateTo('volunteer')}>
+                    <Image src={volunteerImage} />
+
+                </Volunteer>
+            </DonateAndVol>
         </>
     )
 }
