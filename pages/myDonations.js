@@ -19,7 +19,6 @@ const GET_MY_DONATIONS = gql`
             donationAmount
             items 
             createdAt
-            paymentDetails
         }
     }
 `
@@ -78,8 +77,8 @@ function getDonationData(donationItems) {
     return donationItems.map(donationItem => {
         const getDonationAmount = (donationAmount, amount) => {
             return (<>
-                {donationAmount && <TableRow>Donated Rs {donationAmount}</TableRow>}
-                {amount && <TableRow>Saplings at Rs {amount}</TableRow>}
+                {donationAmount > 0 && <TableRow>Donated Rs {donationAmount}</TableRow>}
+                {amount > 0 && <TableRow>Saplings at Rs {amount}</TableRow>}
             </>)
         }
         const getDonationDate = (createdAt) => {
@@ -96,7 +95,7 @@ function getDonationData(donationItems) {
             return rows
         }
         console.log(donationItem, 'donationItem')
-        let { donationAmount, amount, email, createdAt, items, paymentDetails, id } = donationItem
+        let { donationAmount, amount, createdAt, items, id } = donationItem
         let receiptNo = id
         let donatedSaplings = getDonatedSaplings(items)
         let donatedOn = getDonationDate(createdAt)
@@ -120,6 +119,9 @@ function MyDonations() {
     let { email } = contextUser || {}
     const [myDonationsData, isGetMyDonationsLoading, isGetMyDonationsError, refetchMyDonationsData] = useQueryApi(GET_MY_DONATIONS, { email })
 
+    useEffect(() => {
+        refetchMyDonationsData()
+    }, [])
     return (
         <>
             <Header />
