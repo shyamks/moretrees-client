@@ -79,7 +79,7 @@ function getDonationData(donationItems) {
         const getDonationAmount = (donationAmount, amount) => {
             return (<>
                 {donationAmount && <TableRow>Donated Rs {donationAmount}</TableRow>}
-                {amount && <TableRow>Saplings Rs {amount}</TableRow>}
+                {amount && <TableRow>Saplings at Rs {amount}</TableRow>}
             </>)
         }
         const getDonationDate = (createdAt) => {
