@@ -2,12 +2,13 @@
 
 import styled from 'styled-components'
 import Modal from 'react-modal'
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import 'react-toastify/dist/ReactToastify.css';
 
 import Login from './login'
 import Register from './register'
 import UserAvatar from './UserAvatar'
+import MenuIcon from './svg-icons/menu-icon'
 
 import gql from 'graphql-tag';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
@@ -72,24 +73,91 @@ const customStyles = (caseForStyle) => {
 
 }
 
+
+
+/* Hamburger Options Start */
+const HamburgerMenu = styled.div`
+    display: none;
+    @media screen and (max-width: 700px) {
+        display: flex;
+        justify-content: start;
+        flex-direction: column;
+        max-height: ${(props) => !props.show ? '20px' : '200px'};
+        transition: max-height 1s ease-in-out;
+    }
+`
+
+const HamburgerOptionsList = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: ${(props) => !props.show ? '0' : '1'}
+    transition: flex 1s ease-in-out;
+    overflow: hidden;
+`
+const HamburgerOptions = styled.div`
+    display: flex;
+    margin: 10px;
+`
+
+const MenuContainer = styled.div`
+    display: flex;
+    flex-direction: row-reverse;
+    &: hover {
+        cursor: pointer;
+    }
+`
+
+const LoginOption = styled.div`
+
+`
+/* Hamburger Options End*/
+
 const Header = styled.div`
     padding: 35px;
+    justify-content: space-between;
+    margin-left: -8px;
+    margin-right: -8px;
+    // background-color: #454f48;
+    background-color: white;
+    
+    `
+
+const AppHeader = styled.div`
     display: flex;
     flex-direction: horizontal;
     justify-content: space-between;
-    border-bottom: 3px solid rgba(0,0,0,0.09);
-    margin-left: -8px;
-    margin-right: -8px;
-    background-color: #454f48;
-    `
+    @media screen and (max-width: 700px) {
+        display: flex;
+        justify-content: space-between;
+    }
+`
 
 const AppLeftHeader = styled.div`
     display: flex;
     flex-direction: horizontal;
+    @media screen and (max-width: 700px) {
+        display: none;
+    }
 `
+
+const AppLogo = styled.img`
+    display: none;
+    @media screen and (max-width: 700px) {
+        display: flex;
+        justify-content: center;
+        width: 120px;
+        margin-top: -8px;
+        height: 30px;
+    }
+`
+
+
 const AppRightHeader = styled.div`
     display: flex;
     flex-direction: horizontal;
+    @media screen and (max-width: 700px) {
+        display: none;
+    }
 `
 
 const Separator = styled.div`
@@ -111,13 +179,6 @@ const RegisterHeader = styled.div`
     }
 `
 
-const TitleLogo = styled.div`
-    margin-right: 20px;
-    &: hover{
-        cursor: pointer;
-    }
-`
-
 const DonationLink = styled.div`
     margin-right: 20px;
     &: hover{
@@ -131,21 +192,42 @@ const VolunteerLink = styled.div`
         cursor: pointer;
     }
 `
+
+const Logo = styled.img`
+    width: 120px;
+    margin-top: -8px;
+    height:auto;
+    margin-right: 20px;
+    &: hover{
+        cursor: pointer;
+    }
+`
+
 const navigateTo = (page, params) => {
 
 }
 
+const logoImage = '/static/images/moretrees-logo.jpg'
+
 const noop = () => { }
 function SiteHeader(props) {
 
-    // const navigateNow = props.navigate ? props.navigate : noop
+    let hamburgerRef = useRef(null)
     let [modalStatus, setModalStatus] = useState({ type: LOGIN, data: null, open: false })
+    let [hamburgerStatus, setHamburgerStatus] = useState(false)
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
-    // let [token, setAuthToken] = useLocalStorage('token', null)
 
+    console.log(hamburgerRef, 'ref')
     const toggleModal = (modalStatus, modalSetter, type, data) => {
         modalSetter({ type, data, open: !modalStatus.open })
+    }
+
+    const onHamburgerClick = () => {
+        if (hamburgerRef.current.offsetHeight == 0 && hamburgerStatus)
+            setHamburgerStatus(false)
+        else
+            setHamburgerStatus(!hamburgerStatus)
     }
 
     const onLogin = ({ email, password }) => {
@@ -224,32 +306,66 @@ function SiteHeader(props) {
     const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
     return (
         <Header>
-            <AppLeftHeader>
-                <TitleLogo>MoreTrees</TitleLogo>
-                <Separator />
+            <AppHeader>
+                <AppLeftHeader>
+                    <Logo src={logoImage} />
+                    <Separator />
 
-                <DonationLink><Link href='/donate'> Donate </Link></DonationLink>
-                <Separator />
-                <VolunteerLink><Link href='/volunteer'> Volunteer </Link></VolunteerLink>
-                {(loggedInUser && !errorInLoginUser) &&
-                    <>
-                        <Separator />
-                        <Link href='/myDonations'> My Donations </Link>
-                    </>
-                }
-            </AppLeftHeader>
-            <AppRightHeader>
-                {
-                    (loggedInUser && !errorInLoginUser) ?
-                        (<UserAvatar userInfo={loggedInUser} onLogout={onLogout} />) :
-                        (<>
-                            <LoginHeader onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
+                    <DonationLink><Link href='/donate'> Donate </Link></DonationLink>
+                    <Separator />
+                    <VolunteerLink><Link href='/volunteer'> Volunteer </Link></VolunteerLink>
+                    {(loggedInUser && !errorInLoginUser) &&
+                        <>
                             <Separator />
-                            <RegisterHeader onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
-                        </>)
+                            <VolunteerLink><Link href='/myDonations'> My Donations </Link></VolunteerLink>
+                        </>
+                    }
+                </AppLeftHeader>
 
-                }
-            </AppRightHeader>
+
+                {/* for max-width 700px */}
+                <AppLogo src={logoImage} />
+                <HamburgerMenu show={hamburgerStatus}>
+                    <MenuContainer onClick={() => onHamburgerClick()}><MenuIcon /></MenuContainer>
+
+                    <HamburgerOptionsList ref={hamburgerRef} show={hamburgerStatus}>
+                        <HamburgerOptions show={hamburgerStatus}><Link href='/donate'> Donate </Link></HamburgerOptions>
+                        <HamburgerOptions show={hamburgerStatus}><Link href='/volunteer'> Volunteer </Link></HamburgerOptions>
+                        {(loggedInUser && !errorInLoginUser) ?
+                            (<>
+                                <HamburgerOptions show={hamburgerStatus}>
+                                    <Link href='/myDonations'> My Donations </Link>
+                                </HamburgerOptions>
+                                <HamburgerOptions show={hamburgerStatus}>
+                                    <a onClick={() => onLogout()}> Logout </a>
+                                </HamburgerOptions>
+                            </>
+                            ) :
+                            (<>
+                                <HamburgerOptions show={hamburgerStatus}>
+                                    <a onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</a>
+                                </HamburgerOptions>
+                                <HamburgerOptions show={hamburgerStatus}>
+                                    <a onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</a>
+                                </HamburgerOptions>
+                            </>)
+                        }
+                    </HamburgerOptionsList>
+                </HamburgerMenu>
+                {/* for max-width 700px end */}
+                <AppRightHeader>
+                    {
+                        (loggedInUser && !errorInLoginUser) ?
+                            (<UserAvatar userInfo={loggedInUser} onLogout={onLogout} />) :
+                            (<>
+                                <LoginHeader onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
+                                <Separator />
+                                <RegisterHeader onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
+                            </>)
+
+                    }
+                </AppRightHeader>
+            </AppHeader>
             <Modal isOpen={modalStatus.open}
                 onAfterOpen={() => { }}
                 onRequestClose={() => toggleModal(modalStatus, setModalStatus, modalStatus.type)}
