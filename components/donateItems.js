@@ -81,6 +81,10 @@ const MoneyLine = styled.div`
 const DonateItemsContainer = styled.div`
     width: 50%;
     margin: 40px auto auto auto;
+    @media screen and (max-width: 700px) {
+        margin: 10px;
+        width: 30%;
+    }
 `
 const DonateItem = styled.div`
     display: flex;

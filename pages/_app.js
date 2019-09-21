@@ -61,7 +61,6 @@ class MyApp extends App {
     return (
         <UserContext.Provider value={userContextValue}>
           <ApolloProvider client={apolloClient}>
-            <script src="https://js.stripe.com/v3/"></script>
             <Component {...pageProps} />
           </ApolloProvider>
         </UserContext.Provider>

@@ -56,65 +56,32 @@ const GET_USER_QUERY = gql`
       }
     }`
 
-
-// const volunteerOptions = [
-//     {
-//         id: 'plant1',
-//         optionText: 'Plant trees',
-//         status: "ACTIVE"
-//     },
-//     {
-//         id: 'plant2',
-//         optionText: 'Pick location to plant trees',
-//         status: "ACTIVE"
-//     },
-//     {
-//         id: 'plant3',
-//         optionText: 'Help locate the areas where more trees could be planted',
-//         status: "ACTIVE"
-//     },
-//     {
-//         id: 'plant4',
-//         optionText: 'Work with us in the organization in a broader capacity',
-//         status: "ACTIVE"
-//     },
-// ];
-
-const volunteerTimings = [
-    {
-        name: 'check-box-1',
-        key: 'time1',
-        label: 'Betweeen 4-5pm',
-    },
-    {
-        name: 'check-box-2',
-        key: 'time2',
-        label: 'Betweeen 5-6pm',
-    },
-    {
-        name: 'check-box-3',
-        key: 'time3',
-        label: 'Betweeen 6-7pm',
-    },
-    {
-        name: 'check-box-4',
-        key: 'time4',
-        label: 'Betweeen 7-5pm',
-    },
-];
-
-
 const ListContainer = styled.div`
     display: flex;
+    @media screen and (max-width: 700px) {
+        flex-direction: column;
+    }
+
+`
+
+const PriorityListContainer = styled.div`
+    @media screen and (max-width: 700px) {
+        margin: -10px -10px 0px -10px;
+        
+    }
 `
 
 const OptionList = styled.div`
     padding: 20px;
+    @media screen and (max-width: 700px) {
+        padding: 20px 0px 20px 0px;
+    }
 `
 
 const Option = styled.div`
     padding: 5px;
     display: flex;
+    
 `
 
 const OptionLabel = styled.span`
@@ -266,7 +233,9 @@ function VolunteerChoices() {
                             })
                         }
                     </OptionList>
-                    <PriorityList items={selectedOption.checkedPriority} />
+                    <PriorityListContainer>
+                        <PriorityList items={selectedOption.checkedPriority} />
+                    </PriorityListContainer>
                 </ListContainer>
                 <>
                     <div> What do you do?</div>
