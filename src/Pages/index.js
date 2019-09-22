@@ -9,6 +9,7 @@ import bannerImage from '../images/moretrees-back.jpg'
 import volunteerImage from '../images/volunteer.jpg'
 import donateImage from '../images/donate.jpg'
 import buyPlantsImage from '../images/buy-plants.jpg'
+import Footer from '../components/Footer';
 
 
 const PageContent = styled.div`
@@ -54,8 +55,11 @@ const Volunteer = styled.div`
 
 
 const Image = styled.img`
-    width: 100px;
-    hieght: auto;
+    width: 200px;
+    height: auto;
+    @media screen and (max-width: 450px) {
+        width: 150px;
+    }
 `
 
 const Imager = styled.img`
@@ -89,6 +93,7 @@ function MainPage({ history }) {
                     </Volunteer>
                 </DonateAndVol>
             </PageContent>
+            <Footer/>
         </>
     )
 }

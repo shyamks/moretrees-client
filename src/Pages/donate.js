@@ -2,6 +2,7 @@ import DonateItems from '../components/donateItems'
 import Header from '../components/Header'
 import React, { useEffect } from 'react'
 import { PageContent } from '../constants'
+import Footer from '../components/Footer'
 
 function Donate() {
     return (
@@ -10,6 +11,8 @@ function Donate() {
             <PageContent>
                 <DonateItems />
             </PageContent>
+
+            <Footer/>
 
         </>
     )

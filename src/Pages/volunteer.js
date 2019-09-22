@@ -12,6 +12,7 @@ function Volunteer() {
             <PageContent>
                 <VolunteerChoices />
             </PageContent>
+            <Footer/>
         </>
     )
 }

@@ -12,6 +12,7 @@ import Table from 'rc-table';
 import './index.css'
 import 'rc-table/assets/index.css';
 import { GET_MY_DONATIONS, PageContent } from '../constants';
+import Footer from '../components/Footer';
 
 const TableRow = styled.div`
     text-align: center;
@@ -142,6 +143,7 @@ function MyDonations() {
                     </Message>
                 }
             </PageContainer>
+            <Footer/>
         </>
     )
 }

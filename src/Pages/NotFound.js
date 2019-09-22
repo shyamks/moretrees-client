@@ -1,7 +1,11 @@
 import React from 'react';
+import styled from 'styled-components'
 
+const Message = styled.div`
+    text-align: center;
+`
 function NotFound() {
-    return <div> Page Not Found </div>
+    return <Message> Page Not Found </Message>
 }
 
 export default NotFound

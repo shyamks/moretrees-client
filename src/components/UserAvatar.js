@@ -5,9 +5,9 @@ const Username = styled.div`
     margin-right: 16px;
 `
 
-const Container =  styled.div`
-    display: flex;
-`
+// const Container =  styled.div`
+//     display: flex;
+// `
 
 const Separator = styled.div`
     border-right: 1px solid green;
