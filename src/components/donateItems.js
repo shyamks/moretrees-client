@@ -9,7 +9,7 @@ import lodash from 'lodash'
 
 import Input from './Input';
 import Button from './Button';
-import ItemCounter from './counter'
+import Counter from './counter'
 import { STRIPE_PUBLIC_KEY, DONATION_MUTATION, GET_SAPLING_OPTIONS } from '../constants';
 import Checkout from './checkout/Checkout';
 import gql from 'graphql-tag';
@@ -90,7 +90,9 @@ const DonateItemsContainer = styled.div`
 `
 const DonateItem = styled.div`
     display: flex;
-    flex-direction: horizontal;
+    @media screen and (max-width: 575px) {
+        flex-direction: column;
+    }
 `
 const ItemAvatar = styled.div`
     margin: 10px;
@@ -127,7 +129,7 @@ function getDonateItems(items, checkoutCostChanger) {
     let donateItems = [];
 
     for (let item of items) {
-        let id = item.id, cost = item.saplingCost, name = item.saplingName, image = item.saplingImage, remaining = item.remainingCount;
+        let id = item.id, cost = item.saplingCost, name = item.saplingName, image = item.saplingImage, remaining = item.remainingSaplings;
         donateItems.push(
             <DonateItem key={id}>
                 <ItemAvatar>
@@ -137,7 +139,7 @@ function getDonateItems(items, checkoutCostChanger) {
                     <ItemName>{name}</ItemName>
                     <ItemCost> Rs {cost}</ItemCost>
                 </ItemDetail>
-                <ItemCounter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
             </DonateItem>
         )
     }

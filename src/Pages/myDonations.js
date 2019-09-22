@@ -9,6 +9,7 @@ import gql from 'graphql-tag';
 import useQueryApi from '../components/hooks/useQueryApi';
 
 import Table from 'rc-table';
+import './index.css'
 import 'rc-table/assets/index.css';
 import { GET_MY_DONATIONS, PageContent } from '../constants';
 
@@ -129,7 +130,7 @@ function MyDonations() {
                 {!contextUser && <Error statusCode={404} />}
                 {contextUser && myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length > 0 &&
                     <>
-                        <Table columns={columns} data={getDonationData(myDonationsData.myDonations)} components={tableComponents} />
+                        <Table className={'tableWidth'} columns={columns} data={getDonationData(myDonationsData.myDonations)} components={tableComponents} />
                         <Message>
                             Thank You for the Donations.
                         </Message>

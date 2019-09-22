@@ -105,7 +105,6 @@ const Header = styled.div`
 
 const AppHeader = styled.div`
     display: flex;
-    flex-direction: horizontal;
     justify-content: space-between;
     margin: 30px;
     @media screen and (max-width: 700px) {
@@ -116,7 +115,6 @@ const AppHeader = styled.div`
 
 const AppLeftHeader = styled.div`
     display: flex;
-    flex-direction: horizontal;
     @media screen and (max-width: 700px) {
         display: none;
     }
@@ -136,7 +134,6 @@ const AppLogo = styled.img`
 
 const AppRightHeader = styled.div`
     display: flex;
-    flex-direction: horizontal;
     @media screen and (max-width: 700px) {
         display: none;
     }

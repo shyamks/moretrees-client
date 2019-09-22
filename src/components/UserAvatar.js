@@ -7,7 +7,6 @@ const Username = styled.div`
 
 const Container =  styled.div`
     display: flex;
-    flex-direction: horizontal;
 `
 
 const Separator = styled.div`
