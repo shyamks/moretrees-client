@@ -1,15 +1,15 @@
-import { GRAPHQL_ENDPOINT, GET_MY_DONATIONS, GET_USER_QUERY } from "./constants";
+import { GET_MY_DONATIONS, GET_USER_QUERY, FINAL_ENDPOINT } from "./constants";
 import gql from "graphql-tag";
 const { createApolloFetch } = require('apollo-fetch');
 
 const apolloFetch = createApolloFetch({
-    uri: GRAPHQL_ENDPOINT
+    uri: FINAL_ENDPOINT
 });
 
 export const loadDataFromServer = (key, data) => {
     switch (key) {
         case 'countries':
-            return fetch(GRAPHQL_ENDPOINT, {
+            return fetch(FINAL_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ query: GET_MY_DONATIONS }),

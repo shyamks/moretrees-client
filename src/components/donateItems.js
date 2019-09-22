@@ -180,6 +180,8 @@ function DonateItems() {
         const finalAmount = parseInt(donateRef.current.value);
         if (finalAmount >= MIN_DONATION_VALUE)
             setDonateStatus({ status: true, type: PAYMENT_CONFIRMATION, donateAmount: finalAmount })
+        else
+            showToast('Minimum of Rs 50 expected', 'error')
     }
 
     const finalPayment = async () => {
@@ -210,7 +212,7 @@ function DonateItems() {
             let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
             if (!error && referenceId)
                 setModalStatus({ type: PAYMENT_SUCCESS, status: true, data: referenceId })
-            else{
+            else {
                 showToast('Problem occured while donating', 'error')
             }
         }

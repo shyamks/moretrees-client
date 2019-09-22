@@ -1,14 +1,8 @@
 import { STORE_USER } from './constants'
 import { toast } from 'react-toastify'
 
-import { ApolloClient, InMemoryCache } from 'apollo-boost'
-import { createHttpLink } from 'apollo-link-http'
-import { setContext } from 'apollo-link-context'
 import fetch from 'isomorphic-unfetch'
-import { GRAPHQL_NOW_ENDPOINT, GRAPHQL_ENDPOINT, STORE_TOKEN } from './constants';
-// import useLocalStorage from '../components/hooks/useLocalStorage';
 
-let apolloClient = null
 // Polyfill fetch() on the server (used by apollo-client)
 if (typeof window === 'undefined') {
   global.fetch = fetch

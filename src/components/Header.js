@@ -6,6 +6,7 @@ import React from 'react';
 import { useState, useEffect, useContext, useRef } from 'react'
 import { withRouter } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify'
 
 import Login from './login'
 import Register from './register'
@@ -47,7 +48,7 @@ const customStyles = (caseForStyle) => {
     return style
 
 }
-
+toast.configure()
 
 
 /* Hamburger Options Start */
@@ -188,6 +189,15 @@ const navigateTo = (page, params) => {
 
 
 const noop = () => { }
+
+const isServer = () => {
+    try {
+        return !window
+    }
+    catch(e) {
+        return true
+    }
+}
 function SiteHeader({ history }) {
 
     let hamburgerRef = useRef(null)
@@ -288,7 +298,7 @@ function SiteHeader({ history }) {
     const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
     return (
         <Header>
-            <script crossOrigin src="https://js.stripe.com/v3/" async defer></script>
+            <script id="stripe-js" crossOrigin={true} src="https://js.stripe.com/v3/"></script>
             <AppHeader>
                 <AppLeftHeader>
                     <Logo src={logoImage} onClick={() => navigateTo('/')}/>

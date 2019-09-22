@@ -17,12 +17,12 @@ import App from '../../src/App';
 import Routes from '../../src/Routes';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { ApolloClient } from 'apollo-client';
-import { GRAPHQL_ENDPOINT } from '../../src/constants'
+import { FINAL_ENDPOINT } from '../../src/constants'
 import { HttpLink, InMemoryCache } from 'apollo-boost';
 
 const client = new ApolloClient({
     link: new HttpLink({
-        uri: GRAPHQL_ENDPOINT
+        uri: FINAL_ENDPOINT
     }),
     cache: new InMemoryCache(),
     ssrMode: true

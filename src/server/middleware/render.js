@@ -10,20 +10,12 @@ import App from '../../App'
 import { ServerStyleSheet } from 'styled-components'
 import { ApolloProvider } from '@apollo/react-hooks'
 import { ApolloClient } from 'apollo-client'
-import { GRAPHQL_ENDPOINT, STORE_TOKEN } from '../../constants'
+import { STORE_TOKEN, FINAL_ENDPOINT } from '../../constants'
 import { InMemoryCache, HttpLink } from 'apollo-boost'
 import initApollo from '../../utils'
 
-// const client = new ApolloClient({
-//   link: new HttpLink({
-//     uri: GRAPHQL_ENDPOINT
-//   }),
-//   cache: new InMemoryCache(),
-//   ssrMode: true
-// })
-
 const manageApolloMiddleware = () => {
-  const httpLink = createHttpLink({ uri: GRAPHQL_ENDPOINT });
+  const httpLink = createHttpLink({ uri: FINAL_ENDPOINT });
   const middlewareLink = new ApolloLink((operation, forward) => {
   let item
   if (window) item = window.localStorage.getItem(STORE_TOKEN)
@@ -51,7 +43,6 @@ const renderMiddleware = () => (req, res) => {
   const routerContext = {}
   let client = manageApolloMiddleware()
 
-  console.log(client, 'client')
   const CurrentRoute = Routes.find(route => matchPath(req.baseUrl, route))
   // console.log(CurrentRoute, 'currentRoute')
   let promise
@@ -90,7 +81,6 @@ const renderMiddleware = () => (req, res) => {
         value
       )
     })
-    console.log(html, 'html')
     res.send(html)
   }
 }
