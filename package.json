@@ -47,8 +47,9 @@
     "styled-components": "^4.3.2"
   },
   "scripts": {
-    "start": "react-ssr-scripts start",
-    "build": "react-ssr-scripts build && node build",
+    "dev": "react-ssr-scripts start",
+    "start": "node build",
+    "build": "react-ssr-scripts build",
     "test": "react-ssr-scripts test",
     "eject": "react-ssr-scripts eject"
   },
