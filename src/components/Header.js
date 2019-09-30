@@ -11,7 +11,7 @@ import { toast } from 'react-toastify'
 import Login from './login'
 import Register from './register'
 import UserAvatar from './UserAvatar'
-import MenuIcon from './svg-icons/menu-icon'
+import MenuIcon from './svg-icons/MenuIcon'
 
 import gql from 'graphql-tag';
 import useLazyQueryApi from './hooks/useLazyQueryApi';

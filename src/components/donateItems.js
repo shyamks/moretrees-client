@@ -6,6 +6,7 @@ import React from 'react';
 import { useState, useContext, useEffect, useRef } from 'react'
 import { StripeProvider } from 'react-stripe-elements-universal';
 import lodash from 'lodash'
+import ReactMarkdown from 'react-markdown'
 
 import Input from './Input';
 import Button from './Button';
@@ -57,8 +58,7 @@ const customStyle = (caseForStyle) => {
 }
 
 const Donate = styled.div`
-    text-align: center;
-    margin-bottom: 20px;
+    margin: 10px;
 `
 
 const DonateTrees = styled.div`
@@ -99,21 +99,35 @@ const ItemAvatar = styled.div`
 `
 
 const ItemDetail = styled.div`
-    margin: 25px 60px 25px 60px;
+    margin: 0px 60px 25px 20px;
     font-family: "Trebuchet MS", Helvetica, sans-serif;
     white-space:nowrap;
+    display: flex;
+    flex-direction: column;
 `
 
-const ItemName = styled.span`
-    font-style: bold;
+const ItemTitle = styled.span`
+    text-align: left;
+    font-weight: bold;
+    font-size: 22px;
     margin: 10px 10px 0px 10px;
 `
 
-const ItemCost = styled.div`
-    font-style: italic;
-    font-size: 12px;
-    text-align:center;
+const ItemSubtitle = styled.span`
+    text-align: left;
+    margin: 10px 10px 0px 10px;
 `
+
+const ItemCost = styled(ItemSubtitle)`
+    font-weight: bold;
+    font-size: 18px;
+`
+
+// const ItemCost = styled.div`
+//     font-style: italic;
+//     font-size: 12px;
+//     text-align:center;
+// `
 
 const Subtotal = styled.div`
     width: 50%;
@@ -130,15 +144,18 @@ function getDonateItems(items, checkoutCostChanger) {
 
     for (let item of items) {
         let id = item.id, cost = item.saplingCost, name = item.saplingName, image = item.saplingImage, remaining = item.remainingSaplings;
+        let title = 'Roadside trees in Bangalore.'
+        let subtitle = 'Trees in HSR Layout, Kormangala, Whitefield & CBD'
         donateItems.push(
             <DonateItem key={id}>
-                <ItemAvatar>
+                {/* <ItemAvatar>
                     <img style={{ width: 100, height: 100, borderRadius: 50 }} src={image} alt="boohoo" className="img-responsive" />
-                </ItemAvatar>
+                </ItemAvatar> */}
                 <ItemDetail>
-                    <ItemName>{name}</ItemName>
-                    <ItemCost> Rs {cost}</ItemCost>
+                    <ItemTitle>{title}</ItemTitle>
+                    <ItemSubtitle>{subtitle}</ItemSubtitle>
                 </ItemDetail>
+                <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
                 <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
             </DonateItem>
         )
@@ -226,9 +243,53 @@ function DonateItems() {
 
     let [subTotalCheckoutCost, setSubTotalCheckoutCost] = useState(0);
 
+    const donateText = `## Donate\n\n We will plant trees around you. We have projects coming up across 
+                            cities & one of them is bound to be around where you live.
+                            \n The saplings are maintained & watered by us for the critical first year.
+                         \n\n We will notify you about progress through the plants life.
+                         \n You get the geolocation & photo of your sapling once it is planted.`
+
+    const projectsText = `## Projects\n\n `
+
+    const Section = styled.div`
+        display: flex;
+        flex-direction: row;
+    `
+    const DonatePicture = styled.div`
+        width: 40px;
+        height: 40px;
+        margin: 10px;
+    `
+
+    const Container = styled.div`
+        display: flex;
+        flex-direction: column;
+    `
+
     return (
         <Donate>
-            <DonateTrees>
+            <Section>
+                <DonatePicture />
+                <Container>
+                    <ReactMarkdown source={donateText} />
+                </Container>
+            </Section>
+            <Section>
+                <DonatePicture />
+                <Container>
+                    <ReactMarkdown source={projectsText} />
+                    <DonateTrees>
+                        <DonateItemsContainer>
+                            {getDonateItems(saplingsArray, checkoutCostChanger)}
+                        </DonateItemsContainer>
+                        <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
+                    </DonateTrees>
+
+                </Container>
+            </Section>
+        </Donate>)
+    {/* <Donate>
+             <DonateTrees>
                 <DonateItemsContainer>
                     {getDonateItems(saplingsArray, checkoutCostChanger)}
                 </DonateItemsContainer>
@@ -274,9 +335,10 @@ function DonateItems() {
                         Please note the referenceId for further queries. (Ref id: {modalStatus.data})
                     </ModalText>
                 </div>}
-            </Modal>
-        </Donate >
-    )
+            </Modal> 
+        </Donate >*/}
+
+    // )
 }
 
 export default DonateItems;
