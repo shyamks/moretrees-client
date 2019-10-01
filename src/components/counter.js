@@ -19,7 +19,7 @@ export default function Counter({ maximumCount, cost, itemCost }) {
 
     function chgCounter(val) {
         let counterVal = counter.count + val
-        console.log(val, counter, finalMaxCount, 'chgCounter')
+        // console.log(val, counter, finalMaxCount, 'chgCounter', counterVal)
         if (counterVal >= MIN && counterVal <= finalMaxCount) {
             console.log(val, 'val')
             setCounter({ count: counterVal, totalCost: counterVal * parseInt(cost), actionValue: val })
@@ -41,8 +41,9 @@ export default function Counter({ maximumCount, cost, itemCost }) {
         height: 30px;
         border-radius: 8px;
     `
-    const TotalValue = styled.span`
-        margin: 0px 12px 0 12px;
+    const TotalValue = styled.div`
+        display: inline-block;
+        width: 75px;
     `
 
     const Container = styled.div`
@@ -54,7 +55,7 @@ export default function Counter({ maximumCount, cost, itemCost }) {
     return (
         <Container>
             <Button onClick={() => chgCounter(-1)}>-</Button>
-            <TotalValue>{`Rs. ${counter.totalCost}`}</TotalValue>
+            <TotalValue><span>{`Rs. ${counter.totalCost}`}</span></TotalValue>
             <Button onClick={() => chgCounter(1)}>+</Button>
         </Container>
     )

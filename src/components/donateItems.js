@@ -64,21 +64,6 @@ const Donate = styled.div`
 const DonateTrees = styled.div`
     text-align: center;
 `
-
-const Or = styled.div`
-    text-align: center;
-    margin: 30px;
-`
-const DonateMoney = styled.div`
-    text-align: center;
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-`
-
-const MoneyLine = styled.div`
-
-`
 const DonateItemsContainer = styled.div`
     display: inline-block;
     // width: 50%;
@@ -93,9 +78,6 @@ const DonateItem = styled.div`
     @media screen and (max-width: 575px) {
         flex-direction: column;
     }
-`
-const ItemAvatar = styled.div`
-    margin: 10px;
 `
 
 const ItemDetail = styled.div`
@@ -123,45 +105,29 @@ const ItemCost = styled(ItemSubtitle)`
     font-size: 18px;
 `
 
-// const ItemCost = styled.div`
-//     font-style: italic;
-//     font-size: 12px;
-//     text-align:center;
-// `
-
 const Subtotal = styled.div`
     width: 50%;
     margin: auto;
 `
+const Section = styled.div`
+        display: flex;
+        flex-direction: row;
+    `
+const DonatePicture = styled.div`
+        width: 40px;
+        height: 40px;
+        margin: 10px;
+    `
+
+const Container = styled.div`
+        display: flex;
+        flex-direction: column;
+    `
 
 const ModalText = styled.div`
     text-align: center;
     vertical-align: middle;
 `
-
-function getDonateItems(items, checkoutCostChanger) {
-    let donateItems = [];
-
-    for (let item of items) {
-        let id = item.id, cost = item.saplingCost, name = item.saplingName, image = item.saplingImage, remaining = item.remainingSaplings;
-        let title = 'Roadside trees in Bangalore.'
-        let subtitle = 'Trees in HSR Layout, Kormangala, Whitefield & CBD'
-        donateItems.push(
-            <DonateItem key={id}>
-                {/* <ItemAvatar>
-                    <img style={{ width: 100, height: 100, borderRadius: 50 }} src={image} alt="boohoo" className="img-responsive" />
-                </ItemAvatar> */}
-                <ItemDetail>
-                    <ItemTitle>{title}</ItemTitle>
-                    <ItemSubtitle>{subtitle}</ItemSubtitle>
-                </ItemDetail>
-                <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
-                <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
-            </DonateItem>
-        )
-    }
-    return donateItems;
-}
 
 let itemCheckoutList = {}
 
@@ -251,20 +217,7 @@ function DonateItems() {
 
     const projectsText = `## Projects\n\n `
 
-    const Section = styled.div`
-        display: flex;
-        flex-direction: row;
-    `
-    const DonatePicture = styled.div`
-        width: 40px;
-        height: 40px;
-        margin: 10px;
-    `
 
-    const Container = styled.div`
-        display: flex;
-        flex-direction: column;
-    `
 
     return (
         <Donate>
@@ -280,7 +233,25 @@ function DonateItems() {
                     <ReactMarkdown source={projectsText} />
                     <DonateTrees>
                         <DonateItemsContainer>
-                            {getDonateItems(saplingsArray, checkoutCostChanger)}
+                            {saplingsArray.map((item) => {
+                                let id = item.id, cost = item.saplingCost, name = item.saplingName, image = item.saplingImage, remaining = item.remainingSaplings;
+                                let title = 'Roadside trees in Bangalore.'
+                                let subtitle = 'Trees in HSR Layout, Kormangala, Whitefield & CBD'
+                                return (
+                                    <DonateItem key={id}>
+                                        {/* <ItemAvatar>
+                                            <img style={{ width: 100, height: 100, borderRadius: 50 }} src={image} alt="boohoo" className="img-responsive" />
+                                        </ItemAvatar> */}
+                                        <ItemDetail>
+                                            <ItemTitle>{title}</ItemTitle>
+                                            <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                        </ItemDetail>
+                                        <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
+                                        <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                                    </DonateItem>
+                                )
+                            })}
+                            {/* {getDonateItems(saplingsArray, checkoutCostChanger)} */}
                         </DonateItemsContainer>
                         <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
                     </DonateTrees>
