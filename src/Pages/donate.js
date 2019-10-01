@@ -1,4 +1,4 @@
-import DonateItems from '../components/donateItems'
+import DonateItems from '../components/DonateItems'
 import Header from '../components/Header'
 import React, { useEffect } from 'react'
 import { PageContent } from '../constants'

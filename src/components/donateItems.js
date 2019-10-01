@@ -7,6 +7,7 @@ import { useState, useContext, useEffect, useRef } from 'react'
 import { StripeProvider } from 'react-stripe-elements-universal';
 import lodash from 'lodash'
 import ReactMarkdown from 'react-markdown'
+import {Collapse, UnmountClosed} from 'react-collapse';
 
 import Input from './Input';
 import Button from './Button';
@@ -142,6 +143,13 @@ function DonateItems() {
     const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(gql(DONATION_MUTATION))
     const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(gql(GET_SAPLING_OPTIONS), { status: "ACTIVE" })
     const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
+    
+    const [collapseMap, setCollapseMap] = useState({})
+    useEffect(()=> {
+        let saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
+        let map = saplingsArray.reduce((map, sapling) =>{ map[sapling.id] = {collapse: true}; return map;},{})
+        setCollapseMap(map)
+    }, [saplingOptionsData])
 
     const getPaymentInfo = () => {
         let donateAmount = donateStatus.donateAmount
@@ -209,6 +217,7 @@ function DonateItems() {
 
     let [subTotalCheckoutCost, setSubTotalCheckoutCost] = useState(0);
 
+    
     const donateText = `## Donate\n\n We will plant trees around you. We have projects coming up across 
                             cities & one of them is bound to be around where you live.
                             \n The saplings are maintained & watered by us for the critical first year.
@@ -237,6 +246,7 @@ function DonateItems() {
                                 let id = item.id, cost = item.saplingCost, name = item.saplingName, image = item.saplingImage, remaining = item.remainingSaplings;
                                 let title = 'Roadside trees in Bangalore.'
                                 let subtitle = 'Trees in HSR Layout, Kormangala, Whitefield & CBD'
+                                let content = 'Total of 7300'
                                 return (
                                     <DonateItem key={id}>
                                         {/* <ItemAvatar>
@@ -244,10 +254,28 @@ function DonateItems() {
                                         </ItemAvatar> */}
                                         <ItemDetail>
                                             <ItemTitle>{title}</ItemTitle>
-                                            <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                            <ItemSubtitle onClick={()=> setCollapseMap( { ...collapseMap, [id] : { collapse : !collapseMap[id].collapse }}) }>{subtitle}</ItemSubtitle>
+                                            
+                                            <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
+                                            <ItemDetail>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                </ItemDetail>
+                                            </Collapse>
                                         </ItemDetail>
                                         <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
                                         <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                                        
                                     </DonateItem>
                                 )
                             })}
