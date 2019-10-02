@@ -76,6 +76,9 @@ const DonateItemsContainer = styled.div`
 `
 const DonateItem = styled.div`
     display: flex;
+    margin-top: 12px;
+    border-bottom: 1px solid grey;
+    box-shadow: 0 4px 6px -6px #222;
     @media screen and (max-width: 575px) {
         flex-direction: column;
     }
@@ -282,6 +285,7 @@ function DonateItems() {
                             {/* {getDonateItems(saplingsArray, checkoutCostChanger)} */}
                         </DonateItemsContainer>
                         <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
+                        <Button onClick={()=> ''}> Checkout </Button>
                     </DonateTrees>
 
                 </Container>
