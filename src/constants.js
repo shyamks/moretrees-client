@@ -10,6 +10,14 @@ export const GET = 'get'
 export const STORE_TOKEN = 'authToken'
 export const STORE_USER = 'loggedInUser'
 
+export const PAGES = {
+  INDEX: '/',
+  DONATE: '/donate',
+  VOLUNTEER: '/volunteer',
+  MY_DONATIONS: '/myDonations',
+  PROFILE: '/profile',
+}
+
 export const PageContent = styled.div`
     margin-top: 100px;
     width: 100%;

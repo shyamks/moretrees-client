@@ -19,7 +19,7 @@ import useMutationApi from './hooks/useMutationApi';
 import UserContext from './UserContext';
 import { showToast, apiCallbackStatus } from '../utils';
 // import Link from 'next/link'
-import { REGISTER_MUTATION, LOGIN_QUERY } from '../constants';
+import { REGISTER_MUTATION, LOGIN_QUERY, PAGES } from '../constants';
 
 import logoImage from '../images/moretrees-logo.jpg'
 
@@ -183,9 +183,6 @@ const Logo = styled.img`
     }
 `
 
-const navigateTo = (page, params) => {
-
-}
 
 
 const noop = () => { }
@@ -206,11 +203,10 @@ function SiteHeader({ history }) {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
 
-    console.log(hamburgerRef, 'ref')
+    // console.log(hamburgerRef, 'ref')
     const toggleModal = (modalStatus, modalSetter, type, data) => {
         modalSetter({ type, data, open: !modalStatus.open })
     }
-
     const navigateTo = (path) => {
         history.push(path)
     }
@@ -301,33 +297,38 @@ function SiteHeader({ history }) {
             <script id="stripe-js" crossOrigin={true} src="https://js.stripe.com/v3/"></script>
             <AppHeader>
                 <AppLeftHeader>
-                    <Logo src={logoImage} onClick={() => navigateTo('/')}/>
+                    <Logo src={logoImage} onClick={() => navigateTo(PAGES.INDEX)}/>
                     <Separator />
 
-                    <DonationLink onClick={() => navigateTo('donate')}> Donate </DonationLink>
+                    <DonationLink onClick={() => navigateTo(PAGES.DONATE)}> Donate </DonationLink>
                     <Separator />
-                    <VolunteerLink onClick={() => navigateTo('volunteer')}> Volunteer </VolunteerLink>
+                    <VolunteerLink onClick={() => navigateTo(PAGES.VOLUNTEER)}> Volunteer </VolunteerLink>
                     {(loggedInUser && !errorInLoginUser) &&
                         <>
                             <Separator />
-                            <VolunteerLink onClick={() => navigateTo('myDonations')}> My Donations </VolunteerLink>
+                            <VolunteerLink onClick={() => navigateTo(PAGES.MY_DONATIONS)}> My Donations </VolunteerLink>
+                            <Separator />
+                            <VolunteerLink onClick={() => navigateTo(PAGES.PROFILE)}> Profile </VolunteerLink>
                         </>
                     }
                 </AppLeftHeader>
 
 
                 {/* for max-width 700px */}
-                <AppLogo src={logoImage} onClick={() => navigateTo('/')} />
+                <AppLogo src={logoImage} onClick={() => navigateTo(PAGES.INDEX)} />
                 <HamburgerMenu show={hamburgerStatus}>
                     <MenuContainer onClick={() => onHamburgerClick()}><MenuIcon /></MenuContainer>
 
                     <HamburgerOptionsList ref={hamburgerRef} show={hamburgerStatus}>
-                        <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo('donate')}> Donate </HamburgerOption>
-                        <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo('volunteer')}> Volunteer </HamburgerOption>
+                        <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.DONATE)}> Donate </HamburgerOption>
+                        <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.VOLUNTEER)}> Volunteer </HamburgerOption>
                         {(loggedInUser && !errorInLoginUser) ?
                             (<>
-                                <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo('myDonations')}>
+                                <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.MY_DONATIONS)}>
                                      My Donations 
+                                </HamburgerOption>
+                                <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.PROFILE)}>
+                                     Profile 
                                 </HamburgerOption>
                                 <HamburgerOption show={hamburgerStatus}>
                                     <a onClick={() => onLogout()}> Logout </a>
