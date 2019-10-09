@@ -22,6 +22,12 @@ export const PageContent = styled.div`
     margin-top: 100px;
     width: 100%;
     height: auto;
+    padding-bottom: 13rem;
+`
+
+export const Page = styled.div`
+  position: relative;
+  min-height: 100vh;
 `
 
 export const DONATION_MUTATION = `

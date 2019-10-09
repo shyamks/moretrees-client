@@ -10,6 +10,7 @@ import volunteerImage from '../images/volunteer.jpg'
 import donateImage from '../images/donate.jpg'
 import buyPlantsImage from '../images/buy-plants.jpg'
 import Footer from '../components/Footer';
+import { Page } from '../constants';
 
 
 const PageContent = styled.div`
@@ -77,7 +78,7 @@ function MainPage({ history }) {
     }
     console.log(history, 'his')
     return (
-        <>
+        <Page>
             <SiteHeader onRegistered={onNewUserRegistration} />
             <PageContent>
                 <ImageContainer>
@@ -94,7 +95,7 @@ function MainPage({ history }) {
                 </DonateAndVol>
             </PageContent>
             <Footer/>
-        </>
+        </Page>
     )
 }
 

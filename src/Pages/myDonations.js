@@ -11,7 +11,7 @@ import useQueryApi from '../components/hooks/useQueryApi';
 import Table from 'rc-table';
 import './index.css'
 import 'rc-table/assets/index.css';
-import { GET_MY_DONATIONS, PageContent } from '../constants';
+import { GET_MY_DONATIONS, PageContent, Page } from '../constants';
 import Footer from '../components/Footer';
 
 const TableRow = styled.div`
@@ -125,7 +125,7 @@ function MyDonations() {
         refetchMyDonationsData()
     }, [])
     return (
-        <>
+        <Page>
             <Header />
             <PageContainer>
                 {!contextUser && <Error statusCode={404} />}
@@ -144,7 +144,7 @@ function MyDonations() {
                 }
             </PageContainer>
             <Footer/>
-        </>
+        </Page>
     )
 }
 

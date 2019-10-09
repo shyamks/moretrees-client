@@ -73,18 +73,22 @@ const Input = styled.input`
     
 `
 
+const DEFAULT_LENGTH = "80"
 
-
-export default function InputWithLabel({ placeholder, onBlur, isError, id, ...otherProps }) {
+export default function InputWithLabel({ placeholder, onBlur, onChange, isError, maxLength, id, ...otherProps }) {
 
     return (
         <Container>
             <Input id={id} onBlur={(e) => {
                 e.persist()
-                onBlur(e)
+                onBlur && onBlur(e)
+            }}
+            onChange={(e) => {
+                e.persist()
+                onChange && onChange(e)
             }}
                 error={isError}
-                {...otherProps} maxLength="80" required/>
+                {...otherProps} maxLength={maxLength || DEFAULT_LENGTH} required/>
             <Label for={id}>{placeholder}</Label>
         </Container>
     )

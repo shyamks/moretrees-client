@@ -76,10 +76,16 @@ const DonateItemsContainer = styled.div`
     // }
 `
 const DonateItem = styled.div`
+    flex-direction: column;
     display: flex;
     margin-top: 12px;
     border-bottom: 1px solid grey;
     box-shadow: 0 4px 6px -6px #222;
+`
+
+const ItemContainer = styled.div`
+    display: flex;
+    
     @media screen and (max-width: 575px) {
         flex-direction: column;
     }
@@ -129,9 +135,23 @@ const Container = styled.div`
         flex-direction: column;
     `
 
-const ModalText = styled.div`
-    text-align: center;
-    vertical-align: middle;
+const CheckoutContainer = styled.div`
+    
+`
+
+const Arrow = styled.div`
+    &: hover {
+        cursor: pointer;
+    }
+`
+
+const ArrowSymbol = styled.i`
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: ${(props) => props.up ? 'rotate(-135deg)' : 'rotate(45deg)'};
+    -webkit-transform: ${(props) => props.up ? 'rotate(-135deg)' : 'rotate(45deg)'};
 `
 
 let itemCheckoutList = {}
@@ -141,6 +161,7 @@ function DonateItems({ history }) {
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
 
     let [donateStatus, setDonateStatus] = useState({ status: false, donateAmount: 0 })
+    let [checkout, setCheckout] = useState(false)
     let [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
     let donateRef = useRef(null)
 
@@ -226,6 +247,8 @@ function DonateItems({ history }) {
         let email = contextUser && contextUser.email
         if (!email)
             setRegisterModal(true)
+        else
+            setCheckout(true)
     }
 
     const donateText = `## Donate\n\n We will plant trees around you. We have projects coming up across 
@@ -262,37 +285,49 @@ function DonateItems({ history }) {
                                         {/* <ItemAvatar>
                                             <img style={{ width: 100, height: 100, borderRadius: 50 }} src={image} alt="boohoo" className="img-responsive" />
                                         </ItemAvatar> */}
-                                        <ItemDetail>
-                                            <ItemTitle>{title}</ItemTitle>
-                                            <ItemSubtitle onClick={()=> setCollapseMap( { ...collapseMap, [id] : { collapse : !collapseMap[id].collapse }}) }>{subtitle}</ItemSubtitle>
-                                            
-                                            <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
+                                        <ItemContainer>
                                             <ItemDetail>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                </ItemDetail>
-                                            </Collapse>
-                                        </ItemDetail>
-                                        <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
-                                        <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
-                                        
+                                                <ItemTitle>{title}</ItemTitle>
+                                                <ItemSubtitle >{subtitle}</ItemSubtitle>
+                                                
+                                                <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
+                                                    <ItemDetail>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                    </ItemDetail>
+                                                </Collapse>
+                                                
+                                            </ItemDetail>
+
+                                            <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
+                                            <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                                        </ItemContainer>
+                                        <Arrow onClick={()=> setCollapseMap( { ...collapseMap, [id] : { collapse : !collapseMap[id].collapse }}) }>
+                                            <ArrowSymbol up={collapseMap[id] ? !collapseMap[id].collapse : false}/>
+                                        </Arrow>
                                     </DonateItem>
                                 )
                             })}
                             {/* {getDonateItems(saplingsArray, checkoutCostChanger)} */}
                         </DonateItemsContainer>
-                        <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
-                        <Button disabled={subTotalCheckoutCost==0} onClick={()=> onCheckout()}> Checkout </Button>
+                        <CheckoutContainer>
+                        {checkout ? (
+                            <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
+                                <Checkout onSubmit={(getToken) => makePaymentFromToken(getToken)} />
+                            </StripeProvider>
+                        ) :
+                        <Button disabled={subTotalCheckoutCost==0} onClick={()=> onCheckout()}> Checkout </Button>}
+                        </CheckoutContainer>
                     </DonateTrees>
 
                 </Container>

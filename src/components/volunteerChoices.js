@@ -12,6 +12,7 @@ import useMutationApi from './hooks/useMutationApi';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
 import UserContext from './UserContext';
 import { UPDATE_USER_MUTATION, GET_USER_QUERY, GET_VOLUNTEER_QUERY } from '../constants'
+import { showToast } from '../utils'
 
 const ListContainer = styled.div`
     display: flex;
@@ -128,11 +129,17 @@ function VolunteerChoices() {
         console.log(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
-            let [checkedItems, checkedPriority] = getCheckedItemsFromStore(updateUser)
-            setOption({ checkedItems, checkedPriority })
-            storeUserInContext(updateUser)
+            if (!(updateUser.error || updateUserError)) {
+                let [checkedItems, checkedPriority] = getCheckedItemsFromStore(updateUser)
+                setOption({ checkedItems, checkedPriority })
+                storeUserInContext(updateUser)
+                showToast('Updated', 'success')
+            }
+            else {
+                showToast('Update failed', 'error')
+            }
         }
-    }, [updateUserData])
+    }, [updateUserData, updateUserError])
 
     useEffect(() => {
         console.log(userData, 'useEffect userData')

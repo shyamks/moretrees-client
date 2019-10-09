@@ -1,6 +1,6 @@
 import Header from '../components/Header'
 import React, { useEffect, useRef, useState, useContext } from 'react'
-import { PageContent, PAGES, UPDATE_USER_MUTATION, UPDATE_USER_PROFILE_MUTATION, REGISTER_MUTATION } from '../constants'
+import { PageContent, PAGES, UPDATE_USER_MUTATION, UPDATE_USER_PROFILE_MUTATION, REGISTER_MUTATION, Page } from '../constants'
 import Error from './NotFound'
 import Footer from '../components/Footer'
 import Input from '../components/Input'
@@ -8,6 +8,7 @@ import Button from '../components/Button'
 import UserContext from '../components/UserContext'
 import useMutationApi from '../components/hooks/useMutationApi'
 import gql from 'graphql-tag'
+import { showToast } from '../utils'
 const validate = require("validate.js");
 
 const EMAIL = 'email'
@@ -15,7 +16,7 @@ const PASSWORD = 'email'
 
 const getError = (type, value, extraData) => {
 
-    let isError = false, error = null, constraints
+    let isError = false, error = null, constraints, formPassword
     switch (type) {
         case 'name':
             constraints = {
@@ -28,8 +29,9 @@ const getError = (type, value, extraData) => {
                 }
             }
             error = validate({ from: value }, constraints)
-            error = error ? 'Email not valid' : null
+            error = error ? 'Name not valid' : null
             isError = !!error
+            console.log('ehre', value, type, error)
             break
         case 'email':
             constraints = {
@@ -45,28 +47,44 @@ const getError = (type, value, extraData) => {
             break
         case 'password':
             constraints = {
-                from: {
+                password: {
+                    // equality: {
+                    //     attribute: "confirmPassword",
+                    //     message: "is not complex enough",
+                    //     comparator: function (v1, v2) {
+                    //         return JSON.stringify(v1) === JSON.stringify(v2);
+                    //     }
+                    // },
                     length: {
                         minimum: 6,
                         message: "must be at least 6 characters"
                     }
                 }
             }
-            error = validate({ from: value }, constraints)
+            formPassword = (extraData && extraData.formPassword.value) || ''
+            // console.log({ password: value, confirmPassword: formPassword },'password')
+            error = validate({ password: value, confirmPassword: formPassword }, constraints)
             error = error ? 'Password not valid' : null
             isError = !!error
             break
         case 'confirmPassword':
             constraints = {
                 confirmPassword: {
-                    equality: "password",
-                    presence: true,
+                    equality: {
+                        attribute: "password",
+                        message: "is not complex enough",
+                        comparator: function (v1, v2) {
+                            return JSON.stringify(v1) === JSON.stringify(v2);
+                        }
+                    },
                     length: {
-                        minimum: 1
+                        minimum: 6,
+                        message: "must be at least 6 characters"
                     }
                 }
             }
-            let formPassword = (extraData && extraData.formPassword.value) || ''
+            formPassword = (extraData && extraData.formPassword.value) || ''
+            // console.log({ password: value, confirmPassword: formPassword },'confirmPassword')
             error = validate({ password: formPassword, confirmPassword: value }, constraints)
             error = error ? 'Confirm Password not valid' : null
             isError = !!error
@@ -77,8 +95,8 @@ const getError = (type, value, extraData) => {
         case 'fb':
             constraints = {
                 from: {
-                    length: {
-                        minimum: 1,
+                    length:{
+                        minimum: 1
                     }
                 }
             }
@@ -114,22 +132,27 @@ export default function MyProfile({ history, location, staticContext, match, rou
             if (input[inputItem])
                 finalInput[inputItem] = input[inputItem]
         }
-        console.log(finalInput, 'finalInput')
+        // console.log(finalInput, 'finalInput')
         setUpdateUserVariables({ userInput: finalInput })
     }
     const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(gql(UPDATE_USER_MUTATION))
 
     useEffect(() => {
-        console.log(updateUserData, 'useEffect updateUserData')
+        // console.log(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
-            // let [checkedItems, checkedPriority] = getCheckedItemsFromStore(updateUser)
-            // setOption({ checkedItems, checkedPriority })
-            storeUserInContext(updateUser)
-        }
-    }, [updateUserData])
+            if (!(updateUser.error || updateUserError)) {
 
-    console.log(updateUserData, 'updateUserData')
+                showToast('Updated', 'success')
+                storeUserInContext(updateUser)
+            }
+            else{
+                showToast('Update failed', 'error')
+            }
+        }
+    }, [updateUserData, updateUserError])
+
+    // console.log(updateUserData, 'updateUserData')
     let [state, setState] = useState({
         name: { value: '', error: '', isError: false },
         // email: { value: '', error: '', isError: false },
@@ -142,25 +165,22 @@ export default function MyProfile({ history, location, staticContext, match, rou
 
     let [disable, setDisable] = useState(false)
 
-    // const canDisableCreateProfile = () => {
-    //     let extraData
-    //     let bools = []
-    //     for (let key of Object.keys(state)) {
-    //         extraData = (key == 'confirmPassword') ? { formPassword: state.password } : null
-    //         bools.push(getError(key, state[key] ? state[key].value : '', extraData))
-    //     }
-    //     // console.log(bools, 'canDisableCreateProfile')
-    //     return !bools.reduce((acc, ele) => !ele.isError && acc, true)
-    // }
-
     const canDisableUpdateProfile = () => {
-        let extraData
         let bools = []
         for (let key of Object.keys(state)) {
-            extraData = (key == 'confirmPassword') ? { formPassword: state.password } : null
-            bools.push(getError(key, state[key] ? state[key].value : '', extraData))
+            
+            if (key == 'confirmPassword' || key == 'password') {
+                console.log(key,'what')
+                let otherKey = (key == 'confirmPassword') ? 'password' : 'confirmPassword'
+                let extraData = { formPassword: state[otherKey] }
+                let { error, isError } = getError(key, state[key] ? state[key].value : '', extraData)
+                let { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey] ? state[otherKey].value : '', { formPassword: state[key] ? state[key].value : '' })
+                bools.push({ error: error || errorPassword, isError: isError || isErrorPassword })
+            }
+            else
+                bools.push(getError(key, state[key] ? state[key].value : '', {}))
         }
-        // console.log(bools, 'canDisableCreateProfile')
+        console.log(bools, Object.keys(state), 'canDisableCreateProfile')
         return !bools.reduce((acc, ele) => !ele.isError || acc, false)
     }
 
@@ -175,27 +195,47 @@ export default function MyProfile({ history, location, staticContext, match, rou
     }
 
     const handleChange = (type, value) => {
-        let extraData
-        if (type == 'confirmPassword')
-            extraData = { formPassword: state.password }
-        let { error, isError } = getError(type, value, extraData)
-        setState({ ...state, [type]: { value, error, isError } })
+        if (type == 'confirmPassword') {
+            let extraData = { formPassword: state.password }
+            let otherKey = 'password'
+            let { error, isError } = getError(type, value, extraData)
+            let { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey].value, extraData)
+            setState({
+                ...state, [type]: { value, error: error || errorPassword, isError: isError || isErrorPassword },
+                [otherKey]: { value: state[otherKey].value, error: error || errorPassword, isError: isError || isErrorPassword }
+            })
+        }
+        else if (type == 'password') {
+            let extraData = { formPassword: state.confirmPassword }
+            let otherKey = 'confirmPassword'
+            let { error, isError } = getError(type, value, extraData)
+            let { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey].value, extraData)
+            setState({
+                ...state, [type]: { value, error: error || errorPassword, isError: isError || isErrorPassword },
+                [otherKey]: { value: state[otherKey].value, error: error || errorPassword, isError: isError || isErrorPassword }
+            })
+        }
+        else {
+            let { error, isError } = getError(type, value)
+            setState({ ...state, [type]: { value, error, isError } })
+        }
     }
 
+    console.log(state, 'state')
     return (
-        <>
+        <Page>
             <Header />
                 <PageContent>
-                    <Input id={'name'} type={'text'} isError={state['name'].isError} onBlur={(e) => handleChange('name', e.target.value)} placeholder={'Name'} />
-                    {/* <Input id={'email'} type={'text'} isError={state['email'].isError} onBlur={(e) => handleChange('email', e.target.value)} placeholder={'Email'} /> */}
-                    <Input id={'password'} type={'password'} isError={state['password'].isError} onBlur={(e) => handleChange('password', e.target.value)} placeholder={'Password'} />
-                    <Input id={'confirmPassword'} type={'password'} isError={state['confirmPassword'].isError} onBlur={(e) => handleChange('confirmPassword', e.target.value)} placeholder={'Confirm Password'} />
-                    <Input id={'twitter'} isError={state['twitter'].isError} onBlur={(e) => handleChange('twitter', e.target.value)} placeholder={'Twitter'} />
-                    <Input id={'insta'} isError={state['insta'].isError} onBlur={(e) => handleChange('insta', e.target.value)} placeholder={'Instagram'} />
-                    <Input id={'fb'} isError={state['fb'].isError} onBlur={(e) => handleChange('fb', e.target.value)} placeholder={'Facebook'} />
+                    <Input id={'name'} type={'text'} maxLength="10" onChange={(e) => handleChange('name', e.target.value)} placeholder={'Name'} />
+                    {/* <Input id={'email'} type={'text'} isError={state['email'].isError} onChange={(e) => handleChange('email', e.target.value)} placeholder={'Email'} /> */}
+                    <Input id={'password'} type={'password'} isError={state['password'].isError} onChange={(e) => handleChange('password', e.target.value)} placeholder={'Password'} />
+                    <Input id={'confirmPassword'} type={'password'} isError={state['confirmPassword'].isError} onChange={(e) => handleChange('confirmPassword', e.target.value)} placeholder={'Confirm Password'} />
+                    <Input id={'twitter'} onChange={(e) => handleChange('twitter', e.target.value)} placeholder={'Twitter'} />
+                    <Input id={'insta'} onChange={(e) => handleChange('insta', e.target.value)} placeholder={'Instagram'} />
+                    <Input id={'fb'} onChange={(e) => handleChange('fb', e.target.value)} placeholder={'Facebook'} />
                     <Button disabled={disable} onClick={() => updateProfile()} width="200px">Update</Button>
                 </PageContent>
             <Footer />
-        </>
+        </Page>
     )
 }
