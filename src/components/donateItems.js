@@ -5,6 +5,7 @@ import Modal from 'react-modal'
 import React from 'react';
 import { useState, useContext, useEffect, useRef } from 'react'
 import { StripeProvider } from 'react-stripe-elements-universal';
+import { withRouter } from "react-router-dom";
 import lodash from 'lodash'
 import ReactMarkdown from 'react-markdown'
 import {Collapse, UnmountClosed} from 'react-collapse';
@@ -12,7 +13,7 @@ import {Collapse, UnmountClosed} from 'react-collapse';
 import Input from './Input';
 import Button from './Button';
 import Counter from './counter'
-import { STRIPE_PUBLIC_KEY, DONATION_MUTATION, GET_SAPLING_OPTIONS } from '../constants';
+import { STRIPE_PUBLIC_KEY, DONATION_MUTATION, GET_SAPLING_OPTIONS, PAGES } from '../constants';
 import Checkout from './checkout/Checkout';
 import gql from 'graphql-tag';
 import useMutationApi from './hooks/useMutationApi';
@@ -135,8 +136,8 @@ const ModalText = styled.div`
 
 let itemCheckoutList = {}
 
-function DonateItems() {
-    const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
+function DonateItems({ history }) {
+    const { user: contextUser, storeUserInContext, removeUserInContext, authToken, setRegisterModal } = useContext(UserContext);
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
 
     let [donateStatus, setDonateStatus] = useState({ status: false, donateAmount: 0 })
@@ -220,7 +221,13 @@ function DonateItems() {
 
     let [subTotalCheckoutCost, setSubTotalCheckoutCost] = useState(0);
 
-    
+
+    const onCheckout = () => {
+        let email = contextUser && contextUser.email
+        if (!email)
+            setRegisterModal(true)
+    }
+
     const donateText = `## Donate\n\n We will plant trees around you. We have projects coming up across 
                             cities & one of them is bound to be around where you live.
                             \n The saplings are maintained & watered by us for the critical first year.
@@ -285,7 +292,7 @@ function DonateItems() {
                             {/* {getDonateItems(saplingsArray, checkoutCostChanger)} */}
                         </DonateItemsContainer>
                         <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
-                        <Button onClick={()=> ''}> Checkout </Button>
+                        <Button disabled={subTotalCheckoutCost==0} onClick={()=> onCheckout()}> Checkout </Button>
                     </DonateTrees>
 
                 </Container>
@@ -343,5 +350,4 @@ function DonateItems() {
 
     // )
 }
-
-export default DonateItems;
+export default withRouter(DonateItems)

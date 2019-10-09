@@ -116,11 +116,8 @@ function VolunteerChoices() {
             let { optionText, status, id } = item
             return { optionText, status, id }
         })
-        let industry = industryRef.current.value
-        let role = roleRef.current.value
-        let input = { role, industry, volunteerOptions: inputVolunteerList, email }
+        let input = { volunteerOptions: inputVolunteerList, email }
         setUpdateUserVariables({ userInput: input })
-        //   updateUserDataUrl({ url: GRAPHQL_ENDPOINT, method: POST, query: UPDATE_USER_MUTATION })
     }
 
     const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(gql(UPDATE_USER_MUTATION))
@@ -194,11 +191,6 @@ function VolunteerChoices() {
                         <PriorityList items={selectedOption.checkedPriority} />
                     </PriorityListContainer>
                 </ListContainer>
-                <>
-                    <div> What do you do?</div>
-                    <Input ref={industryRef} placeholder={'Industry'} />
-                    <Input ref={roleRef} placeholder={'Role'} />
-                </>
                 <Button onClick={onSubmitVolunteerOptions}> Submit </Button>
             </>
         </Wrapper>

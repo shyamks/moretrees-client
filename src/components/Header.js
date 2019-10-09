@@ -183,7 +183,11 @@ const Logo = styled.img`
     }
 `
 
-
+export const GET_LOGGEDIN_USER = gql`
+  query GetCartItems {
+    user @client
+  }
+`;
 
 const noop = () => { }
 
@@ -200,13 +204,14 @@ function SiteHeader({ history }) {
     let hamburgerRef = useRef(null)
     let [modalStatus, setModalStatus] = useState({ type: LOGIN, data: null, open: false })
     let [hamburgerStatus, setHamburgerStatus] = useState(false)
-    const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
+    const { user: contextUser, storeUserInContext, removeUserInContext, authToken, callRegisterModal, setRegisterModal } = useContext(UserContext);
+
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
 
-    // console.log(hamburgerRef, 'ref')
     const toggleModal = (modalStatus, modalSetter, type, data) => {
         modalSetter({ type, data, open: !modalStatus.open })
     }
+
     const navigateTo = (path) => {
         history.push(path)
     }
@@ -225,7 +230,7 @@ function SiteHeader({ history }) {
     }
 
     const onRegister = ({ email, username, password, mobile }) => {
-        setRegisterVariables({ email, username, password, mobile })
+        setRegisterVariables({ email, username, password, phone: mobile })
         setCalledStatus(true, REGISTER)
         toggleModal(modalStatus, setModalStatus, REGISTER)
     }
@@ -235,30 +240,30 @@ function SiteHeader({ history }) {
         setLoginData(null)
     }
 
-    const gotFromApiAndNotInLocalStorage = (loggedInUser, userInContext) => {
-        return loggedInUser && !userInContext
-    }
-    const onResponseFromLoginApi = (data, isError) => {
-        // console.log(data,isError,'hellll')
-        if (!data) return { loggedInUser: contextUser, errorInLoginUser: null }
-        let loginUser = data.loginUser
-        const errorInLoginUser = (loginUser && loginUser.error) || isError
-        const loggedInUser = loginUser || contextUser
-        if (!errorInLoginUser) {
-            // console.log('asdasasdasdfassadfasfsfs')
-            if (gotFromApiAndNotInLocalStorage(loggedInUser, contextUser)) {
-                storeUserInContext(loggedInUser)
-            }
-        }
-        console.log(loggedInUser, errorInLoginUser, 'pls help')
+    // const gotFromApiAndNotInLocalStorage = (loggedInUser, userInContext) => {
+    //     return loggedInUser && !userInContext
+    // }
+    // const onResponseFromLoginApi = (data, isError) => {
+    //     // console.log(data,isError,'hellll')
+    //     if (!data) return { loggedInUser: contextUser, errorInLoginUser: null }
+    //     let loginUser = data.loginUser
+    //     const errorInLoginUser = (loginUser && loginUser.error) || isError
+    //     const loggedInUser = loginUser || contextUser
+    //     if (!errorInLoginUser) {
+    //         // console.log('asdasasdasdfassadfasfsfs')
+    //         if (gotFromApiAndNotInLocalStorage(loggedInUser, contextUser)) {
+    //             storeUserInContext(loggedInUser)
+    //         }
+    //     }
+    //     console.log(loggedInUser, errorInLoginUser, 'pls help')
 
-        return { loggedInUser, errorInLoginUser }
-    }
-    const onResponseFromRegisterApi = (data, isError) => {
-        const errorInRegisterUser = (data && data.data.registerUser && data.data.registerUser.error) || isError
-        const registerUser = data && data.data.registerUser
-        return { registerUser, errorInRegisterUser }
-    }
+    //     return { loggedInUser, errorInLoginUser }
+    // }
+    // const onResponseFromRegisterApi = (data, isError) => {
+    //     const errorInRegisterUser = (data && data.data.registerUser && data.data.registerUser.error) || isError
+    //     const registerUser = data && data.data.registerUser
+    //     return { registerUser, errorInRegisterUser }
+    // }
     const [loginData, loginLoading, loginError, setLoginVariables, setLoginData] = useLazyQueryApi(gql(LOGIN_QUERY))
     const [registerData, registerLoading, registerError, setRegisterVariables, setRegisterData] = useMutationApi(gql(REGISTER_MUTATION))
 
@@ -266,20 +271,21 @@ function SiteHeader({ history }) {
         if (loginData && loginData.loginUser && checkCalledStatus(LOGIN)) {
             let loginUser = loginData.loginUser
             // const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
+            storeUserInContext(loginUser)
             console.log(loginData, loginError, 'wtf loginError')
             if (loginUser.error || loginError) {
                 showToast("Login failed!", 'error');
             }
             else if (loginUser.username)
-                showToast(`Logged in ${loggedInUser.username} !`, 'success')
+                showToast(`Logged in ${loginUser.username} !`, 'success')
             setCalledStatus(false)
         }
     }, [loginData, loginError])
 
     useEffect(() => {
         if (registerData && registerData.data && checkCalledStatus(REGISTER)) {
-            // const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
             let registerUser = registerData.data.registerUser
+            storeUserInContext(registerUser)
             if (registerUser.error || registerError) {
                 showToast("Registration failed!", 'error');
                 toggleModal(modalStatus, setModalStatus, ERROR, registerUser.error)
@@ -290,8 +296,17 @@ function SiteHeader({ history }) {
         }
     }, [registerData, registerError])
 
-    const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
-    const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
+    useEffect(() => {
+        if (callRegisterModal)
+            toggleModal(modalStatus, setModalStatus, REGISTER)
+    }, [callRegisterModal])
+
+    // if (callRegisterModal) {
+    //     toggleModal(modalStatus, setModalStatus, REGISTER)
+    // }
+    // const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
+    let errorInLogin = (contextUser && contextUser.error) || loginError
+    // const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
     return (
         <Header>
             <script id="stripe-js" crossOrigin={true} src="https://js.stripe.com/v3/"></script>
@@ -303,7 +318,7 @@ function SiteHeader({ history }) {
                     <DonationLink onClick={() => navigateTo(PAGES.DONATE)}> Donate </DonationLink>
                     <Separator />
                     <VolunteerLink onClick={() => navigateTo(PAGES.VOLUNTEER)}> Volunteer </VolunteerLink>
-                    {(loggedInUser && !errorInLoginUser) &&
+                    {(contextUser && !errorInLogin) &&
                         <>
                             <Separator />
                             <VolunteerLink onClick={() => navigateTo(PAGES.MY_DONATIONS)}> My Donations </VolunteerLink>
@@ -322,7 +337,7 @@ function SiteHeader({ history }) {
                     <HamburgerOptionsList ref={hamburgerRef} show={hamburgerStatus}>
                         <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.DONATE)}> Donate </HamburgerOption>
                         <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.VOLUNTEER)}> Volunteer </HamburgerOption>
-                        {(loggedInUser && !errorInLoginUser) ?
+                        {(contextUser && !errorInLogin) ?
                             (<>
                                 <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.MY_DONATIONS)}>
                                      My Donations 
@@ -349,8 +364,8 @@ function SiteHeader({ history }) {
                 {/* for max-width 700px end */}
                 <AppRightHeader>
                     {
-                        (loggedInUser && !errorInLoginUser) ?
-                            (<UserAvatar userInfo={loggedInUser} onLogout={onLogout} />) :
+                        (contextUser && !errorInLogin) ?
+                            (<UserAvatar userInfo={contextUser} onLogout={onLogout} />) :
                             (<>
                                 <LoginHeader onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
                                 <Separator />
@@ -362,7 +377,10 @@ function SiteHeader({ history }) {
             </AppHeader>
             <Modal isOpen={modalStatus.open}
                 onAfterOpen={() => { }}
-                onRequestClose={() => toggleModal(modalStatus, setModalStatus, modalStatus.type)}
+                onRequestClose={() => {
+                    setRegisterModal(false)
+                    toggleModal(modalStatus, setModalStatus, modalStatus.type)
+                }}
                 style={customStyles(modalStatus.type)}
                 contentLabel={modalStatus.type}
             >

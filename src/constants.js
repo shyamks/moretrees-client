@@ -47,89 +47,101 @@ query getSaplingOptions($status: String){
 `
 
 export const REGISTER_MUTATION = `
-    mutation registerUser($username: String!, $email: String!, $password: String!) {
-        registerUser(username: $username, email: $email, password: $password) {
-            username
-            email
-            error
-            message
-        }
-    }`
+mutation registerUser($username: String!, $email: String!, $password: String!) {
+    registerUser(username: $username, email: $email, password: $password) {
+      username
+      email
+      phone
+      twitterProfile
+      fbProfile
+      instaProfile
+      volunteerOptions {
+        optionText
+        id
+        status
+      }
+      accessToken
+      message
+      error
+    }
+}`
 
 export const LOGIN_QUERY = `
-    query loginUser($email: String!, $password: String!){
-        loginUser(email: $email, password: $password) {
-            username
-            email
-            phone
-            bio
-            industry
-            role
-            volunteerOptions {
-              optionText
-              id
-              status
-            }
-            accessToken
-            message
-            error
+query loginUser($email: String!, $password: String!){
+    loginUser(email: $email, password: $password) {
+        username
+        email
+        phone
+        twitterProfile
+        fbProfile
+        instaProfile
+        volunteerOptions {
+          optionText
+          id
+          status
         }
-    }`
+        accessToken
+        message
+        error
+    }
+}`
 
 export const GET_VOLUNTEER_QUERY = `
-    query getVolunteerOptions($status: String){
-        getVolunteerOptions(status: $status) {
-            optionText
-            status
-            id
-        }
-  }`
+query getVolunteerOptions($status: String){
+    getVolunteerOptions(status: $status) {
+        optionText
+        status
+        id
+    }
+}`
 
 export const UPDATE_USER_MUTATION = `
-    mutation updateUser($userInput: UserInput!) {
-      updateUser(input: $userInput){
-        username
-        email
-        bio
-        phone
-        industry
-        volunteerOptions {
-          optionText
-          id
-          status
-        }
-        error
-        message
-      }
-    }`
+mutation updateUser($userInput: UserInput!) {
+  updateUser(input: $userInput){
+    username
+    email
+    phone
+    twitterProfile
+    fbProfile
+    instaProfile
+    volunteerOptions {
+      optionText
+      id
+      status
+    }
+    message
+    error
+  }
+}`
 
 export const GET_USER_QUERY = `
-    query getUser($email: String!) {
-      getUser(email: $email){
-        username
-        email
-        bio
-        phone
-        industry
-        volunteerOptions {
-          optionText
-          id
-          status
-        }
-        error
-        message
-      }
-    }`
+query getUser($email: String!) {
+  getUser(email: $email){
+    username
+    email
+    phone
+    twitterProfile
+    fbProfile
+    instaProfile
+    volunteerOptions {
+      optionText
+      id
+      status
+    }
+    message
+    error
+  }
+}`
 
 export const GET_MY_DONATIONS = `
-    query myDonations($email: String){
-        myDonations(email: $email){
-            id
-            email
-            amount
-            donationAmount
-            items 
-            createdAt
-        }
+query myDonations($email: String){
+    myDonations(email: $email){
+        id
+        email
+        amount
+        donationAmount
+        items 
+        createdAt
     }
+}
 `
