@@ -10,14 +10,14 @@ import volunteerImage from '../images/volunteer.jpg'
 import donateImage from '../images/donate.jpg'
 import buyPlantsImage from '../images/buy-plants.jpg'
 import Footer from '../components/Footer';
-import { Page } from '../constants';
+import { Page, PageContent } from '../constants';
 
 
-const PageContent = styled.div`
-    margin-top: 90px;
-    width: 100%;
-    height: auto;
-`
+// const PageContent = styled.div`
+//     margin-top: 90px;
+//     width: 100%;
+//     height: auto;
+// `
 const DonateAndVol = styled.div`
     display: flex;
     justify-content: space-around;

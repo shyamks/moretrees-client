@@ -61,11 +61,6 @@ mutation registerUser($username: String!, $email: String!, $password: String!) {
       twitterProfile
       fbProfile
       instaProfile
-      volunteerOptions {
-        optionText
-        id
-        status
-      }
       accessToken
       message
       error
@@ -81,11 +76,6 @@ query loginUser($email: String!, $password: String!){
         twitterProfile
         fbProfile
         instaProfile
-        volunteerOptions {
-          optionText
-          id
-          status
-        }
         accessToken
         message
         error
@@ -110,11 +100,8 @@ mutation updateUser($userInput: UserInput!) {
     twitterProfile
     fbProfile
     instaProfile
-    volunteerOptions {
-      optionText
-      id
-      status
-    }
+    availableWhen
+    availableWhat
     message
     error
   }
@@ -129,11 +116,8 @@ query getUser($email: String!) {
     twitterProfile
     fbProfile
     instaProfile
-    volunteerOptions {
-      optionText
-      id
-      status
-    }
+    availableWhen
+    availableWhat
     message
     error
   }
