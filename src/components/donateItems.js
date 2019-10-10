@@ -21,6 +21,11 @@ import useQueryApi from './hooks/useQueryApi';
 import { showToast, apiCallbackStatus } from '../utils';
 import UserContext from './UserContext';
 
+import donateLogoImage from '../images/moretrees-donate-logo.png'
+import projectsLogoImage from '../images/moretrees-projects-logo.png'
+import roadProjectsLogoImage from '../images/moretrees-road-projects-logo.png'
+import riverProjectsLogoImage from '../images/moretrees-river-projects-logo.png'
+
 const DONATION = 'donation'
 
 const PAYMENT_CONFIRMATION = 'paymentConfirmation'
@@ -68,12 +73,6 @@ const DonateTrees = styled.div`
 `
 const DonateItemsContainer = styled.div`
     display: inline-block;
-    // width: 50%;
-    // margin: 40px auto auto auto;
-    // @media screen and (max-width: 700px) {
-    //     margin: 10px;
-    //     width: 30%;
-    // }
 `
 const DonateItem = styled.div`
     flex-direction: column;
@@ -85,8 +84,8 @@ const DonateItem = styled.div`
 
 const ItemContainer = styled.div`
     display: flex;
-    
-    @media screen and (max-width: 575px) {
+    flex-direction: row;
+    @media all and (max-width: 900px) {
         flex-direction: column;
     }
 `
@@ -101,20 +100,35 @@ const ItemDetail = styled.div`
 
 const ItemTitle = styled.span`
     text-align: left;
+    @media all and (max-width: 900px) {
+        text-align: center;
+    }
     font-weight: bold;
     font-size: 22px;
     margin: 10px 10px 0px 10px;
 `
 
-const ItemSubtitle = styled.span`
+const ItemSubtitle = styled.div`
     text-align: left;
+    @media all and (max-width: 900px) {
+        text-align: center;
+    }
     margin: 10px 10px 0px 10px;
 `
 
 const ItemCost = styled(ItemSubtitle)`
     font-weight: bold;
     font-size: 18px;
+    width: 160px;
 `
+
+const CostContainer = styled.div`
+    display: flex;
+    @media all and (max-width: 900px) {
+        align-self: center;
+    }
+`
+
 
 const Subtotal = styled.div`
     width: 50%;
@@ -137,6 +151,26 @@ const Container = styled.div`
 
 const CheckoutContainer = styled.div`
     
+`
+
+const SectionLogo = styled.img`
+    width: 55px;
+    height: 50px;
+    margin: 10px 5px 10px 10px;
+`
+
+const ProjectsTitleLogo = styled.img`
+    width: 50px;
+    height: 45px;
+    margin: 10px;
+`
+const ProjectsLogo = styled.img`
+    width: 50px;
+    height: 45px;
+    margin: 10px;
+    @media all and (max-width: 900px) {
+        align-self: center;
+    }
 `
 
 const Arrow = styled.div`
@@ -264,13 +298,13 @@ function DonateItems({ history }) {
     return (
         <Donate>
             <Section>
-                <DonatePicture />
+                <SectionLogo src={donateLogoImage}/>
                 <Container>
                     <ReactMarkdown source={donateText} />
                 </Container>
             </Section>
             <Section>
-                <DonatePicture />
+                <ProjectsTitleLogo src={projectsLogoImage}/>
                 <Container>
                     <ReactMarkdown source={projectsText} />
                     <DonateTrees>
@@ -286,6 +320,7 @@ function DonateItems({ history }) {
                                             <img style={{ width: 100, height: 100, borderRadius: 50 }} src={image} alt="boohoo" className="img-responsive" />
                                         </ItemAvatar> */}
                                         <ItemContainer>
+                                            <ProjectsLogo src={roadProjectsLogoImage}/>
                                             <ItemDetail>
                                                 <ItemTitle>{title}</ItemTitle>
                                                 <ItemSubtitle >{subtitle}</ItemSubtitle>
@@ -308,11 +343,12 @@ function DonateItems({ history }) {
                                                 </Collapse>
                                                 
                                             </ItemDetail>
-
-                                            <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
-                                            <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                                            <CostContainer>
+                                                <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
+                                                <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                                            </CostContainer>
                                         </ItemContainer>
-                                        <Arrow onClick={()=> setCollapseMap( { ...collapseMap, [id] : { collapse : !collapseMap[id].collapse }}) }>
+                                        <Arrow onClick={() => setCollapseMap({ ...collapseMap, [id]: { collapse: !collapseMap[id].collapse } })}>
                                             <ArrowSymbol up={collapseMap[id] ? !collapseMap[id].collapse : false}/>
                                         </Arrow>
                                     </DonateItem>

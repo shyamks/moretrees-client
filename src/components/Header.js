@@ -54,23 +54,22 @@ toast.configure()
 /* Hamburger Options Start */
 const HamburgerMenu = styled.div`
     display: none;
-    @media screen and (max-width: 700px) {
+    @media screen and (max-width: 800px) {
         display: flex;
         justify-content: start;
         flex-direction: column;
-        max-height: ${(props) => !props.show ? '20px' : '200px'};
+        max-height: ${(props) => !props.show ? '20px' : '260px'};
         transition: max-height 1s ease-in-out;
     }
 `
 
-const HamburgerOptionsList = styled.div`
+const HamburgerOptionsList = styled.ul`
     display: flex;
     flex-direction: column;
-    flex: ${(props) => !props.show ? '0' : '1'}
     transition: flex 1s ease-in-out;
     overflow: hidden;
 `
-const HamburgerOption = styled.div`
+const HamburgerOption = styled.li`
     display: flex;
     margin: 10px;
     &: hover {
@@ -108,7 +107,7 @@ const AppHeader = styled.div`
     display: flex;
     justify-content: space-between;
     margin: 30px;
-    @media screen and (max-width: 700px) {
+    @media screen and (max-width: 800px) {
         display: flex;
         justify-content: space-between;
     }
@@ -116,14 +115,14 @@ const AppHeader = styled.div`
 
 const AppLeftHeader = styled.div`
     display: flex;
-    @media screen and (max-width: 700px) {
+    @media screen and (max-width: 800px) {
         display: none;
     }
 `
 
 const AppLogo = styled.img`
     display: none;
-    @media screen and (max-width: 700px) {
+    @media screen and (max-width: 800px) {
         display: flex;
         justify-content: center;
         width: 120px;
@@ -135,7 +134,7 @@ const AppLogo = styled.img`
 
 const AppRightHeader = styled.div`
     display: flex;
-    @media screen and (max-width: 700px) {
+    @media screen and (max-width: 800px) {
         display: none;
     }
 `
@@ -329,7 +328,7 @@ function SiteHeader({ history }) {
                 </AppLeftHeader>
 
 
-                {/* for max-width 700px */}
+                {/* for max-width 800px */}
                 <AppLogo src={logoImage} onClick={() => navigateTo(PAGES.INDEX)} />
                 <HamburgerMenu show={hamburgerStatus}>
                     <MenuContainer onClick={() => onHamburgerClick()}><MenuIcon /></MenuContainer>
@@ -361,7 +360,7 @@ function SiteHeader({ history }) {
                         }
                     </HamburgerOptionsList>
                 </HamburgerMenu>
-                {/* for max-width 700px end */}
+                {/* for max-width 800px end */}
                 <AppRightHeader>
                     {
                         (contextUser && !errorInLogin) ?

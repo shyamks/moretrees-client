@@ -11,6 +11,23 @@ let InputContainer = styled.span`
         cursor: pointer
     }
 `
+const Button = styled.button`
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+    `
+    const TotalValue = styled.div`
+        display: inline-block;
+        width: 75px;
+    `
+
+    const Container = styled.div`
+        display: inline-table;
+        flex-direction: row;
+        border-radius: 5px;
+        margin: 5px;
+        min-width: 140px;
+    `
 
 export default function Counter({ maximumCount, cost, itemCost }) {
     let finalMaxCount = Math.min(maximumCount, MAX)
@@ -36,22 +53,7 @@ export default function Counter({ maximumCount, cost, itemCost }) {
     }, [counter])
 
 
-    const Button = styled.button`
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-    `
-    const TotalValue = styled.div`
-        display: inline-block;
-        width: 75px;
-    `
-
-    const Container = styled.div`
-        display: inline-table;
-        flex-direction: row;
-        border-radius: 5px;
-        margin: 5px;
-    `
+    
     return (
         <Container>
             <Button onClick={() => chgCounter(-1)}>-</Button>

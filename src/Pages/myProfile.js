@@ -1,18 +1,20 @@
-import Header from '../components/Header'
 import React, { useEffect, useRef, useState, useContext } from 'react'
+import styled from 'styled-components'
+import gql from 'graphql-tag'
+
 import { PageContent, PAGES, UPDATE_USER_MUTATION, UPDATE_USER_PROFILE_MUTATION, REGISTER_MUTATION, Page } from '../constants'
+import Header from '../components/Header'
 import Error from './NotFound'
 import Footer from '../components/Footer'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import UserContext from '../components/UserContext'
 import useMutationApi from '../components/hooks/useMutationApi'
-import gql from 'graphql-tag'
 import { showToast } from '../utils'
 const validate = require("validate.js");
 
-const EMAIL = 'email'
-const PASSWORD = 'email'
+// const EMAIL = 'email'
+// const PASSWORD = 'email'
 
 const getError = (type, value, extraData) => {
 
@@ -114,6 +116,11 @@ const getError = (type, value, extraData) => {
 
 }
 
+const UpdateContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`
 export default function MyProfile({ history, location, staticContext, match, route }) {
 
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
@@ -225,7 +232,8 @@ export default function MyProfile({ history, location, staticContext, match, rou
     return (
         <Page>
             <Header />
-                <PageContent>
+            <PageContent>
+                <UpdateContainer>
                     <Input id={'name'} type={'text'} maxLength="10" onChange={(e) => handleChange('name', e.target.value)} placeholder={'Name'} />
                     {/* <Input id={'email'} type={'text'} isError={state['email'].isError} onChange={(e) => handleChange('email', e.target.value)} placeholder={'Email'} /> */}
                     <Input id={'password'} type={'password'} isError={state['password'].isError} onChange={(e) => handleChange('password', e.target.value)} placeholder={'Password'} />
@@ -234,7 +242,8 @@ export default function MyProfile({ history, location, staticContext, match, rou
                     <Input id={'insta'} onChange={(e) => handleChange('insta', e.target.value)} placeholder={'Instagram'} />
                     <Input id={'fb'} onChange={(e) => handleChange('fb', e.target.value)} placeholder={'Facebook'} />
                     <Button disabled={disable} onClick={() => updateProfile()} width="200px">Update</Button>
-                </PageContent>
+                </UpdateContainer>
+            </PageContent>
             <Footer />
         </Page>
     )
