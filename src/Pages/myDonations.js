@@ -46,9 +46,8 @@ const columns = [
 
 function getDonationData(donationItems) {
     return donationItems.map(donationItem => {
-        const getDonationAmount = (donationAmount, amount) => {
+        const getDonationAmount = (amount) => {
             return (<>
-                {donationAmount > 0 && <TableRow>Donated Rs {donationAmount}</TableRow>}
                 {amount > 0 && <TableRow>Saplings at Rs {amount}</TableRow>}
             </>)
         }
@@ -59,18 +58,18 @@ function getDonationData(donationItems) {
         }
         const getDonatedSaplings = (items) => {
             let rows = items.map(item => {
-                let { id, count, saplingName } = item
-                let row = <TableRow> {count}x {saplingName}</TableRow>
+                let { id, count, title } = item
+                let row = <TableRow> {count}x {title}</TableRow>
                 return row
             })
             return rows
         }
         console.log(donationItem, 'donationItem')
-        let { donationAmount, amount, createdAt, items, id } = donationItem
+        let { amount, createdAt, items, id } = donationItem
         let receiptNo = id
         let donatedSaplings = getDonatedSaplings(items)
         let donatedOn = getDonationDate(createdAt)
-        let totalAmount = getDonationAmount(donationAmount, amount)
+        let totalAmount = getDonationAmount(amount)
         console.log(donatedSaplings, donatedOn, 'donationData')
         const data = { receiptNo, donatedSaplings, donatedOn, totalAmount }
         return data

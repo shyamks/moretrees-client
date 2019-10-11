@@ -17,11 +17,8 @@ export const loadDataFromServer = (key, data) => {
 
         case 'donate':
             return apolloFetch({
-                query: gql(GET_SAPLING_OPTIONS),
+                query: (GET_SAPLING_OPTIONS),
                 variables: { status: 'ACTIVE' }
-            }).then(res => {
-                console.log(res,'res')
-                return res.json()
             })
         default: 
             return Promise.resolve(null)

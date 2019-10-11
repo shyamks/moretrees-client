@@ -130,7 +130,6 @@ query myDonations($email: String){
         id
         email
         amount
-        donationAmount
         items 
         createdAt
     }

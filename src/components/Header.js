@@ -308,7 +308,6 @@ function SiteHeader({ history }) {
     // const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
     return (
         <Header>
-            <script id="stripe-js" crossOrigin={true} src="https://js.stripe.com/v3/"></script>
             <AppHeader>
                 <AppLeftHeader>
                     <Logo src={logoImage} onClick={() => navigateTo(PAGES.INDEX)}/>

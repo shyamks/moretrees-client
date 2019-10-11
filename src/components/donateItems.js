@@ -1,20 +1,20 @@
 // import { Table } from 'react-bootstrap';
 
 import styled from 'styled-components'
-import Modal from 'react-modal'
+// import Modal from 'react-modal'
 import React from 'react';
 import { useState, useContext, useEffect, useRef } from 'react'
-import { StripeProvider } from 'react-stripe-elements-universal';
+// import { StripeProvider } from 'react-stripe-elements-universal';
 import { withRouter } from "react-router-dom";
 import lodash from 'lodash'
 import ReactMarkdown from 'react-markdown'
 import {Collapse, UnmountClosed} from 'react-collapse';
 
-import Input from './Input';
+// import Input from './Input';
 import Button from './Button';
 import Counter from './counter'
 import { STRIPE_PUBLIC_KEY, DONATION_MUTATION, GET_SAPLING_OPTIONS, PAGES } from '../constants';
-import Checkout from './checkout/Checkout';
+// import Checkout from './checkout/Checkout';
 import gql from 'graphql-tag';
 import useMutationApi from './hooks/useMutationApi';
 import useQueryApi from './hooks/useQueryApi';
@@ -31,38 +31,38 @@ const DONATION = 'donation'
 const PAYMENT_CONFIRMATION = 'paymentConfirmation'
 const PAYMENT_SUCCESS = 'paymentSuccess'
 
-const MIN_DONATION_VALUE = 50
+// const MIN_DONATION_VALUE = 50
 
-const customStyle = (caseForStyle) => {
-    let customPadding = '20px 20px 0 20px'
-    if (caseForStyle === PAYMENT_SUCCESS)
-        customPadding = '20px'
-    let style = {
-        content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            borderRadius: '30px',
-            padding: customPadding,
-            border: '0px',
-            boxShadow: '3px 3px 5px 6px #ccc'
-        },
-        overlay: {
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(255, 255, 255, 0.95)'
-        }
-    }
+// const customStyle = (caseForStyle) => {
+//     let customPadding = '20px 20px 0 20px'
+//     if (caseForStyle === PAYMENT_SUCCESS)
+//         customPadding = '20px'
+//     let style = {
+//         content: {
+//             top: '50%',
+//             left: '50%',
+//             right: 'auto',
+//             bottom: 'auto',
+//             marginRight: '-50%',
+//             transform: 'translate(-50%, -50%)',
+//             borderRadius: '30px',
+//             padding: customPadding,
+//             border: '0px',
+//             boxShadow: '3px 3px 5px 6px #ccc'
+//         },
+//         overlay: {
+//             position: 'fixed',
+//             top: 0,
+//             left: 0,
+//             right: 0,
+//             bottom: 0,
+//             backgroundColor: 'rgba(255, 255, 255, 0.95)'
+//         }
+//     }
 
-    return style
+//     return style
 
-}
+// }
 
 const Donate = styled.div`
     margin: 10px;
@@ -95,6 +95,7 @@ const ItemDetail = styled.div`
     font-family: "Trebuchet MS", Helvetica, sans-serif;
     white-space:nowrap;
     display: flex;
+    width: 470px;
     flex-direction: column;
 `
 
@@ -129,28 +130,18 @@ const CostContainer = styled.div`
     }
 `
 
-
-const Subtotal = styled.div`
-    width: 50%;
-    margin: auto;
-`
 const Section = styled.div`
-        display: flex;
-        flex-direction: row;
-    `
-const DonatePicture = styled.div`
-        width: 40px;
-        height: 40px;
-        margin: 10px;
-    `
+    display: flex;
+    flex-direction: row;
+`
 
 const Container = styled.div`
-        display: flex;
-        flex-direction: column;
-    `
+    display: flex;
+    flex-direction: column;
+`
 
 const CheckoutContainer = styled.div`
-    
+    margin-top: 20px;
 `
 
 const SectionLogo = styled.img`
@@ -190,18 +181,22 @@ const ArrowSymbol = styled.i`
 
 let itemCheckoutList = {}
 
-function DonateItems({ history }) {
+
+// B3AunkV7bOzjYdzIUHPFGtVc key secret
+
+function DonateItems({ staticContext }) {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken, setRegisterModal } = useContext(UserContext);
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
+    const [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
 
-    let [donateStatus, setDonateStatus] = useState({ status: false, donateAmount: 0 })
-    let [checkout, setCheckout] = useState(false)
-    let [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
-    let donateRef = useRef(null)
+    // let [donateStatus, setDonateStatus] = useState({ status: false, donateAmount: 0 })
+    // let [checkout, setCheckout] = useState(false)
+    // let donateRef = useRef(null)
 
+    console.log(staticContext,'staticContext')
     const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(gql(DONATION_MUTATION))
     const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(gql(GET_SAPLING_OPTIONS), { status: "ACTIVE" })
-    const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
+    const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || (staticContext && staticContext.data.data.getSaplingOptions) || []
     
     const [collapseMap, setCollapseMap] = useState({})
     useEffect(()=> {
@@ -214,44 +209,10 @@ function DonateItems({ history }) {
     }, [saplingOptionsData])
 
     const getPaymentInfo = () => {
-        let donateAmount = donateStatus.donateAmount
-        let email = (contextUser && contextUser.email) || ""
-        let items = Object.values(itemCheckoutList).map((item) => lodash.pick(item, ['id', 'count', 'saplingName']))
-        let input = { email, amount: subTotalCheckoutCost, donationAmount: donateAmount, items }
-        return { input, totalAmount: subTotalCheckoutCost + donateAmount }
-    }
-
-    const makePaymentFromToken = async (getToken) => {
-        let { totalAmount } = getPaymentInfo()
-        if (totalAmount)
-            setModalStatus({ status: true, type: PAYMENT_CONFIRMATION, data: totalAmount, getToken })
-        else
-            showToast('Make some selection', 'error')
-    }
-
-    const doIt = () => {
-        const finalAmount = parseInt(donateRef.current.value);
-        if (finalAmount >= MIN_DONATION_VALUE)
-            setDonateStatus({ status: true, type: PAYMENT_CONFIRMATION, donateAmount: finalAmount })
-        else
-            showToast('Minimum of Rs 50 expected', 'error')
-    }
-
-    const finalPayment = async () => {
-        let getToken = modalStatus.getToken
-        let token = await getToken()
-        if (!token) {
-            showToast('Card info incorrect', 'error')
-            closeModal()
-            return
-        }
         let email = (contextUser && contextUser.email) || ''
-        let { input } = getPaymentInfo()
-        input = { ...input, email, token: token.id }
-        console.log(input, 'input finalPayment')
-        setDonationDataVariables({ donationInput: input })
-        setCalledStatus(true, DONATION)
-        closeModal()
+        let items = Object.values(itemCheckoutList).map((item) => lodash.pick(item, ['id', 'count', 'title']))
+        let input = { email, amount: subTotalCheckoutCost, items }
+        return { input, totalAmount: subTotalCheckoutCost }
     }
 
     const closeModal = () => {
@@ -263,8 +224,10 @@ function DonateItems({ history }) {
             console.log(donationData, 'wtf payment')
             let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
             let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
-            if (!error && referenceId)
+            if (!error && referenceId){
                 setModalStatus({ type: PAYMENT_SUCCESS, status: true, data: referenceId })
+                showToast('Donation successfull', 'success')
+            }
             else {
                 showToast('Problem occured while donating', 'error')
             }
@@ -272,20 +235,71 @@ function DonateItems({ history }) {
     }, [donationData, donationDataError])
 
     function checkoutCostChanger(count, val, item) {
-        itemCheckoutList[item.saplingName] = { ...item, count }
+        itemCheckoutList[item.title] = { ...item, count }
         console.log(count, itemCheckoutList, 'checkoutCounter');
         setSubTotalCheckoutCost(subTotalCheckoutCost + val);
     }
 
     let [subTotalCheckoutCost, setSubTotalCheckoutCost] = useState(0);
 
+    const getRazorOptions = ({ amount, name, email }) => {
+        const finalPayment = (token) => {
+            // let getToken = modalStatus.getToken
+            // let token = await getToken()
+            if (!token) {
+                showToast('Card info incorrect', 'error')
+                closeModal()
+                return
+            }
+            let email = (contextUser && contextUser.email) || ''
+            let { input } = getPaymentInfo()
+            input = { ...input, email, token: token.razorpay_payment_id }
+            console.log(input, 'input finalPayment')
+            setDonationDataVariables({ donationInput: input })
+            setCalledStatus(true, DONATION)
+            closeModal()
+        }
+        
+        let razorOptions = {
+            key: 'rzp_test_cxpMW5qj3FfIZD', // Enter the Key ID generated from the Dashboard
+            amount: amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise or INR 500.
+            currency: 'INR',
+            name: 'Moretrees',
+            description: 'Donation',
+            // "image": "https://example.com/your_logo",
+            // "order_id": "order_9A33XWu170gUtm",//This is a sample Order ID. Create an Order using Orders API. (https://razorpay.com/docs/payment-gateway/orders/integration/#step-1-create-an-order). Refer the Checkout form table given below
+            handler: function (response) {
+                // alert(response.razorpay_payment_id);
+                finalPayment(response)
+            },
+            prefill: {
+                name,
+                email
+            },
+            notes: {
+                address: 'note value'
+            },
+            theme: {
+                color: '#F37254'
+            }
+        }
+        return razorOptions
+    }
 
-    const onCheckout = () => {
+    const makePayment = () => {
         let email = contextUser && contextUser.email
         if (!email)
             setRegisterModal(true)
-        else
-            setCheckout(true)
+        else{
+            if (subTotalCheckoutCost > 0) {
+                let rzp1 = new window.Razorpay(getRazorOptions({ amount: subTotalCheckoutCost, email }))
+                rzp1.open();
+            }
+            else{
+                showToast('Make some selection', 'error')
+            }
+        }
+        
     }
 
     const donateText = `## Donate\n\n We will plant trees around you. We have projects coming up across 
@@ -295,8 +309,6 @@ function DonateItems({ history }) {
                          \n You get the geolocation & photo of your sapling once it is planted.`
 
     const projectsText = `## Projects\n\n `
-
-
 
     return (
         <Donate>
@@ -351,15 +363,9 @@ function DonateItems({ history }) {
                                     </DonateItem>
                                 )
                             })}
-                            {/* {getDonateItems(saplingsArray, checkoutCostChanger)} */}
                         </DonateItemsContainer>
                         <CheckoutContainer>
-                        {checkout ? (
-                            <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
-                                <Checkout onSubmit={(getToken) => makePaymentFromToken(getToken)} />
-                            </StripeProvider>
-                        ) :
-                        <Button disabled={subTotalCheckoutCost==0} onClick={()=> onCheckout()}> Checkout </Button>}
+                                <Button disabled={subTotalCheckoutCost == 0} onClick={() => makePayment()}> Checkout </Button>
                         </CheckoutContainer>
                     </DonateTrees>
 
@@ -391,7 +397,7 @@ function DonateItems({ history }) {
                 }
             </DonateMoney>
             <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
-                <Checkout onSubmit={(getToken) => makePaymentFromToken(getToken)} />
+                <Checkout onSubmit={(getToken) => makePayment(getToken)} />
             </StripeProvider>
             <Modal isOpen={modalStatus.status}
                 onAfterOpen={() => { }}
