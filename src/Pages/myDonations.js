@@ -8,9 +8,7 @@ import Error from './NotFound'
 import gql from 'graphql-tag';
 import useQueryApi from '../components/hooks/useQueryApi';
 
-// import Table from 'rc-table';
 import './index.css'
-import 'rc-table/assets/index.css';
 import { GET_MY_DONATIONS, PageContent, Page } from '../constants';
 import Footer from '../components/Footer';
 import { useTable } from 'react-table';
@@ -145,28 +143,6 @@ function MyDonations() {
         refetchMyDonationsData()
     }, [])
 
-    // const columns = React.useMemo(
-    //     () => [
-    //         {
-    //             Header: 'First Name',
-    //             accessor: 'firstName',
-    //         },
-    //         {
-    //             Header: 'Last Name',
-    //             accessor: 'lastName',
-    //         },
-    //     ],
-    //     []
-    //   )
-
-
-    // const data = [
-    //     { firstName: 'hello world', lastName: 'hello world2' },
-    //     { firstName: 'hello world', lastName: 'hello world2' },
-    //     { firstName: 'hello world', lastName: 'hello world2' }
-    // ]
-
-
     return (
         <Page>
             <Header />
@@ -175,7 +151,6 @@ function MyDonations() {
                 {!contextUser && <Error statusCode={404} />}
                 {contextUser && myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length > 0 &&
                     <TableContainer>
-                        {/* <Table className={'tableWidth'} columns={columns} data={getDonationData(myDonationsData.myDonations)} components={tableComponents} /> */}
                         <Styles>
                             <Table columns={columns} data={getDonationData(myDonationsData.myDonations)}/>
                         </Styles>

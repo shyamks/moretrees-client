@@ -1,20 +1,14 @@
-// import { Table } from 'react-bootstrap';
-
 import styled from 'styled-components'
-// import Modal from 'react-modal'
 import React from 'react';
 import { useState, useContext, useEffect, useRef } from 'react'
-// import { StripeProvider } from 'react-stripe-elements-universal';
 import { withRouter } from "react-router-dom";
 import lodash from 'lodash'
 import ReactMarkdown from 'react-markdown'
-import {Collapse, UnmountClosed} from 'react-collapse';
+import {Collapse,} from 'react-collapse';
 
-// import Input from './Input';
 import Button from './Button';
 import Counter from './counter'
 import { STRIPE_PUBLIC_KEY, DONATION_MUTATION, GET_SAPLING_OPTIONS, PAGES } from '../constants';
-// import Checkout from './checkout/Checkout';
 import gql from 'graphql-tag';
 import useMutationApi from './hooks/useMutationApi';
 import useQueryApi from './hooks/useQueryApi';
@@ -30,39 +24,6 @@ const DONATION = 'donation'
 
 const PAYMENT_CONFIRMATION = 'paymentConfirmation'
 const PAYMENT_SUCCESS = 'paymentSuccess'
-
-// const MIN_DONATION_VALUE = 50
-
-// const customStyle = (caseForStyle) => {
-//     let customPadding = '20px 20px 0 20px'
-//     if (caseForStyle === PAYMENT_SUCCESS)
-//         customPadding = '20px'
-//     let style = {
-//         content: {
-//             top: '50%',
-//             left: '50%',
-//             right: 'auto',
-//             bottom: 'auto',
-//             marginRight: '-50%',
-//             transform: 'translate(-50%, -50%)',
-//             borderRadius: '30px',
-//             padding: customPadding,
-//             border: '0px',
-//             boxShadow: '3px 3px 5px 6px #ccc'
-//         },
-//         overlay: {
-//             position: 'fixed',
-//             top: 0,
-//             left: 0,
-//             right: 0,
-//             bottom: 0,
-//             backgroundColor: 'rgba(255, 255, 255, 0.95)'
-//         }
-//     }
-
-//     return style
-
-// }
 
 const Donate = styled.div`
     margin: 10px;
@@ -182,16 +143,10 @@ const ArrowSymbol = styled.i`
 let itemCheckoutList = {}
 
 
-// B3AunkV7bOzjYdzIUHPFGtVc key secret
-
 function DonateItems({ staticContext }) {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken, setRegisterModal } = useContext(UserContext);
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
     const [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
-
-    // let [donateStatus, setDonateStatus] = useState({ status: false, donateAmount: 0 })
-    // let [checkout, setCheckout] = useState(false)
-    // let donateRef = useRef(null)
 
     console.log(staticContext,'staticContext')
     const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(gql(DONATION_MUTATION))
@@ -372,56 +327,5 @@ function DonateItems({ staticContext }) {
                 </Container>
             </Section>
         </Donate>)
-    {/* <Donate>
-             <DonateTrees>
-                <DonateItemsContainer>
-                    {getDonateItems(saplingsArray, checkoutCostChanger)}
-                </DonateItemsContainer>
-                <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
-            </DonateTrees>
-            <Or>
-                OR
-            </Or>
-            <DonateMoney>
-                {
-                    donateStatus.status ?
-                        <>
-                            <>I would like to donate Rs {donateStatus.donateAmount}</>
-                            <Button onClick={() => setDonateStatus({ status: false, donateAmount: 0 })}> Reset </Button>
-                        </> :
-                        <>
-                            <MoneyLine>You could choose the amount you want to donate.</MoneyLine>
-                            <Input ref={donateRef} numberInputWidth={'50px'} type="number" defaultValue={MIN_DONATION_VALUE} />
-                            <Button onClick={() => { doIt() }}> Lets do it! </Button>
-                        </>
-                }
-            </DonateMoney>
-            <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
-                <Checkout onSubmit={(getToken) => makePayment(getToken)} />
-            </StripeProvider>
-            <Modal isOpen={modalStatus.status}
-                onAfterOpen={() => { }}
-                onRequestClose={() => closeModal()}
-                style={customStyle(modalStatus.type)}
-                contentLabel={'Hey Man'}
-            >
-                {modalStatus.type === PAYMENT_CONFIRMATION && <div>
-                    <ModalText>
-                        Lets make a total donation of Rs {modalStatus.data}
-                    </ModalText>
-                    <Button onClick={() => finalPayment()}>Go ahead</Button>
-
-                </div>}
-
-                {modalStatus.type === PAYMENT_SUCCESS && <div>
-                    <ModalText>
-                        Thanks for donating for such a cause.
-                        Please note the referenceId for further queries. (Ref id: {modalStatus.data})
-                    </ModalText>
-                </div>}
-            </Modal> 
-        </Donate >*/}
-
-    // )
 }
 export default withRouter(DonateItems)
