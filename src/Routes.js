@@ -27,21 +27,21 @@ const Routes = [
         name: 'volunteerPage',
         exact: true,
         component: Volunteer,
-        loadData: () => loadDataFromServer('donate')
+        loadData: () => loadDataFromServer('volunteer')
     },
     {
         path: PAGES.MY_DONATIONS,
         name: 'myDonationsPage',
         exact: true,
         component: MyDonations,
-        loadData: () => loadDataFromServer('donate')
+        loadData: () => loadDataFromServer('myDonations')
     },
     {
         path: PAGES.PROFILE,
         name: 'myProfile',
         exact: true,
         component: MyProfile,
-        loadData: () => loadDataFromServer('donate')
+        loadData: () => loadDataFromServer('myProfile')
     },
     {
         component: NotFound,

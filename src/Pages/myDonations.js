@@ -14,6 +14,7 @@ import 'rc-table/assets/index.css';
 import { GET_MY_DONATIONS, PageContent, Page } from '../constants';
 import Footer from '../components/Footer';
 import { useTable } from 'react-table';
+import useClient from '../components/hooks/useClient';
 
 const TableRow = styled.div`
     text-align: center;
@@ -137,7 +138,7 @@ const Styles = styled.div`
 
 function MyDonations() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
-
+    let client = useClient()
     let { email } = contextUser || {}
     const [myDonationsData, isGetMyDonationsLoading, isGetMyDonationsError, refetchMyDonationsData] = useQueryApi(gql(GET_MY_DONATIONS), { email })
     console.log(myDonationsData, isGetMyDonationsError, 'data')
@@ -170,6 +171,7 @@ function MyDonations() {
     return (
         <Page>
             <Header />
+            {client &&
             <PageContent>
                 {!contextUser && <Error statusCode={404} />}
                 {contextUser && myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length > 0 &&
@@ -188,7 +190,7 @@ function MyDonations() {
                         You have not made any donations yet.
                     </Message>
                 }
-            </PageContent>
+            </PageContent>}
             <Footer/>
         </Page>
     )

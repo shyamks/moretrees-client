@@ -42,12 +42,13 @@ mutation makeDonation($donationInput : DonationPaymentInput) {
 export const GET_SAPLING_OPTIONS = `
 query getSaplingOptions($status: String){
     getSaplingOptions(status: $status){
-        id
-        status
-        saplingName
-        saplingImage
-        saplingCost
-        remainingSaplings
+      id
+      type
+      title
+      subtitle
+      cost
+      content
+      remaining
     }
 }
 `

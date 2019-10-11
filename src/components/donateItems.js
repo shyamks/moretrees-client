@@ -206,7 +206,10 @@ function DonateItems({ history }) {
     const [collapseMap, setCollapseMap] = useState({})
     useEffect(()=> {
         let saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
-        let map = saplingsArray.reduce((map, sapling) =>{ map[sapling.id] = {collapse: true}; return map;},{})
+        let map = saplingsArray.reduce((map, sapling) => { 
+            map[sapling.id] = {collapse: true}
+            return map
+        }, {})
         setCollapseMap(map)
     }, [saplingOptionsData])
 
@@ -310,17 +313,12 @@ function DonateItems({ history }) {
                     <DonateTrees>
                         <DonateItemsContainer>
                             {saplingsArray.map((item) => {
-                                let id = item.id, cost = item.saplingCost, name = item.saplingName, image = item.saplingImage, remaining = item.remainingSaplings;
-                                let title = 'Roadside trees in Bangalore.'
-                                let subtitle = 'Trees in HSR Layout, Kormangala, Whitefield & CBD'
-                                let content = 'Total of 7300'
+                                let {id, title, subtitle, content, remaining, type, cost} = item
+                                let logoType = (type == 'ROAD') ? roadProjectsLogoImage : riverProjectsLogoImage
                                 return (
                                     <DonateItem key={id}>
-                                        {/* <ItemAvatar>
-                                            <img style={{ width: 100, height: 100, borderRadius: 50 }} src={image} alt="boohoo" className="img-responsive" />
-                                        </ItemAvatar> */}
                                         <ItemContainer>
-                                            <ProjectsLogo src={roadProjectsLogoImage}/>
+                                            <ProjectsLogo src={logoType}/>
                                             <ItemDetail>
                                                 <ItemTitle>{title}</ItemTitle>
                                                 <ItemSubtitle >{subtitle}</ItemSubtitle>
@@ -341,7 +339,6 @@ function DonateItems({ history }) {
                                                         <ItemSubtitle>{subtitle}</ItemSubtitle>
                                                     </ItemDetail>
                                                 </Collapse>
-                                                
                                             </ItemDetail>
                                             <CostContainer>
                                                 <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>

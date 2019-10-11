@@ -12,6 +12,7 @@ import gql from 'graphql-tag';
 import useQueryApi from './hooks/useQueryApi';
 import useMutationApi from './hooks/useMutationApi';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
+import useClient from './hooks/useClient';
 import UserContext from './UserContext';
 import { UPDATE_USER_MUTATION, GET_USER_QUERY, GET_VOLUNTEER_QUERY } from '../constants'
 import { showToast } from '../utils'
@@ -91,6 +92,7 @@ let selectedOptionObject = {
 function VolunteerChoices() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken, setRegisterModal } = useContext(UserContext);
     const [selectedOptionObject, setSelectedOptionObject] = useState({ what: null, when: null })
+    const client = useClient()
 
     const onSubmit = () => {
         let { email } = contextUser || {}
@@ -163,15 +165,19 @@ function VolunteerChoices() {
                     <ReactMarkdown source={volunteerText} />
                 </ColumnContainer>
             </RowContainer>
-            <DropdownContainer>
-                <SelectDropdown placeholder={'What would you like to do?'} selectedOption={{ value: whatSelected, label: whatSelected }}
-                    options={optionsWhat} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, what: option.value }) }} />
-                <SelectDropdown placeholder={'When are you available?'} selectedOption={{ value: whenSelected, label: whenSelected }}
-                    options={optionsWhen} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, when: option.value }) }} />
-            </DropdownContainer>
-            <ButtonContainer>
-                <Button disabled={disable} onClick={onSubmit}> Submit </Button>
-            </ButtonContainer>
+            {client &&
+                <>
+                    <DropdownContainer>
+                        <SelectDropdown placeholder={'What would you like to do?'} selectedOption={{ value: whatSelected, label: whatSelected }}
+                            options={optionsWhat} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, what: option.value }) }} />
+                        <SelectDropdown placeholder={'When are you available?'} selectedOption={{ value: whenSelected, label: whenSelected }}
+                            options={optionsWhen} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, when: option.value }) }} />
+                    </DropdownContainer>
+
+                    <ButtonContainer>
+                        <Button disabled={disable} onClick={onSubmit}> Submit </Button>
+                    </ButtonContainer>
+                </>}
         </Wrapper>
     )
 }

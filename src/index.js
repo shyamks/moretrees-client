@@ -12,7 +12,6 @@ if (module.hot) {
     }
   });
 }
-console.log(express,'express')
 express().use((req, res) => app.handle(req, res))
   .listen(process.env.PORT || 3000, () => {
     console.log(

@@ -76,7 +76,6 @@ function MainPage({ history }) {
     const navigateTo = (path) => {
         history.push(path)
     }
-    console.log(history, 'his')
     return (
         <Page>
             <SiteHeader onRegistered={onNewUserRegistration} />
