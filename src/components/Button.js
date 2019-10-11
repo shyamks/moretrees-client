@@ -8,9 +8,10 @@ const Button = styled.button`
     color: ${(props) => (props.color ? props.color : 'white')};
     border-radius: 5px;
     border-width: 0px;
-    background-color: #60bc0f;
+    background-color: ${(props) => props.disabled ? 'grey' : '#60bc0f'};
     height: ${(props) => (props.height ? props.height : '33px')};
     width: ${(props) => (props.width ? props.width : '100px')};
+    outline: none;
     &: hover{
         cursor: pointer;
         border: 1px solid #60bc0f;

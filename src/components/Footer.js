@@ -5,23 +5,22 @@ import React from 'react';
 import footerImage from '../images/moretrees-footer.jpg'
 
 const Wrapper = styled.footer`
-    margin-top: 20px;
-    // position: fixed;
-    left: 0;
-    bottom: 0;
+    height: 100px;
+    position: absolute;
+    bottom: 100px;
     width: 100%;
-    color: white;
-    text-align: center;
 `
 
 const ImageContainer = styled.div`
     max-width: 400px;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
 `
 
 const Image = styled.img`
     width: 100%;
     height: auto;
+
 `
 
 

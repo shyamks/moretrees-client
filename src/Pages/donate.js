@@ -1,20 +1,18 @@
-import DonateItems from '../components/donateItems'
+import DonateItems from '../components/DonateItems'
 import Header from '../components/Header'
 import React, { useEffect } from 'react'
-import { PageContent } from '../constants'
+import { PageContent, Page } from '../constants'
 import Footer from '../components/Footer'
 
-function Donate() {
+function Donate({ staticContext }) {
     return (
-        <>
+        <Page>
             <Header />
             <PageContent>
-                <DonateItems />
+                <DonateItems staticContext={staticContext}/>
             </PageContent>
-
             <Footer/>
-
-        </>
+        </Page>
     )
 }
 

@@ -3,17 +3,17 @@ import VolunteerChoices from '../components/volunteerChoices'
 import React from 'react'
 import styled from 'styled-components'
 import Footer from '../components/Footer';
-import { PageContent } from '../constants';
+import { PageContent, Page } from '../constants';
 
 function Volunteer() {
     return (
-        <>
+        <Page>
             <Header />
             <PageContent>
                 <VolunteerChoices />
             </PageContent>
-            <Footer/>
-        </>
+            <Footer />
+        </Page>
     )
 }
 export default Volunteer

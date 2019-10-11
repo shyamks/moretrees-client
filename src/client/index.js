@@ -15,7 +15,7 @@ const manageApolloMiddleware = () => {
     const middlewareLink = new ApolloLink((operation, forward) => {
         let item
         if (window) item = window.localStorage.getItem(STORE_TOKEN)
-        console.log(item, 'items')
+        console.log(item, 'manageApolloMiddleware')
         const token = item ? JSON.parse(item) : ""
         operation.setContext({
             headers: {

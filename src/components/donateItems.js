@@ -1,204 +1,173 @@
-// import { Table } from 'react-bootstrap';
-
 import styled from 'styled-components'
-import Modal from 'react-modal'
 import React from 'react';
 import { useState, useContext, useEffect, useRef } from 'react'
-import { StripeProvider } from 'react-stripe-elements-universal';
+import { withRouter } from "react-router-dom";
 import lodash from 'lodash'
+import ReactMarkdown from 'react-markdown'
+import {Collapse,} from 'react-collapse';
 
-import Input from './Input';
 import Button from './Button';
 import Counter from './counter'
-import { STRIPE_PUBLIC_KEY, DONATION_MUTATION, GET_SAPLING_OPTIONS } from '../constants';
-import Checkout from './checkout/Checkout';
+import { STRIPE_PUBLIC_KEY, DONATION_MUTATION, GET_SAPLING_OPTIONS, PAGES } from '../constants';
 import gql from 'graphql-tag';
 import useMutationApi from './hooks/useMutationApi';
 import useQueryApi from './hooks/useQueryApi';
 import { showToast, apiCallbackStatus } from '../utils';
 import UserContext from './UserContext';
 
+import donateLogoImage from '../images/moretrees-donate-logo.png'
+import projectsLogoImage from '../images/moretrees-projects-logo.png'
+import roadProjectsLogoImage from '../images/moretrees-road-projects-logo.png'
+import riverProjectsLogoImage from '../images/moretrees-river-projects-logo.png'
+
 const DONATION = 'donation'
 
 const PAYMENT_CONFIRMATION = 'paymentConfirmation'
 const PAYMENT_SUCCESS = 'paymentSuccess'
 
-const MIN_DONATION_VALUE = 50
-
-const customStyle = (caseForStyle) => {
-    let customPadding = '20px 20px 0 20px'
-    if (caseForStyle === PAYMENT_SUCCESS)
-        customPadding = '20px'
-    let style = {
-        content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            borderRadius: '30px',
-            padding: customPadding,
-            border: '0px',
-            boxShadow: '3px 3px 5px 6px #ccc'
-        },
-        overlay: {
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(255, 255, 255, 0.95)'
-        }
-    }
-
-    return style
-
-}
-
 const Donate = styled.div`
-    text-align: center;
-    margin-bottom: 20px;
+    margin: 10px;
 `
 
 const DonateTrees = styled.div`
     text-align: center;
 `
-
-const Or = styled.div`
-    text-align: center;
-    margin: 30px;
-`
-const DonateMoney = styled.div`
-    text-align: center;
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-`
-
-const MoneyLine = styled.div`
-
-`
 const DonateItemsContainer = styled.div`
     display: inline-block;
-    // width: 50%;
-    // margin: 40px auto auto auto;
-    // @media screen and (max-width: 700px) {
-    //     margin: 10px;
-    //     width: 30%;
-    // }
 `
 const DonateItem = styled.div`
+    flex-direction: column;
     display: flex;
-    @media screen and (max-width: 575px) {
+    margin-top: 12px;
+    border-bottom: 1px solid grey;
+    box-shadow: 0 4px 6px -6px #222;
+`
+
+const ItemContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    @media all and (max-width: 900px) {
         flex-direction: column;
     }
 `
-const ItemAvatar = styled.div`
-    margin: 10px;
-`
 
 const ItemDetail = styled.div`
-    margin: 25px 60px 25px 60px;
+    margin: 0px 60px 25px 20px;
     font-family: "Trebuchet MS", Helvetica, sans-serif;
     white-space:nowrap;
+    display: flex;
+    width: 470px;
+    flex-direction: column;
 `
 
-const ItemName = styled.span`
-    font-style: bold;
+const ItemTitle = styled.span`
+    text-align: left;
+    @media all and (max-width: 900px) {
+        text-align: center;
+    }
+    font-weight: bold;
+    font-size: 22px;
     margin: 10px 10px 0px 10px;
 `
 
-const ItemCost = styled.div`
-    font-style: italic;
-    font-size: 12px;
-    text-align:center;
-`
-
-const Subtotal = styled.div`
-    width: 50%;
-    margin: auto;
-`
-
-const ModalText = styled.div`
-    text-align: center;
-    vertical-align: middle;
-`
-
-function getDonateItems(items, checkoutCostChanger) {
-    let donateItems = [];
-
-    for (let item of items) {
-        let id = item.id, cost = item.saplingCost, name = item.saplingName, image = item.saplingImage, remaining = item.remainingSaplings;
-        donateItems.push(
-            <DonateItem key={id}>
-                <ItemAvatar>
-                    <img style={{ width: 100, height: 100, borderRadius: 50 }} src={image} alt="boohoo" className="img-responsive" />
-                </ItemAvatar>
-                <ItemDetail>
-                    <ItemName>{name}</ItemName>
-                    <ItemCost> Rs {cost}</ItemCost>
-                </ItemDetail>
-                <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
-            </DonateItem>
-        )
+const ItemSubtitle = styled.div`
+    text-align: left;
+    @media all and (max-width: 900px) {
+        text-align: center;
     }
-    return donateItems;
-}
+    margin: 10px 10px 0px 10px;
+`
+
+const ItemCost = styled(ItemSubtitle)`
+    font-weight: bold;
+    font-size: 18px;
+    width: 160px;
+`
+
+const CostContainer = styled.div`
+    display: flex;
+    @media all and (max-width: 900px) {
+        align-self: center;
+    }
+`
+
+const Section = styled.div`
+    display: flex;
+    flex-direction: row;
+`
+
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+`
+
+const CheckoutContainer = styled.div`
+    margin-top: 20px;
+`
+
+const SectionLogo = styled.img`
+    width: 55px;
+    height: 50px;
+    margin: 10px 5px 10px 10px;
+`
+
+const ProjectsTitleLogo = styled.img`
+    width: 50px;
+    height: 45px;
+    margin: 10px;
+`
+const ProjectsLogo = styled.img`
+    width: 50px;
+    height: 45px;
+    margin: 10px;
+    @media all and (max-width: 900px) {
+        align-self: center;
+    }
+`
+
+const Arrow = styled.div`
+    &: hover {
+        cursor: pointer;
+    }
+`
+
+const ArrowSymbol = styled.i`
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: ${(props) => props.up ? 'rotate(-135deg)' : 'rotate(45deg)'};
+    -webkit-transform: ${(props) => props.up ? 'rotate(-135deg)' : 'rotate(45deg)'};
+`
 
 let itemCheckoutList = {}
 
-function DonateItems() {
-    const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
+
+function DonateItems({ staticContext }) {
+    const { user: contextUser, storeUserInContext, removeUserInContext, authToken, setRegisterModal } = useContext(UserContext);
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
+    const [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
 
-    let [donateStatus, setDonateStatus] = useState({ status: false, donateAmount: 0 })
-    let [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
-    let donateRef = useRef(null)
-
+    console.log(staticContext,'staticContext')
     const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(gql(DONATION_MUTATION))
     const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(gql(GET_SAPLING_OPTIONS), { status: "ACTIVE" })
-    const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
+    const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || (staticContext && staticContext.data.data.getSaplingOptions) || []
+    
+    const [collapseMap, setCollapseMap] = useState({})
+    useEffect(()=> {
+        let saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
+        let map = saplingsArray.reduce((map, sapling) => { 
+            map[sapling.id] = {collapse: true}
+            return map
+        }, {})
+        setCollapseMap(map)
+    }, [saplingOptionsData])
 
     const getPaymentInfo = () => {
-        let donateAmount = donateStatus.donateAmount
-        let email = (contextUser && contextUser.email) || ""
-        let items = Object.values(itemCheckoutList).map((item) => lodash.pick(item, ['id', 'count', 'saplingName']))
-        let input = { email, amount: subTotalCheckoutCost, donationAmount: donateAmount, items }
-        return { input, totalAmount: subTotalCheckoutCost + donateAmount }
-    }
-
-    const makePaymentFromToken = async (getToken) => {
-        let { totalAmount } = getPaymentInfo()
-        if (totalAmount)
-            setModalStatus({ status: true, type: PAYMENT_CONFIRMATION, data: totalAmount, getToken })
-        else
-            showToast('Make some selection', 'error')
-    }
-
-    const doIt = () => {
-        const finalAmount = parseInt(donateRef.current.value);
-        if (finalAmount >= MIN_DONATION_VALUE)
-            setDonateStatus({ status: true, type: PAYMENT_CONFIRMATION, donateAmount: finalAmount })
-        else
-            showToast('Minimum of Rs 50 expected', 'error')
-    }
-
-    const finalPayment = async () => {
-        let getToken = modalStatus.getToken
-        let token = await getToken()
-        if (!token) {
-            showToast('Card info incorrect', 'error')
-            closeModal()
-            return
-        }
         let email = (contextUser && contextUser.email) || ''
-        let { input } = getPaymentInfo()
-        input = { ...input, email, token: token.id }
-        console.log(input, 'input finalPayment')
-        setDonationDataVariables({ donationInput: input })
-        setCalledStatus(true, DONATION)
-        closeModal()
+        let items = Object.values(itemCheckoutList).map((item) => lodash.pick(item, ['id', 'count', 'title']))
+        let input = { email, amount: subTotalCheckoutCost, items }
+        return { input, totalAmount: subTotalCheckoutCost }
     }
 
     const closeModal = () => {
@@ -210,8 +179,10 @@ function DonateItems() {
             console.log(donationData, 'wtf payment')
             let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
             let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
-            if (!error && referenceId)
+            if (!error && referenceId){
                 setModalStatus({ type: PAYMENT_SUCCESS, status: true, data: referenceId })
+                showToast('Donation successfull', 'success')
+            }
             else {
                 showToast('Problem occured while donating', 'error')
             }
@@ -219,64 +190,142 @@ function DonateItems() {
     }, [donationData, donationDataError])
 
     function checkoutCostChanger(count, val, item) {
-        itemCheckoutList[item.saplingName] = { ...item, count }
+        itemCheckoutList[item.title] = { ...item, count }
         console.log(count, itemCheckoutList, 'checkoutCounter');
         setSubTotalCheckoutCost(subTotalCheckoutCost + val);
     }
 
     let [subTotalCheckoutCost, setSubTotalCheckoutCost] = useState(0);
 
+    const getRazorOptions = ({ amount, name, email }) => {
+        const finalPayment = (token) => {
+            // let getToken = modalStatus.getToken
+            // let token = await getToken()
+            if (!token) {
+                showToast('Card info incorrect', 'error')
+                closeModal()
+                return
+            }
+            let email = (contextUser && contextUser.email) || ''
+            let { input } = getPaymentInfo()
+            input = { ...input, email, token: token.razorpay_payment_id }
+            console.log(input, 'input finalPayment')
+            setDonationDataVariables({ donationInput: input })
+            setCalledStatus(true, DONATION)
+            closeModal()
+        }
+        
+        let razorOptions = {
+            key: 'rzp_test_cxpMW5qj3FfIZD', // Enter the Key ID generated from the Dashboard
+            amount: amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise or INR 500.
+            currency: 'INR',
+            name: 'Moretrees',
+            description: 'Donation',
+            // "image": "https://example.com/your_logo",
+            // "order_id": "order_9A33XWu170gUtm",//This is a sample Order ID. Create an Order using Orders API. (https://razorpay.com/docs/payment-gateway/orders/integration/#step-1-create-an-order). Refer the Checkout form table given below
+            handler: function (response) {
+                // alert(response.razorpay_payment_id);
+                finalPayment(response)
+            },
+            prefill: {
+                name,
+                email
+            },
+            notes: {
+                address: 'note value'
+            },
+            theme: {
+                color: '#F37254'
+            }
+        }
+        return razorOptions
+    }
+
+    const makePayment = () => {
+        let email = contextUser && contextUser.email
+        if (!email)
+            setRegisterModal(true)
+        else{
+            if (subTotalCheckoutCost > 0) {
+                let rzp1 = new window.Razorpay(getRazorOptions({ amount: subTotalCheckoutCost, email }))
+                rzp1.open();
+            }
+            else{
+                showToast('Make some selection', 'error')
+            }
+        }
+        
+    }
+
+    const donateText = `## Donate\n\n We will plant trees around you. We have projects coming up across 
+                            cities & one of them is bound to be around where you live.
+                            \n The saplings are maintained & watered by us for the critical first year.
+                         \n\n We will notify you about progress through the plants life.
+                         \n You get the geolocation & photo of your sapling once it is planted.`
+
+    const projectsText = `## Projects\n\n `
+
     return (
         <Donate>
-            <DonateTrees>
-                <DonateItemsContainer>
-                    {getDonateItems(saplingsArray, checkoutCostChanger)}
-                </DonateItemsContainer>
-                <Subtotal> Subtotal: Rs {subTotalCheckoutCost}</Subtotal>
-            </DonateTrees>
-            <Or>
-                OR
-            </Or>
-            <DonateMoney>
-                {
-                    donateStatus.status ?
-                        <>
-                            <>I would like to donate Rs {donateStatus.donateAmount}</>
-                            <Button onClick={() => setDonateStatus({ status: false, donateAmount: 0 })}> Reset </Button>
-                        </> :
-                        <>
-                            <MoneyLine>You could choose the amount you want to donate.</MoneyLine>
-                            <Input ref={donateRef} numberInputWidth={'50px'} type="number" defaultValue={MIN_DONATION_VALUE} />
-                            <Button onClick={() => { doIt() }}> Lets do it! </Button>
-                        </>
-                }
-            </DonateMoney>
-            <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
-                <Checkout onSubmit={(getToken) => makePaymentFromToken(getToken)} />
-            </StripeProvider>
-            <Modal isOpen={modalStatus.status}
-                onAfterOpen={() => { }}
-                onRequestClose={() => closeModal()}
-                style={customStyle(modalStatus.type)}
-                contentLabel={'Hey Man'}
-            >
-                {modalStatus.type === PAYMENT_CONFIRMATION && <div>
-                    <ModalText>
-                        Lets make a total donation of Rs {modalStatus.data}
-                    </ModalText>
-                    <Button onClick={() => finalPayment()}>Go ahead</Button>
+            <Section>
+                <SectionLogo src={donateLogoImage}/>
+                <Container>
+                    <ReactMarkdown source={donateText} />
+                </Container>
+            </Section>
+            <Section>
+                <ProjectsTitleLogo src={projectsLogoImage}/>
+                <Container>
+                    <ReactMarkdown source={projectsText} />
+                    <DonateTrees>
+                        <DonateItemsContainer>
+                            {saplingsArray.map((item) => {
+                                let {id, title, subtitle, content, remaining, type, cost} = item
+                                let logoType = (type == 'ROAD') ? roadProjectsLogoImage : riverProjectsLogoImage
+                                return (
+                                    <DonateItem key={id}>
+                                        <ItemContainer>
+                                            <ProjectsLogo src={logoType}/>
+                                            <ItemDetail>
+                                                <ItemTitle>{title}</ItemTitle>
+                                                <ItemSubtitle >{subtitle}</ItemSubtitle>
+                                                
+                                                <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
+                                                    <ItemDetail>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
+                                                    </ItemDetail>
+                                                </Collapse>
+                                            </ItemDetail>
+                                            <CostContainer>
+                                                <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
+                                                <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                                            </CostContainer>
+                                        </ItemContainer>
+                                        <Arrow onClick={() => setCollapseMap({ ...collapseMap, [id]: { collapse: !collapseMap[id].collapse } })}>
+                                            <ArrowSymbol up={collapseMap[id] ? !collapseMap[id].collapse : false}/>
+                                        </Arrow>
+                                    </DonateItem>
+                                )
+                            })}
+                        </DonateItemsContainer>
+                        <CheckoutContainer>
+                                <Button disabled={subTotalCheckoutCost == 0} onClick={() => makePayment()}> Checkout </Button>
+                        </CheckoutContainer>
+                    </DonateTrees>
 
-                </div>}
-
-                {modalStatus.type === PAYMENT_SUCCESS && <div>
-                    <ModalText>
-                        Thanks for donating for such a cause.
-                        Please note the referenceId for further queries. (Ref id: {modalStatus.data})
-                    </ModalText>
-                </div>}
-            </Modal>
-        </Donate >
-    )
+                </Container>
+            </Section>
+        </Donate>)
 }
-
-export default DonateItems;
+export default withRouter(DonateItems)

@@ -8,7 +8,7 @@ const express = require('express');
 const publicPath = path.join(__dirname, '/public');
 const app = express();
 
-app.use(express.static(publicPath));
+app.use('/static', express.static(publicPath));
 app.use(htmlMiddleware());
 app.use(renderMiddleware());
 

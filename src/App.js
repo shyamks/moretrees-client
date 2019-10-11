@@ -10,7 +10,8 @@ import { STORE_TOKEN, STORE_USER } from './constants';
 class App extends React.Component {
   state = {
     user: null,
-    authToken: null
+    authToken: null,
+    callRegisterModal: false
   };
 
   setLocalStorageItem = (key, value) => {
@@ -20,7 +21,7 @@ class App extends React.Component {
     catch (e) {
       console.log(e, 'localStorage error')
     }
-  }
+  };
 
   storeUserInContext = (user) => {
     this.setLocalStorageItem(STORE_USER, user);
@@ -39,22 +40,27 @@ class App extends React.Component {
     this.setState({ user: null, authToken: null });
   };
 
-  getUserAndToken = () => {
+  getAppState = () => {
+    let {user, authToken, callRegisterModal} = this.state
     try {
       let localStorageUserItem = localStorage.getItem(STORE_USER)
       let localStorageAuthTokenItem = localStorage.getItem(STORE_TOKEN)
       let backupUserItem = localStorageUserItem ? JSON.parse(localStorageUserItem) : null
       let backupAuthItem = localStorageAuthTokenItem ? JSON.parse(localStorageAuthTokenItem) : null
-      return [this.state.user || backupUserItem, this.state.authToken || backupAuthItem]
+      return [user || backupUserItem, authToken || backupAuthItem, callRegisterModal]
     }
     catch (e) {
-      return [this.state.user, this.state.authToken]
+      return [user, authToken, callRegisterModal]
     }
-  }
+  };
+
+  setRegisterModal = (value) => {
+    this.setState({ callRegisterModal: value })
+  };
 
   render() {
-    const [user, authToken] = this.getUserAndToken()
-    let userContextValue = { user, storeUserInContext: this.storeUserInContext, removeUserInContext: this.removeUserInContext, authToken }
+    const [user, authToken, callRegisterModal] = this.getAppState()
+    let userContextValue = { user, storeUserInContext: this.storeUserInContext, removeUserInContext: this.removeUserInContext, authToken, callRegisterModal, setRegisterModal: this.setRegisterModal }
     return (
       <UserContext.Provider value={userContextValue}>
         <Switch>

@@ -1,30 +1,9 @@
-import { useState } from 'react'
-import React from 'react';
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import Input from './Input'
 
 const MIN = 0
 const MAX = 9
-
-let CounterContainer = styled.div`
-    display: flex;
-    text-align: center;
-    justify-content: space-between;
-    margin: 25px 0 25px 0;
-    padding-left: 40px;
-    width: 100px;
-`
-
-let Container = styled.div`
-    display: flex;
-`
-let Minus = styled.span`
-    margin: 0 5px 0 0;
-    height: 20px;
-    &:hover {
-        cursor: pointer
-    }
-`
 
 let InputContainer = styled.span`
     margin-top: -25px;
@@ -32,46 +11,54 @@ let InputContainer = styled.span`
         cursor: pointer
     }
 `
+const Button = styled.button`
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+    `
+    const TotalValue = styled.div`
+        display: inline-block;
+        width: 75px;
+    `
 
-let Plus = styled.span`
-    margin: 0 0 0 5px;
-    height: 20px;
-    &:hover {
-        cursor: pointer
-    }
-`
+    const Container = styled.div`
+        display: inline-table;
+        flex-direction: row;
+        border-radius: 5px;
+        margin: 5px;
+        min-width: 140px;
+    `
 
-let TotalCost = styled.div`
-    margin: 0px 60px 0px 60px;
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
-    white-space:nowrap;
-`
-
-function Counter({ maximumCount, cost, itemCost }) {
-    console.log(maximumCount, 'lol')
-
+export default function Counter({ maximumCount, cost, itemCost }) {
     let finalMaxCount = Math.min(maximumCount, MAX)
 
+    let [counter, setCounter] = React.useState({ count: 0, totalCost: 0, actionValue: null })
+
     function chgCounter(val) {
-        let counterVal = count + val
+        let counterVal = counter.count + val
+        // console.log(val, counter, finalMaxCount, 'chgCounter', counterVal)
         if (counterVal >= MIN && counterVal <= finalMaxCount) {
-            setCount(counterVal)
-            setTotalCost(counterVal * cost)
-            itemCost(counterVal, val * cost);
+            console.log(val, 'val')
+            setCounter({ count: counterVal, totalCost: counterVal * parseInt(cost), actionValue: val })
+            // itemCost && itemCost(counterVal, val * parseInt(cost));
         }
     }
-    let [count, setCount] = useState(0)
 
-    let [totalCost, setTotalCost] = useState(0)
+    React.useEffect(() => {
+        let { count, totalCost, actionValue } = counter
+        if (actionValue){
+            console.log(counter, parseInt(cost), 'wjat')
+            itemCost && itemCost(count, actionValue * parseInt(cost))
+        }
+    }, [counter])
+
+
+    
     return (
-        <CounterContainer>
-            <Container>
-                <Minus onClick={() => chgCounter(-1)}> - </Minus>
-                <InputContainer><Input numberInputWidth={'12px'} value={count}></Input></InputContainer>
-                <Plus onClick={() => chgCounter(1)}> + </Plus>
-            </Container>
-            <TotalCost> Rs {totalCost}</TotalCost>
-        </CounterContainer>
+        <Container>
+            <Button onClick={() => chgCounter(-1)}>-</Button>
+            <TotalValue><span>{`Rs. ${counter.totalCost}`}</span></TotalValue>
+            <Button onClick={() => chgCounter(1)}>+</Button>
+        </Container>
     )
 }
-export default Counter;
