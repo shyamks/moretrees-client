@@ -51,8 +51,7 @@
     "dev": "react-ssr-scripts start",
     "start": "node build",
     "build": "react-ssr-scripts build",
-    "test": "bundlesize",
-    "oldTest": "react-ssr-scripts test",
+    "test": "react-ssr-scripts test",
     "eject": "react-ssr-scripts eject"
   },
   "eslintConfig": {
