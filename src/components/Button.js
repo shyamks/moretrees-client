@@ -11,22 +11,12 @@ const Button = styled.button`
     height: ${(props) => (props.height ? props.height : '33px')};
     width: ${(props) => (props.width ? props.width : '100px')};
     outline: none;
-    border: 1px solid #60bc0f;
-    background-color: transparent;
-    box-shadow:none;
-    outline-style:none;
-
     &: hover{
         cursor: pointer;
     }
     &: active {
         outline: none;
         border: none;
-    }
-    &: focus {
-        outline: none;
-
-border-color:transparent;
     }
 `
 
