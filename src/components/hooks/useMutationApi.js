@@ -16,10 +16,6 @@ function useMutationApi(MUTATION) {
         callAPI()
     }, [variableDetails])
 
-    // useEffect(() => {
-    //     console.log('data effect',data)
-    //     setSavedApiData(data)
-    // }, [data])
     return [savedApiData, loading, error, setVariables, setSavedApiData]
 }
 

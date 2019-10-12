@@ -18,7 +18,7 @@ const customStyles = {
         return {...provided, width: 300, display: 'flex'}
     },
     singleValue: (provided, state) => {
-        // console.log(provided,state,'lets see')
+
       const opacity = state.isDisabled ? 0.5 : 1;
       const transition = 'opacity 300ms';
   

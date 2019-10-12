@@ -15,13 +15,14 @@ const Button = styled.button`
         width: 30px;
         height: 30px;
         border-radius: 8px;
+        outline: none;
     `
-    const TotalValue = styled.div`
+const TotalValue = styled.div`
         display: inline-block;
         width: 75px;
     `
 
-    const Container = styled.div`
+const Container = styled.div`
         display: inline-table;
         flex-direction: row;
         border-radius: 5px;
@@ -36,9 +37,7 @@ export default function Counter({ maximumCount, cost, itemCost }) {
 
     function chgCounter(val) {
         let counterVal = counter.count + val
-        // console.log(val, counter, finalMaxCount, 'chgCounter', counterVal)
         if (counterVal >= MIN && counterVal <= finalMaxCount) {
-            console.log(val, 'val')
             setCounter({ count: counterVal, totalCost: counterVal * parseInt(cost), actionValue: val })
             // itemCost && itemCost(counterVal, val * parseInt(cost));
         }
@@ -47,7 +46,6 @@ export default function Counter({ maximumCount, cost, itemCost }) {
     React.useEffect(() => {
         let { count, totalCost, actionValue } = counter
         if (actionValue){
-            console.log(counter, parseInt(cost), 'wjat')
             itemCost && itemCost(count, actionValue * parseInt(cost))
         }
     }, [counter])

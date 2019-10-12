@@ -9,13 +9,14 @@ import { ApolloClient } from 'apollo-client';
 import { STORE_TOKEN, FINAL_ENDPOINT } from '../constants';
 import { InMemoryCache, ApolloLink } from 'apollo-boost';
 import { createHttpLink } from 'apollo-link-http';
+import Logger from '../components/Logger';
 
 const manageApolloMiddleware = () => {
     const httpLink = createHttpLink({ uri: FINAL_ENDPOINT });
     const middlewareLink = new ApolloLink((operation, forward) => {
         let item
         if (window) item = window.localStorage.getItem(STORE_TOKEN)
-        console.log(item, 'manageApolloMiddleware')
+        Logger(item, 'manageApolloMiddleware')
         const token = item ? JSON.parse(item) : ""
         operation.setContext({
             headers: {

@@ -22,6 +22,7 @@ import { showToast, apiCallbackStatus } from '../utils';
 import { REGISTER_MUTATION, LOGIN_QUERY, PAGES } from '../constants';
 
 import logoImage from '../images/moretrees-logo.jpg'
+import Logger from './Logger';
 
 const LOGIN = 'Login'
 const REGISTER = 'Register'
@@ -239,30 +240,6 @@ function SiteHeader({ history }) {
         setLoginData(null)
     }
 
-    // const gotFromApiAndNotInLocalStorage = (loggedInUser, userInContext) => {
-    //     return loggedInUser && !userInContext
-    // }
-    // const onResponseFromLoginApi = (data, isError) => {
-    //     // console.log(data,isError,'hellll')
-    //     if (!data) return { loggedInUser: contextUser, errorInLoginUser: null }
-    //     let loginUser = data.loginUser
-    //     const errorInLoginUser = (loginUser && loginUser.error) || isError
-    //     const loggedInUser = loginUser || contextUser
-    //     if (!errorInLoginUser) {
-    //         // console.log('asdasasdasdfassadfasfsfs')
-    //         if (gotFromApiAndNotInLocalStorage(loggedInUser, contextUser)) {
-    //             storeUserInContext(loggedInUser)
-    //         }
-    //     }
-    //     console.log(loggedInUser, errorInLoginUser, 'pls help')
-
-    //     return { loggedInUser, errorInLoginUser }
-    // }
-    // const onResponseFromRegisterApi = (data, isError) => {
-    //     const errorInRegisterUser = (data && data.data.registerUser && data.data.registerUser.error) || isError
-    //     const registerUser = data && data.data.registerUser
-    //     return { registerUser, errorInRegisterUser }
-    // }
     const [loginData, loginLoading, loginError, setLoginVariables, setLoginData] = useLazyQueryApi(gql(LOGIN_QUERY))
     const [registerData, registerLoading, registerError, setRegisterVariables, setRegisterData] = useMutationApi(gql(REGISTER_MUTATION))
 
@@ -271,7 +248,7 @@ function SiteHeader({ history }) {
             let loginUser = loginData.loginUser
             // const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
             storeUserInContext(loginUser)
-            console.log(loginData, loginError, 'wtf loginError')
+            Logger(loginData, loginError, 'wtf loginError')
             if (loginUser.error || loginError) {
                 showToast("Login failed!", 'error');
             }

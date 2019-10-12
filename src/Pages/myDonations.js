@@ -13,6 +13,7 @@ import { GET_MY_DONATIONS, PageContent, Page } from '../constants';
 import Footer from '../components/Footer';
 import { useTable } from 'react-table';
 import useClient from '../components/hooks/useClient';
+import Logger from '../components/Logger';
 
 const TableRow = styled.div`
     text-align: center;
@@ -51,7 +52,7 @@ function getDonationData(donationItems) {
         }
         const getDonationDate = (createdAt) => {
             let date = new Date(parseInt(createdAt))
-            console.log(date, createdAt, 'date')
+            Logger(date, createdAt, 'date')
             return (date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
         }
         const getDonatedSaplings = (items) => {
@@ -62,13 +63,13 @@ function getDonationData(donationItems) {
             })
             return rows
         }
-        console.log(donationItem, 'donationItem')
+        Logger(donationItem, 'donationItem')
         let { amount, createdAt, items, id } = donationItem
         let receiptNo = id
         let donatedSaplings = getDonatedSaplings(items)
         let donatedOn = getDonationDate(createdAt)
         let totalAmount = getDonationAmount(amount)
-        console.log(donatedSaplings, donatedOn, 'donationData')
+        Logger(donatedSaplings, donatedOn, 'donationData')
         const data = { receiptNo, donatedSaplings, donatedOn, totalAmount }
         return data
     })
@@ -138,7 +139,7 @@ function MyDonations() {
     let client = useClient()
     let { email } = contextUser || {}
     const [myDonationsData, isGetMyDonationsLoading, isGetMyDonationsError, refetchMyDonationsData] = useQueryApi(gql(GET_MY_DONATIONS), { email })
-    console.log(myDonationsData, isGetMyDonationsError, 'data')
+    Logger(myDonationsData, isGetMyDonationsError, 'data')
     useEffect(() => {
         refetchMyDonationsData()
     }, [])
@@ -184,7 +185,7 @@ function Table({ columns, data }) {
                 {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map(column => {
-                            console.log(column, headerGroup, column.getHeaderProps(), 'column')
+                            Logger(column, headerGroup, column.getHeaderProps(), 'column')
                             return (
                                 <th {...column.getHeaderProps()} style={column.style}>{column.render('Header')}</th>
                             )
@@ -198,7 +199,7 @@ function Table({ columns, data }) {
                         prepareRow(row) || (
                             <tr {...row.getRowProps()}>
                                 {row.cells.map(cell => {
-                                    // console.log(cell, row, 'cell')
+                                    // Logger(cell, row, 'cell')
                                     return <td {...cell.getCellProps()}>{cell.value}</td>
                                 })}
                             </tr>

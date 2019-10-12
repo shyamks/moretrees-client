@@ -8,7 +8,7 @@ import {Collapse,} from 'react-collapse';
 
 import Button from './Button';
 import Counter from './counter'
-import { STRIPE_PUBLIC_KEY, DONATION_MUTATION, GET_SAPLING_OPTIONS, PAGES } from '../constants';
+import { DONATION_MUTATION, GET_SAPLING_OPTIONS } from '../constants';
 import gql from 'graphql-tag';
 import useMutationApi from './hooks/useMutationApi';
 import useQueryApi from './hooks/useQueryApi';
@@ -19,6 +19,7 @@ import donateLogoImage from '../images/moretrees-donate-logo.png'
 import projectsLogoImage from '../images/moretrees-projects-logo.png'
 import roadProjectsLogoImage from '../images/moretrees-road-projects-logo.png'
 import riverProjectsLogoImage from '../images/moretrees-river-projects-logo.png'
+import Logger from './Logger';
 
 const DONATION = 'donation'
 
@@ -148,7 +149,7 @@ function DonateItems({ staticContext }) {
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
     const [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
 
-    console.log(staticContext,'staticContext')
+    Logger(staticContext,'staticContext')
     const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(gql(DONATION_MUTATION))
     const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(gql(GET_SAPLING_OPTIONS), { status: "ACTIVE" })
     const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || (staticContext && staticContext.data.data.getSaplingOptions) || []
@@ -176,7 +177,7 @@ function DonateItems({ staticContext }) {
 
     useEffect(() => {
         if (donationData && donationData.data && checkCalledStatus(DONATION)) {
-            console.log(donationData, 'wtf payment')
+            Logger(donationData, 'wtf payment')
             let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
             let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
             if (!error && referenceId){
@@ -191,7 +192,7 @@ function DonateItems({ staticContext }) {
 
     function checkoutCostChanger(count, val, item) {
         itemCheckoutList[item.title] = { ...item, count }
-        console.log(count, itemCheckoutList, 'checkoutCounter');
+        Logger(count, itemCheckoutList, 'checkoutCounter');
         setSubTotalCheckoutCost(subTotalCheckoutCost + val);
     }
 
@@ -209,7 +210,7 @@ function DonateItems({ staticContext }) {
             let email = (contextUser && contextUser.email) || ''
             let { input } = getPaymentInfo()
             input = { ...input, email, token: token.razorpay_payment_id }
-            console.log(input, 'input finalPayment')
+            Logger(input, 'input finalPayment')
             setDonationDataVariables({ donationInput: input })
             setCalledStatus(true, DONATION)
             closeModal()

@@ -1,5 +1,6 @@
 import './styles/loginStyles.css';
 import React, { useRef, useState } from 'react'
+import Logger from './Logger';
 
 function Register({ onSubmit }) {
     let emailRef = useRef(null)
@@ -22,7 +23,7 @@ function Register({ onSubmit }) {
         let username = usernameRef.current.value
         let password = passwordRef.current.value
         let mobile = mobileRef.current.value
-        console.log({ emailRef, usernameRef, passwordRef, mobileRef }, 'register')
+        Logger({ emailRef, usernameRef, passwordRef, mobileRef }, 'register')
         if (validDetails({ email, username, password, mobile }))
             onSubmit({ email, username, password, mobile })
     }
@@ -30,7 +31,7 @@ function Register({ onSubmit }) {
     const validity = (value, type) => {
         var usernameRegex = /^[a-zA-Z0-9]+$/;
         var emailRegex = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-        console.log(value, 'valid')
+        Logger(value, 'valid')
         const getStatus = (value, type) => {
             switch (type) {
                 case 'email':
@@ -71,7 +72,7 @@ function Register({ onSubmit }) {
             errorOfValue = getErrorText(value, type)
 
         let returnValue = { status: statusOfValue, errorText: errorOfValue }
-        console.log({ ...validRegister, [type]: returnValue }, 'pls console')
+        Logger({ ...validRegister, [type]: returnValue }, 'pls console')
         setValidityOfRegister({ ...validRegister, [type]: returnValue })
         return returnValue
 
@@ -79,11 +80,11 @@ function Register({ onSubmit }) {
 
     const handleChange = (e, eventType, type) => {
         e.persist()
-        console.log(e, 'tarr')
+        Logger(e, 'tarr')
         if (eventType === 'blur') {
             let classList = e.target.classList
             let value = e.target.value
-            console.log(e, ...classList, 'event')
+            Logger(e, ...classList, 'event')
             if (!validity(value, type).status) {
                 ![...classList].includes('error') && e.target.classList.add('error')
             }

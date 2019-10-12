@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react'
 import axios from 'axios'
+import Logger from '../Logger';
 
 const useDataApi = ({ initialUrl, method, query }, auto = false, initialData) => {
     if (auto && !(initialUrl && method && query))
@@ -16,7 +17,7 @@ const useDataApi = ({ initialUrl, method, query }, auto = false, initialData) =>
 
             try {
                 const result = await axios({ url: url.url || initialUrl, method: url.method || method, data: { query: url.query || query } });
-                console.log(result, 'result')
+                Logger(result, 'result')
                 setData(result.data);
             } catch (error) {
                 setIsError(true);

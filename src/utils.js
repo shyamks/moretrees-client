@@ -2,6 +2,7 @@ import { STORE_USER } from './constants'
 import { toast } from 'react-toastify'
 
 import fetch from 'isomorphic-unfetch'
+import Logger from './components/Logger'
 
 // Polyfill fetch() on the server (used by apollo-client)
 if (typeof window === 'undefined') {
@@ -14,7 +15,7 @@ export const getUserFromLocalStorage = () => {
         return userItem ? JSON.parse(userItem) : null
     }
     catch (e) {
-        console.log(e)
+        Logger(e)
         return null
     }
 }

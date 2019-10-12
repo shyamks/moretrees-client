@@ -4,7 +4,6 @@ const Button = styled.button`
     margin: 20px;
     font-size: 16px;
     font-weight: 500;
-    // border: 1px solid #60bc0f;
     color: ${(props) => (props.color ? props.color : 'white')};
     border-radius: 5px;
     border-width: 0px;
@@ -12,10 +11,13 @@ const Button = styled.button`
     height: ${(props) => (props.height ? props.height : '33px')};
     width: ${(props) => (props.width ? props.width : '100px')};
     outline: none;
+    border: 1px solid #60bc0f;
+    background-color: transparent;
+    box-shadow:none;
+    outline-style:none;
+
     &: hover{
         cursor: pointer;
-        border: 1px solid #60bc0f;
-        background-color: transparent;
     }
     &: active {
         outline: none;
@@ -23,6 +25,8 @@ const Button = styled.button`
     }
     &: focus {
         outline: none;
+
+border-color:transparent;
     }
 `
 

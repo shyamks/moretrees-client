@@ -11,6 +11,7 @@ import Button from '../components/Button'
 import UserContext from '../components/UserContext'
 import useMutationApi from '../components/hooks/useMutationApi'
 import { showToast } from '../utils'
+import Logger from '../components/Logger'
 const validate = require("validate.js");
 
 // const EMAIL = 'email'
@@ -33,7 +34,7 @@ const getError = (type, value, extraData) => {
             error = validate({ from: value }, constraints)
             error = error ? 'Name not valid' : null
             isError = !!error
-            console.log('ehre', value, type, error)
+            Logger('ehre', value, type, error)
             break
         case 'email':
             constraints = {
@@ -64,7 +65,7 @@ const getError = (type, value, extraData) => {
                 }
             }
             formPassword = (extraData && extraData.formPassword.value) || ''
-            // console.log({ password: value, confirmPassword: formPassword },'password')
+            // Logger({ password: value, confirmPassword: formPassword },'password')
             error = validate({ password: value, confirmPassword: formPassword }, constraints)
             error = error ? 'Password not valid' : null
             isError = !!error
@@ -86,11 +87,11 @@ const getError = (type, value, extraData) => {
                 }
             }
             formPassword = (extraData && extraData.formPassword.value) || ''
-            // console.log({ password: value, confirmPassword: formPassword },'confirmPassword')
+            // Logger({ password: value, confirmPassword: formPassword },'confirmPassword')
             error = validate({ password: formPassword, confirmPassword: value }, constraints)
             error = error ? 'Confirm Password not valid' : null
             isError = !!error
-            // console.log(error, isError, 'confirmPassword here')
+            // Logger(error, isError, 'confirmPassword here')
             break
         case 'twitter':
         case 'insta':
@@ -105,7 +106,7 @@ const getError = (type, value, extraData) => {
             error = validate({ from: value }, constraints)
             error = error ? `${type} not valid` : null
             isError = !!error
-            // console.log(error, isError, `${type} here`)
+            // Logger(error, isError, `${type} here`)
             break
         default:
 
@@ -139,13 +140,13 @@ export default function MyProfile({ history, location, staticContext, match, rou
             if (input[inputItem])
                 finalInput[inputItem] = input[inputItem]
         }
-        // console.log(finalInput, 'finalInput')
+        // Logger(finalInput, 'finalInput')
         setUpdateUserVariables({ userInput: finalInput })
     }
     const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(gql(UPDATE_USER_MUTATION))
 
     useEffect(() => {
-        // console.log(updateUserData, 'useEffect updateUserData')
+        // Logger(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
             if (!(updateUser.error || updateUserError)) {
@@ -159,7 +160,7 @@ export default function MyProfile({ history, location, staticContext, match, rou
         }
     }, [updateUserData, updateUserError])
 
-    // console.log(updateUserData, 'updateUserData')
+    // Logger(updateUserData, 'updateUserData')
     let [state, setState] = useState({
         name: { value: '', error: '', isError: false },
         // email: { value: '', error: '', isError: false },
@@ -177,7 +178,7 @@ export default function MyProfile({ history, location, staticContext, match, rou
         for (let key of Object.keys(state)) {
             
             if (key == 'confirmPassword' || key == 'password') {
-                console.log(key,'what')
+                Logger(key,'what')
                 let otherKey = (key == 'confirmPassword') ? 'password' : 'confirmPassword'
                 let extraData = { formPassword: state[otherKey] }
                 let { error, isError } = getError(key, state[key] ? state[key].value : '', extraData)
@@ -187,7 +188,7 @@ export default function MyProfile({ history, location, staticContext, match, rou
             else
                 bools.push(getError(key, state[key] ? state[key].value : '', {}))
         }
-        console.log(bools, Object.keys(state), 'canDisableCreateProfile')
+        Logger(bools, Object.keys(state), 'canDisableCreateProfile')
         return !bools.reduce((acc, ele) => !ele.isError || acc, false)
     }
 
@@ -228,7 +229,7 @@ export default function MyProfile({ history, location, staticContext, match, rou
         }
     }
 
-    console.log(state, 'state')
+    Logger(state, 'state')
     return (
         <Page>
             <Header />

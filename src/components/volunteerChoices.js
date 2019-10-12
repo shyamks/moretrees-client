@@ -19,6 +19,7 @@ import { showToast } from '../utils'
 
 import volunteerLogoImage from '../images/moretrees-volunteer-logo.png'
 import { SelectDropdown } from './SelectDropdown'
+import Logger from './Logger'
 
 const ListContainer = styled.div`
     display: flex;
@@ -112,7 +113,7 @@ function VolunteerChoices() {
     const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(gql(UPDATE_USER_MUTATION))
 
     useEffect(() => {
-        console.log(updateUserData, 'useEffect updateUserData')
+        Logger(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
             if (!(updateUser.error || updateUserError)) {
@@ -155,7 +156,7 @@ function VolunteerChoices() {
     let {whenSelected, whatSelected} = getOptionsSelected()
     
     let disable = !(whatSelected && whenSelected)
-    console.log(selectedOptionObject, contextUser, { whatSelected, whenSelected }, disable, 'ssr issue here')
+    Logger(selectedOptionObject, contextUser, { whatSelected, whenSelected }, disable, 'ssr issue here')
     
     return (
         <Wrapper>
