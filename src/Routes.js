@@ -7,6 +7,7 @@ import NotFound from "./Pages/NotFound";
 import { loadDataFromServer } from "./helpers";
 import { PAGES } from "./constants";
 import MyProfile from "./Pages/myProfile";
+import Admin from "./Pages/admin";
 
 const Routes = [
     {
@@ -42,6 +43,13 @@ const Routes = [
         exact: true,
         component: MyProfile,
         loadData: () => loadDataFromServer('myProfile')
+    },
+    {
+        path: PAGES.ADMIN,
+        name: 'admin',
+        exact: true,
+        component: Admin,
+        loadData: () => loadDataFromServer('admin')
     },
     {
         component: NotFound,

@@ -101,6 +101,7 @@ const Header = styled.div`
     left: 0;
     right: 0;
     width: 100%;
+    z-index: 1000;
     
     `
 
@@ -299,6 +300,8 @@ function SiteHeader({ history }) {
                             <VolunteerLink onClick={() => navigateTo(PAGES.MY_DONATIONS)}> My Donations </VolunteerLink>
                             <Separator />
                             <VolunteerLink onClick={() => navigateTo(PAGES.PROFILE)}> Profile </VolunteerLink>
+                            <Separator />
+                            <VolunteerLink onClick={() => navigateTo(PAGES.ADMIN)}> Admin </VolunteerLink>
                         </>
                     }
                 </AppLeftHeader>
@@ -319,6 +322,9 @@ function SiteHeader({ history }) {
                                 </HamburgerOption>
                                 <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.PROFILE)}>
                                      Profile 
+                                </HamburgerOption>
+                                <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.ADMIN)}>
+                                     Admin 
                                 </HamburgerOption>
                                 <HamburgerOption show={hamburgerStatus}>
                                     <a onClick={() => onLogout()}> Logout </a>

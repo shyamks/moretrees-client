@@ -14,7 +14,7 @@ import useMutationApi from './hooks/useMutationApi';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
 import useClient from './hooks/useClient';
 import UserContext from './UserContext';
-import { UPDATE_USER_MUTATION, GET_USER_QUERY, GET_VOLUNTEER_QUERY } from '../constants'
+import { UPDATE_USER_MUTATION, GET_USER_QUERY, GET_VOLUNTEER_QUERY, availableWhenOptions, availableWhatOptions } from '../constants'
 import { showToast } from '../utils'
 
 import volunteerLogoImage from '../images/moretrees-volunteer-logo.png'
@@ -131,22 +131,6 @@ function VolunteerChoices() {
                             \nOur volunteers plant trees, scout locations, help build our website, launch operations in new cities and more.
                             \nOur volunteers are EVERYTHING.`
 
-
-    const optionsWhat = [
-        { value: 'Plant trees with us', label: 'Plant trees with us' },
-        { value: 'Scout locations to plant trees for us', label: 'Scout locations to plant trees for us' },
-        { value: 'Help us launch your city', label: 'Help us launch your city' },
-        { value: 'Operations', label: 'Operations' },
-        { value: 'Marketing', label: 'Marketing' },
-        { value: 'Website', label: 'Website' },
-    ];
-
-    const optionsWhen = [
-        { value: 'Weekdays', label: 'Weekdays' },
-        { value: 'Weekends', label: 'Weekends' },
-        { value: 'Any day', label: 'Any day' },
-    ];
-
     const getOptionsSelected = () => {
         let { what, when } = selectedOptionObject
         let whatSelected = what || (contextUser && contextUser.availableWhat)
@@ -170,9 +154,9 @@ function VolunteerChoices() {
                 <>
                     <DropdownContainer>
                         <SelectDropdown placeholder={'What would you like to do?'} selectedOption={{ value: whatSelected, label: whatSelected }}
-                            options={optionsWhat} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, what: option.value }) }} />
+                            options={availableWhatOptions} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, what: option.value }) }} />
                         <SelectDropdown placeholder={'When are you available?'} selectedOption={{ value: whenSelected, label: whenSelected }}
-                            options={optionsWhen} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, when: option.value }) }} />
+                            options={availableWhenOptions} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, when: option.value }) }} />
                     </DropdownContainer>
 
                     <ButtonContainer>

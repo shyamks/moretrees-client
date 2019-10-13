@@ -1,25 +1,25 @@
 import styled from 'styled-components'
-import React from 'react';
+import React from 'react'
 import { useState, useContext, useEffect, useRef } from 'react'
-import { withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom"
 import lodash from 'lodash'
 import ReactMarkdown from 'react-markdown'
-import {Collapse,} from 'react-collapse';
+import { Collapse } from 'react-collapse'
 
-import Button from './Button';
+import Button from './Button'
 import Counter from './counter'
-import { DONATION_MUTATION, GET_SAPLING_OPTIONS } from '../constants';
-import gql from 'graphql-tag';
-import useMutationApi from './hooks/useMutationApi';
-import useQueryApi from './hooks/useQueryApi';
-import { showToast, apiCallbackStatus } from '../utils';
-import UserContext from './UserContext';
+import { DONATION_MUTATION, GET_SAPLING_OPTIONS } from '../constants'
+import gql from 'graphql-tag'
+import useMutationApi from './hooks/useMutationApi'
+import useQueryApi from './hooks/useQueryApi'
+import { showToast, apiCallbackStatus } from '../utils'
+import UserContext from './UserContext'
 
 import donateLogoImage from '../images/moretrees-donate-logo.png'
 import projectsLogoImage from '../images/moretrees-projects-logo.png'
 import roadProjectsLogoImage from '../images/moretrees-road-projects-logo.png'
 import riverProjectsLogoImage from '../images/moretrees-river-projects-logo.png'
-import Logger from './Logger';
+import Logger from './Logger'
 
 const DONATION = 'donation'
 

@@ -48,3 +48,9 @@ export const apiCallbackStatus = () => {
 
     return [setCalledStatus, checkCalledStatus]
 }
+
+export const convertNullToEmptyString = (value) => {
+    if (value == null || value == undefined)
+        return ''
+    return value
+}

@@ -16,8 +16,31 @@ export const PAGES = {
   VOLUNTEER: '/volunteer',
   MY_DONATIONS: '/myDonations',
   PROFILE: '/profile',
+  ADMIN: '/admin',
 }
 
+export const availableWhenOptions =[
+  { value: 'Weekdays', label: 'Weekdays' },
+  { value: 'Weekends', label: 'Weekends' },
+  { value: 'Any day', label: 'Any day' },
+]
+export const availableWhatOptions =[
+  { value: 'Plant trees with us', label: 'Plant trees with us' },
+  { value: 'Scout locations to plant trees for us', label: 'Scout locations to plant trees for us' },
+  { value: 'Help us launch your city', label: 'Help us launch your city' },
+  { value: 'Operations', label: 'Operations' },
+  { value: 'Marketing', label: 'Marketing' },
+  { value: 'Website', label: 'Website' },
+]
+export const adminOptions = [
+  {value: 'Users', label: 'Users'},
+  {value: 'Users Donated', label: 'Users Donated'},
+  {value: 'Donate Items', label: 'Donate Items'}
+]
+export const donationTypes = [
+  {value: 'RIVER', label: 'RIVER'},
+  {value: 'ROAD', label: 'ROAD'},
+]
 export const PageContent = styled.div`
     margin-top: 100px;
     width: 100%;
@@ -108,6 +131,22 @@ mutation updateUser($userInput: UserInput!) {
   }
 }`
 
+export const UPDATE_USERS_MUTATION = `
+mutation updateUsers($userInput: [UserInput]!, $email: String!) {
+  updateUsers(input: $userInput, email: $email){
+    status
+    error
+  }
+}`
+
+export const UPDATE_SAPLINGS_MUTATION = `
+mutation updateSaplings($saplingInput: [SaplingOptionsInput]!, $email: String!) {
+  updateSaplings(input: $saplingInput, email: $email){
+    status
+    error
+  }
+}`
+
 export const GET_USER_QUERY = `
 query getUser($email: String!) {
   getUser(email: $email){
@@ -123,6 +162,35 @@ query getUser($email: String!) {
     error
   }
 }`
+
+export const GET_ALL_USERS = `
+query getAllUsers($email: String!) {
+  getAllUsers(email: $email){
+    id
+    username
+    email
+    phone
+    twitterProfile
+    fbProfile
+    instaProfile
+    availableWhen
+    availableWhat
+    message
+    error
+  }
+}`
+
+export const GET_ALL_USER_DONATIONS = `
+query getAllUserDonations($email: String!) {
+  getAllUserDonations(email: $email){
+        id
+        email
+        amount
+        items 
+        createdAt
+  }
+}`
+
 
 export const GET_MY_DONATIONS = `
 query myDonations($email: String){
