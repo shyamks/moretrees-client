@@ -19,12 +19,15 @@ export const PAGES = {
   ADMIN: '/admin',
 }
 
-export const availableWhenOptions =[
+export const UserType = {
+  ADMIN: 'admin'
+}
+export const availableWhenOptions = [
   { value: 'Weekdays', label: 'Weekdays' },
   { value: 'Weekends', label: 'Weekends' },
   { value: 'Any day', label: 'Any day' },
 ]
-export const availableWhatOptions =[
+export const availableWhatOptions = [
   { value: 'Plant trees with us', label: 'Plant trees with us' },
   { value: 'Scout locations to plant trees for us', label: 'Scout locations to plant trees for us' },
   { value: 'Help us launch your city', label: 'Help us launch your city' },
@@ -33,13 +36,13 @@ export const availableWhatOptions =[
   { value: 'Website', label: 'Website' },
 ]
 export const adminOptions = [
-  {value: 'Users', label: 'Users'},
-  {value: 'Users Donated', label: 'Users Donated'},
-  {value: 'Donate Items', label: 'Donate Items'}
+  { value: 'Users', label: 'Users' },
+  { value: 'Users Donated', label: 'Users Donated' },
+  { value: 'Donate Items', label: 'Donate Items' }
 ]
 export const donationTypes = [
-  {value: 'RIVER', label: 'RIVER'},
-  {value: 'ROAD', label: 'ROAD'},
+  { value: 'RIVER', label: 'RIVER' },
+  { value: 'ROAD', label: 'ROAD' },
 ]
 export const PageContent = styled.div`
     margin-top: 100px;
@@ -51,6 +54,11 @@ export const PageContent = styled.div`
 export const Page = styled.div`
   position: relative;
   min-height: 100vh;
+`
+
+export const MarkTitle = styled.h2`
+  font-weight: 700 !important;
+  margin-top: 14px;
 `
 
 export const DONATION_MUTATION = `
@@ -72,6 +80,7 @@ query getSaplingOptions($status: String){
       cost
       content
       remaining
+      status
     }
 }
 `
@@ -96,6 +105,7 @@ query loginUser($email: String!, $password: String!){
     loginUser(email: $email, password: $password) {
         username
         email
+        type
         phone
         twitterProfile
         fbProfile
@@ -120,6 +130,7 @@ mutation updateUser($userInput: UserInput!) {
   updateUser(input: $userInput){
     username
     email
+    type
     phone
     twitterProfile
     fbProfile
@@ -134,14 +145,37 @@ mutation updateUser($userInput: UserInput!) {
 export const UPDATE_USERS_MUTATION = `
 mutation updateUsers($userInput: [UserInput]!, $email: String!) {
   updateUsers(input: $userInput, email: $email){
+    response {
+      username
+      email
+      type
+      phone
+      twitterProfile
+      fbProfile
+      instaProfile
+      availableWhen
+      availableWhat
+      message
+      error
+    }
     status
     error
   }
 }`
 
 export const UPDATE_SAPLINGS_MUTATION = `
-mutation updateSaplings($saplingInput: [SaplingOptionsInput]!, $email: String!) {
+mutation updateSaplings($saplingInput: [UpdateSaplingsInput]!, $email: String!) {
   updateSaplings(input: $saplingInput, email: $email){
+    response {
+      id
+      type
+      title
+      subtitle
+      cost
+      content
+      remaining
+      status
+    }
     status
     error
   }
