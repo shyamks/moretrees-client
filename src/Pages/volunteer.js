@@ -7,13 +7,15 @@ import { PageContent, Page } from '../constants';
 
 function Volunteer() {
     return (
-        <Page>
+        <>
             <Header />
-            <PageContent>
-                <VolunteerChoices />
-            </PageContent>
-            <Footer />
-        </Page>
+            <Page>
+                <PageContent>
+                    <VolunteerChoices />
+                </PageContent>
+                <Footer />
+            </Page>
+        </>
     )
 }
 export default Volunteer

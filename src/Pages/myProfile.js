@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useContext } from 'react'
 import styled from 'styled-components'
 import gql from 'graphql-tag'
 
-import { PageContent, PAGES, UPDATE_USER_MUTATION, UPDATE_USER_PROFILE_MUTATION, REGISTER_MUTATION, Page } from '../constants'
+import { PageContent, PAGES, UPDATE_USER_MUTATION, UPDATE_USER_PROFILE_MUTATION, REGISTER_MUTATION, Page, GET_USER_QUERY } from '../constants'
 import Header from '../components/Header'
 import Error from './NotFound'
 import Footer from '../components/Footer'
@@ -11,7 +11,8 @@ import Button from '../components/Button'
 import UserContext from '../components/UserContext'
 import useMutationApi from '../components/hooks/useMutationApi'
 import { showToast } from '../utils'
-import Logger from '../components/Logger'
+import NotFound from './NotFound'
+import useQueryApi from '../components/hooks/useQueryApi'
 const validate = require("validate.js");
 
 // const EMAIL = 'email'
@@ -31,10 +32,9 @@ const getError = (type, value, extraData) => {
                     }
                 }
             }
-            error = validate({ from: value }, constraints)
-            error = error ? 'Name not valid' : null
-            isError = !!error
-            Logger('ehre', value, type, error)
+            isError = validate({ from: value }, constraints)
+            error = isError ? 'Name not valid' : null
+            // Logger('ehre', value, type, error)
             break
         case 'email':
             constraints = {
@@ -44,54 +44,27 @@ const getError = (type, value, extraData) => {
                     }
                 }
             }
-            error = validate({ from: value }, constraints)
+            isError = validate({ from: value }, constraints)
             error = error ? 'Email not valid' : null
-            isError = !!error
             break
         case 'password':
-            constraints = {
-                password: {
-                    // equality: {
-                    //     attribute: "confirmPassword",
-                    //     message: "is not complex enough",
-                    //     comparator: function (v1, v2) {
-                    //         return JSON.stringify(v1) === JSON.stringify(v2);
-                    //     }
-                    // },
-                    length: {
-                        minimum: 6,
-                        message: "must be at least 6 characters"
-                    }
-                }
-            }
             formPassword = (extraData && extraData.formPassword.value) || ''
-            // Logger({ password: value, confirmPassword: formPassword },'password')
-            error = validate({ password: value, confirmPassword: formPassword }, constraints)
-            error = error ? 'Password not valid' : null
-            isError = !!error
+            console.log({ password: value, confirmPassword: formPassword },(formPassword === value && value.length >=6), extraData,'password')
+            if (formPassword != '' || value != ''){
+                isError = (formPassword === value && value.length >=6) ? false : true
+            }
+            error = isError ? 'Password not valid' : null
             break
         case 'confirmPassword':
-            constraints = {
-                confirmPassword: {
-                    equality: {
-                        attribute: "password",
-                        message: "is not complex enough",
-                        comparator: function (v1, v2) {
-                            return JSON.stringify(v1) === JSON.stringify(v2);
-                        }
-                    },
-                    length: {
-                        minimum: 6,
-                        message: "must be at least 6 characters"
-                    }
+            
+            formPassword = (extraData && extraData.formPassword.value) || ''
+            console.log({ password: value, confirmPassword: formPassword },(formPassword === value && value.length >=6), extraData,'confirmPassword')
+            if (formPassword != '' || value != ''){
+                if (!(formPassword === value && value.length >=6)){
+                    isError = true
                 }
             }
-            formPassword = (extraData && extraData.formPassword.value) || ''
-            // Logger({ password: value, confirmPassword: formPassword },'confirmPassword')
-            error = validate({ password: formPassword, confirmPassword: value }, constraints)
-            error = error ? 'Confirm Password not valid' : null
-            isError = !!error
-            // Logger(error, isError, 'confirmPassword here')
+            error = isError ? 'Confirm Password not valid' : null
             break
         case 'twitter':
         case 'insta':
@@ -112,7 +85,7 @@ const getError = (type, value, extraData) => {
 
     }
     // 
-    return { error, isError: !!isError }
+    return { error, isError }
 
 
 }
@@ -125,6 +98,34 @@ const UpdateContainer = styled.div`
 export default function MyProfile({ history, location, staticContext, match, route }) {
 
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
+    const { email } = contextUser || {}
+
+    let [state, setState] = useState({
+        name: { value: '', error: '', isError: false },
+        // email: { value: '', error: '', isError: false },
+        password: { value: '', error: '', isError: false },
+        confirmPassword: { value: '', error: '', isError: false },
+        twitter: { value: '', error: '', isError: false },
+        insta: { value: '', error: '', isError: false },
+        fb: { value: '', error: '', isError: false },
+    })
+
+    const [userData, isGetuserLoading, isGetUserError, refetchUserData]= useQueryApi(gql(GET_USER_QUERY), { email })
+    useEffect(() => {
+        if (userData && !userData.getUser.error && !isGetUserError){
+            let user = userData.getUser
+            let { fbProfile, instaProfile, twitterProfile, username } = user
+            let stateObject = {
+                name: { value: username, error: '', isError: false },
+                password: { value: '', error: '', isError: false },
+                confirmPassword: { value: '', error: '', isError: false },
+                twitter: { value: twitterProfile, error: '', isError: false },
+                fb: { value: fbProfile, error: '', isError: false },
+                insta: { value: instaProfile, error: '', isError: false },
+            }
+            setState(stateObject)
+        }
+    }, [userData, isGetUserError])
 
     const onSubmit = () => {
         let {
@@ -143,15 +144,24 @@ export default function MyProfile({ history, location, staticContext, match, rou
         // Logger(finalInput, 'finalInput')
         setUpdateUserVariables({ userInput: finalInput })
     }
-    const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(gql(UPDATE_USER_MUTATION))
 
+
+    const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(gql(UPDATE_USER_MUTATION))
     useEffect(() => {
         // Logger(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
             if (!(updateUser.error || updateUserError)) {
-
-                showToast('Updated', 'success')
+                let { fbProfile, instaProfile, twitterProfile, username } = updateUser
+                showToast('Updated', 'success')                
+                setState({
+                    name: { value: username, error: '', isError: false },
+                    password: { value: '', error: '', isError: false },
+                    confirmPassword: { value: '', error: '', isError: false },
+                    twitter: { value: twitterProfile, error: '', isError: false },
+                    fb: { value: fbProfile, error: '', isError: false },
+                    insta: { value: instaProfile, error: '', isError: false },
+                })
                 storeUserInContext(updateUser)
             }
             else{
@@ -160,36 +170,24 @@ export default function MyProfile({ history, location, staticContext, match, rou
         }
     }, [updateUserData, updateUserError])
 
-    // Logger(updateUserData, 'updateUserData')
-    let [state, setState] = useState({
-        name: { value: '', error: '', isError: false },
-        // email: { value: '', error: '', isError: false },
-        password: { value: '', error: '', isError: false },
-        confirmPassword: { value: '', error: '', isError: false },
-        twitter: { value: '', error: '', isError: false },
-        insta: { value: '', error: '', isError: false },
-        fb: { value: '', error: '', isError: false },
-    })
 
     let [disable, setDisable] = useState(false)
 
     const canDisableUpdateProfile = () => {
         let bools = []
         for (let key of Object.keys(state)) {
-            
             if (key == 'confirmPassword' || key == 'password') {
-                Logger(key,'what')
                 let otherKey = (key == 'confirmPassword') ? 'password' : 'confirmPassword'
                 let extraData = { formPassword: state[otherKey] }
                 let { error, isError } = getError(key, state[key] ? state[key].value : '', extraData)
-                let { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey] ? state[otherKey].value : '', { formPassword: state[key] ? state[key].value : '' })
+                let { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey] ? state[otherKey].value : '', extraData)
                 bools.push({ error: error || errorPassword, isError: isError || isErrorPassword })
             }
             else
                 bools.push(getError(key, state[key] ? state[key].value : '', {}))
         }
-        Logger(bools, Object.keys(state), 'canDisableCreateProfile')
-        return !bools.reduce((acc, ele) => !ele.isError || acc, false)
+        console.log(bools, Object.keys(state), 'canDisableCreateProfile')
+        return !bools.reduce((acc, ele) => !ele.isError && acc, true)
     }
 
     useEffect(() => {
@@ -203,19 +201,9 @@ export default function MyProfile({ history, location, staticContext, match, rou
     }
 
     const handleChange = (type, value) => {
-        if (type == 'confirmPassword') {
-            let extraData = { formPassword: state.password }
-            let otherKey = 'password'
-            let { error, isError } = getError(type, value, extraData)
-            let { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey].value, extraData)
-            setState({
-                ...state, [type]: { value, error: error || errorPassword, isError: isError || isErrorPassword },
-                [otherKey]: { value: state[otherKey].value, error: error || errorPassword, isError: isError || isErrorPassword }
-            })
-        }
-        else if (type == 'password') {
-            let extraData = { formPassword: state.confirmPassword }
-            let otherKey = 'confirmPassword'
+        let otherKey = (type == 'confirmPassword') ? 'password' : 'confirmPassword'
+        if (type == 'confirmPassword' || type == 'password') {
+            let extraData = { formPassword: state[otherKey] }
             let { error, isError } = getError(type, value, extraData)
             let { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey].value, extraData)
             setState({
@@ -229,21 +217,28 @@ export default function MyProfile({ history, location, staticContext, match, rou
         }
     }
 
-    Logger(state, 'state')
     return (
         <Page>
             <Header />
             <PageContent>
                 <UpdateContainer>
-                    <Input id={'name'} type={'text'} maxLength="10" onChange={(e) => handleChange('name', e.target.value)} placeholder={'Name'} />
-                    {/* <Input id={'email'} type={'text'} isError={state['email'].isError} onChange={(e) => handleChange('email', e.target.value)} placeholder={'Email'} /> */}
-                    <Input id={'password'} type={'password'} isError={state['password'].isError} onChange={(e) => handleChange('password', e.target.value)} placeholder={'Password'} />
-                    <Input id={'confirmPassword'} type={'password'} isError={state['confirmPassword'].isError} onChange={(e) => handleChange('confirmPassword', e.target.value)} placeholder={'Confirm Password'} />
-                    <Input id={'twitter'} onChange={(e) => handleChange('twitter', e.target.value)} placeholder={'Twitter'} />
-                    <Input id={'insta'} onChange={(e) => handleChange('insta', e.target.value)} placeholder={'Instagram'} />
-                    <Input id={'fb'} onChange={(e) => handleChange('fb', e.target.value)} placeholder={'Facebook'} />
-                    <Button disabled={disable} onClick={() => updateProfile()} width="200px">Update</Button>
+                    {contextUser &&
+                        <>
+                            <Input id={'name'} value={state.name.value} type={'text'} maxLength="10" onChange={(e) => handleChange('name', e.target.value)} placeholder={'Name'} />
+                            {/* <Input id={'email'} type={'text'} isError={state['email'].isError} onChange={(e) => handleChange('email', e.target.value)} placeholder={'Email'} /> */}
+                            <Input id={'password'} value={state.password.value} type={'password'} isError={state['password'].isError} onChange={(e) => handleChange('password', e.target.value)} placeholder={'Password'} />
+                            <Input id={'confirmPassword'} value={state.confirmPassword.value} type={'password'} isError={state['confirmPassword'].isError} onChange={(e) => handleChange('confirmPassword', e.target.value)} placeholder={'Confirm Password'} />
+                            <Input id={'twitter'} value={state.twitter.value} onChange={(e) => handleChange('twitter', e.target.value)} placeholder={'Twitter'} />
+                            <Input id={'insta'} value={state.insta.value} onChange={(e) => handleChange('insta', e.target.value)} placeholder={'Instagram'} />
+                            <Input id={'fb'} value={state.fb.value} onChange={(e) => handleChange('fb', e.target.value)} placeholder={'Facebook'} />
+                            <Button disabled={disable} onClick={() => updateProfile()} width="200px">Update</Button>
+                        </>
+                    }
                 </UpdateContainer>
+
+                {!contextUser && !isGetuserLoading &&
+                    <NotFound statusCode={404} />
+                }
             </PageContent>
             <Footer />
         </Page>

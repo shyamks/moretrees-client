@@ -8,7 +8,7 @@ import { Collapse } from 'react-collapse'
 
 import Button from './Button'
 import Counter from './counter'
-import { DONATION_MUTATION, GET_SAPLING_OPTIONS } from '../constants'
+import { DONATION_MUTATION, GET_SAPLING_OPTIONS, MarkTitle } from '../constants'
 import gql from 'graphql-tag'
 import useMutationApi from './hooks/useMutationApi'
 import useQueryApi from './hooks/useQueryApi'
@@ -59,6 +59,13 @@ const ItemDetail = styled.div`
     display: flex;
     width: 470px;
     flex-direction: column;
+`
+
+const ItemContent = styled.div`
+    margin: 20px 10px 10px 10px;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    white-space:nowrap;
+    display: flex;
 `
 
 const ItemTitle = styled.span`
@@ -152,6 +159,11 @@ function DonateItems({ staticContext }) {
     Logger(staticContext,'staticContext')
     const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(gql(DONATION_MUTATION))
     const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(gql(GET_SAPLING_OPTIONS), { status: "ACTIVE" })
+    useEffect(()=> {
+        console.log('herererere')
+        refetchSaplingOptionsData()
+    },[])
+    
     const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || (staticContext && staticContext.data.data.getSaplingOptions) || []
     
     const [collapseMap, setCollapseMap] = useState({})
@@ -258,7 +270,7 @@ function DonateItems({ staticContext }) {
         
     }
 
-    const donateText = `## Donate\n\n We will plant trees around you. We have projects coming up across 
+    const donateText = ` We will plant trees around you. We have projects coming up across 
                             cities & one of them is bound to be around where you live.
                             \n The saplings are maintained & watered by us for the critical first year.
                          \n\n We will notify you about progress through the plants life.
@@ -271,13 +283,14 @@ function DonateItems({ staticContext }) {
             <Section>
                 <SectionLogo src={donateLogoImage}/>
                 <Container>
+                    <MarkTitle> Donate </MarkTitle>
                     <ReactMarkdown source={donateText} />
                 </Container>
             </Section>
             <Section>
                 <ProjectsTitleLogo src={projectsLogoImage}/>
                 <Container>
-                    <ReactMarkdown source={projectsText} />
+                <MarkTitle> Projects </MarkTitle>
                     <DonateTrees>
                         <DonateItemsContainer>
                             {saplingsArray.map((item) => {
@@ -292,20 +305,9 @@ function DonateItems({ staticContext }) {
                                                 <ItemSubtitle >{subtitle}</ItemSubtitle>
                                                 
                                                 <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
-                                                    <ItemDetail>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                    </ItemDetail>
+                                                    <ItemContent>
+                                                        <ReactMarkdown source={content} />
+                                                    </ItemContent>
                                                 </Collapse>
                                             </ItemDetail>
                                             <CostContainer>

@@ -10,12 +10,16 @@ const Button = styled.button`
     background-color: ${(props) => props.disabled ? 'grey' : '#60bc0f'};
     height: ${(props) => (props.height ? props.height : '33px')};
     width: ${(props) => (props.width ? props.width : '100px')};
-    outline: none;
+    outline: 0;
     &: hover{
         cursor: pointer;
     }
     &: active {
-        outline: none;
+        outline: 0;
+        border: none;
+    }
+    &: focus {
+        outline: 0;
         border: none;
     }
 `
