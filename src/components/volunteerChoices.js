@@ -14,7 +14,7 @@ import useMutationApi from './hooks/useMutationApi';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
 import useClient from './hooks/useClient';
 import UserContext from './UserContext';
-import { UPDATE_USER_MUTATION, GET_USER_QUERY, GET_VOLUNTEER_QUERY, availableWhenOptions, availableWhatOptions } from '../constants'
+import { UPDATE_USER_MUTATION, GET_USER_QUERY, GET_VOLUNTEER_QUERY, availableWhenOptions, availableWhatOptions, MarkTitle } from '../constants'
 import { showToast } from '../utils'
 
 import volunteerLogoImage from '../images/moretrees-volunteer-logo.png'
@@ -86,10 +86,6 @@ const DropdownContainer = styled(RowContainer)`
     }
 `
 
-let selectedOptionObject = {
-    what: null,
-    when: null
-}
 function VolunteerChoices() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken, setRegisterModal } = useContext(UserContext);
     const [selectedOptionObject, setSelectedOptionObject] = useState({ what: null, when: null })
@@ -126,7 +122,7 @@ function VolunteerChoices() {
         }
     }, [updateUserData, updateUserError])
 
-    const volunteerText = `## Volunteer\n\n We would love to have more people work with us to plant moretrees on this planet.
+    const volunteerText = `We would love to have more people work with us to plant moretrees on this planet.
                             \n We are a completely volunteer run initiative
                             \nOur volunteers plant trees, scout locations, help build our website, launch operations in new cities and more.
                             \nOur volunteers are EVERYTHING.`
@@ -147,15 +143,16 @@ function VolunteerChoices() {
             <RowContainer>
                 <SectionLogo src={volunteerLogoImage}/>
                 <ColumnContainer>
+                    <MarkTitle> Volunteer </MarkTitle>
                     <ReactMarkdown source={volunteerText} />
                 </ColumnContainer>
             </RowContainer>
             {client &&
                 <>
                     <DropdownContainer>
-                        <SelectDropdown placeholder={'What would you like to do?'} selectedOption={{ value: whatSelected, label: whatSelected }}
+                        <SelectDropdown placeholder={'What would you like to do?'} selectedOption={ whatSelected ?{ value: whatSelected, label: whatSelected } : null}
                             options={availableWhatOptions} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, what: option.value }) }} />
-                        <SelectDropdown placeholder={'When are you available?'} selectedOption={{ value: whenSelected, label: whenSelected }}
+                        <SelectDropdown placeholder={'When are you available?'} selectedOption={whenSelected ? { value: whenSelected, label: whenSelected }: null}
                             options={availableWhenOptions} onChange={(option) => { setSelectedOptionObject({ ...selectedOptionObject, when: option.value }) }} />
                     </DropdownContainer>
 

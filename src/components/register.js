@@ -1,6 +1,7 @@
 import './styles/loginStyles.css';
 import React, { useRef, useState } from 'react'
-import Logger from './Logger';
+
+import Recaptcha from 'react-recaptcha'
 
 function Register({ onSubmit }) {
     let emailRef = useRef(null)
@@ -12,10 +13,11 @@ function Register({ onSubmit }) {
         email: { status: false, errorText: null },
         username: { status: false, errorText: null },
         password: { status: false, errorText: null },
-        mobile: { status: false, errorText: null }
+        mobile: { status: false, errorText: null },
+        captcha: false
     })
-    const validDetails = ({ email, username, password , mobile}) => {
-        return validity(email, 'email').status && validity(username, 'username').status && validity(password, 'password').status && validity(mobile,'mobile').status
+    const validDetails = ({ email, username, password, mobile, captcha }) => {
+        return captcha && validity(email, 'email').status && validity(username, 'username').status && validity(password, 'password').status && validity(mobile, 'mobile').status
     }
 
     const onRegister = () => {
@@ -23,15 +25,16 @@ function Register({ onSubmit }) {
         let username = usernameRef.current.value
         let password = passwordRef.current.value
         let mobile = mobileRef.current.value
-        Logger({ emailRef, usernameRef, passwordRef, mobileRef }, 'register')
-        if (validDetails({ email, username, password, mobile }))
+        let recaptcha = validRegister.captcha
+        // console.log({ emailRef, usernameRef, passwordRef, mobileRef }, 'register')
+        if (validDetails({ email, username, password, mobile, captcha: recaptcha }))
             onSubmit({ email, username, password, mobile })
     }
 
     const validity = (value, type) => {
-        var usernameRegex = /^[a-zA-Z0-9]+$/;
-        var emailRegex = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-        Logger(value, 'valid')
+        let usernameRegex = /^[a-zA-Z0-9]+$/
+        let emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
+        // console.log({ value, type }, emailRegex, 'check value')
         const getStatus = (value, type) => {
             switch (type) {
                 case 'email':
@@ -72,7 +75,7 @@ function Register({ onSubmit }) {
             errorOfValue = getErrorText(value, type)
 
         let returnValue = { status: statusOfValue, errorText: errorOfValue }
-        Logger({ ...validRegister, [type]: returnValue }, 'pls console')
+        // console.log({ ...validRegister, [type]: returnValue }, 'pls console')
         setValidityOfRegister({ ...validRegister, [type]: returnValue })
         return returnValue
 
@@ -80,11 +83,11 @@ function Register({ onSubmit }) {
 
     const handleChange = (e, eventType, type) => {
         e.persist()
-        Logger(e, 'tarr')
+        // console.log(e, 'tarr')
         if (eventType === 'blur') {
             let classList = e.target.classList
             let value = e.target.value
-            Logger(e, ...classList, 'event')
+            // console.log(e, ...classList, 'event')
             if (!validity(value, type).status) {
                 ![...classList].includes('error') && e.target.classList.add('error')
             }
@@ -99,6 +102,13 @@ function Register({ onSubmit }) {
         }
 
     }
+
+    // specifying verify callback function
+    var verifyCallback = function (response) {
+        if (response) {
+            setValidityOfRegister({ ...validRegister, captcha: true })
+        }
+    };
 
     return (
         <div className="login-container">
@@ -119,10 +129,15 @@ function Register({ onSubmit }) {
                         onBlur={(e) => handleChange(e, 'blur', 'mobile')} />
                     {/* {!validRegister.password.status && <label className="form-label" for="password">{validRegister.password.errorText}</label>} */}
 
-                    <input ref={emailRef} type="email" className="login-input" placeholder="Email" required 
+                    <input ref={emailRef} type="email" className="login-input" placeholder="Email" required
                         onFocus={(e) => handleChange(e, 'focus', 'email')}
                         onBlur={(e) => handleChange(e, 'blur', 'email')} />
                     {/* {!validRegister.email.status && <label className="form-label" for="email">{validRegister.email.errorText}</label>} */}
+                    <Recaptcha
+                        sitekey={process.env.CAPTCHA_SITE_KEY}
+                        render="explicit"
+                        verifyCallback={verifyCallback}
+                    />
                     <button onClick={onRegister} type="submit" className="login-button">Register</button>
                 </div>
             </section>
