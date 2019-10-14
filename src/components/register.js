@@ -134,7 +134,7 @@ function Register({ onSubmit }) {
                         onBlur={(e) => handleChange(e, 'blur', 'email')} />
                     {/* {!validRegister.email.status && <label className="form-label" for="email">{validRegister.email.errorText}</label>} */}
                     <Recaptcha
-                        sitekey={process.env.CAPTCHA_SITE_KEY}
+                        sitekey={process.env.REACT_APP_CAPTCHA_SITE_KEY}
                         render="explicit"
                         verifyCallback={verifyCallback}
                     />

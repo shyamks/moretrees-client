@@ -33,7 +33,7 @@ function Login({ onSubmit }) {
                     <input ref={emailRef} type="text" className="login-input" placeholder="Email" required autoFocus />
                     <input ref={passRef} type="password" className="login-input" placeholder="Password" required />
                     <Recaptcha
-                        sitekey={process.env.CAPTCHA_SITE_KEY}
+                        sitekey={process.env.REACT_APP_CAPTCHA_SITE_KEY}
                         render="explicit"
                         verifyCallback={verifyCallback}
                     />
