@@ -17,9 +17,8 @@ import { showToast, convertNullToEmptyString } from '../../utils';
 import UserContext from '../UserContext';
 import Logger from '../Logger';
 
-
 const columns = [
-    { dataField: 'createdAt', text: 'CreatedAt', sort: true, editable: false},
+    { dataField: 'createdAt', text: 'CreatedAt', sort: true, editable: false },
     { dataField: 'email', text: 'Email', sort: true, editable: false },
     { dataField: 'amount', text: 'Amount', editable: false },
 ]
@@ -97,27 +96,11 @@ export function UsersDonatedTable(){
         }
     }, [allUserDonationsData, isGetAllUserDonationsError])
 
-    const [updatedRows, setUpdatedRows] = useState({})
+    useEffect(() => {
+        refetchAllUserDonationsData()
+    }, [])
 
     const [tableState, setTableState] = useState([])
-
-    const [changed, setChanged] = useState(false)
-
-    const update = () => {
-        let { email } = contextUser || {}
-        if (email) {
-            let oldRows = Object.values(updatedRows)
-            let rows = oldRows.map((row) => {
-                return lodash.pick(row, ['username', 'email', 'availableWhen', 'availableWhat', 'fbProfile', 'twitterProfile', 'instaProfile'])
-            })
-            console.log(rows, email, 'newRows')
-
-            // rows && setUpdateUsersVariables({ userInput: rows, email })
-        }
-        else {
-            showToast('Not a user', 'error')
-        }
-    }
 
     
 
@@ -128,33 +111,12 @@ export function UsersDonatedTable(){
             return {...userDonated, createdAt: getDonationDate(userDonated.createdAt)}
         })
         allUsersDonated && setTableState(allUsersDonated)
-        setChanged(false)
     }
 
-    const handleTableChange = (type, { data, cellEdit: { rowId, dataField, newValue } }) => {
-        const result = data.map((row) => {
-            if (row.id === rowId && !lodash.isEqual(convertNullToEmptyString(row[dataField]),newValue)) {
-                const newRow = { ...row }
-                newRow[dataField] = newValue
-                updatedRows[rowId] = newRow
-                setUpdatedRows(updatedRows)
-                !changed && setChanged(true)
-                return newRow;
-            }
-            return row
-        });
-        setTableState(result)
-    }
     return (
         <>
-            <ButtonContainer>
-                <Button disabled={!changed} onClick={() => update()}>Update</Button>
-                <Button disabled={!changed} onClick={() => reset()}>Reset</Button>
-            </ButtonContainer>
-            {tableState &&
                 <BootstrapTable
                     remote={{ cellEdit: true }}
-                    onTableChange={handleTableChange}
                     keyField='id'
                     data={tableState}
                     columns={columns}

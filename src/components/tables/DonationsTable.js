@@ -13,7 +13,7 @@ import useQueryApi from '../hooks/useQueryApi'
 import gql from 'graphql-tag'
 import useMutationApi from '../hooks/useMutationApi';
 import Button from '../Button';
-import { showToast, convertNullToEmptyString } from '../../utils';
+import { showToast, convertNullToEmptyString, getNewId } from '../../utils';
 import UserContext from '../UserContext';
 
 
@@ -24,11 +24,39 @@ const columns = [
             type: Type.SELECT, options: donationTypes
         }
     },
-    { dataField: 'title', text: 'Title', sort: true, editable: true },
-    { dataField: 'subtitle', text: 'Subtitle', editable: true },
+    {
+        dataField: 'title', text: 'Title', sort: true, editable: true, editor: {
+            type: Type.TEXTAREA
+        }
+    },
+    {
+        dataField: 'subtitle', text: 'Subtitle', editable: true, editor: {
+            type: Type.TEXTAREA
+        }
+    },
     { dataField: 'cost', text: 'Cost', editable: true },
-    { dataField: 'content', text: 'Content', editable: true },
+    {
+        dataField: 'content', text: 'Content', editable: true, editor: {
+            type: Type.TEXTAREA
+        }
+    },
     { dataField: 'remaining', text: 'Remaining', editable: true },
+    {
+        dataField: 'status', text: 'Status', editable: true,
+        editor: {
+            type: Type.SELECT, options: [{value: 'ACTIVE', label: 'ACTIVE'}, {value: 'INACTIVE', label: 'INACTIVE'}]
+        }
+    },
+    {
+        dataField: 'removeRow', text: 'RemoveRow', 
+        editor: {
+            type: Type.SELECT, options: [{value: true, label: 'YES'}, {value: false, label: 'NO'}]
+        },
+        formatter: (cell, row, rowIndex) => {
+            console.log(cell, row, rowIndex, 'formatter')
+            return cell == 'true' ? "YES" : "NO"
+        }
+    },
 ]
 
 const ButtonContainer = styled.div`
@@ -51,16 +79,23 @@ export function DonationsTable() {
     const saplingsDate = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
     useEffect(() => {
         if (saplingOptionsData && saplingOptionsData.getSaplingOptions && !isGetSaplingOptionsError) {
-            reset()
+            reset(saplingOptionsData, false)
         }
     }, [saplingOptionsData, isGetSaplingOptionsError])
+
+    useEffect(() => {
+        refetchSaplingOptionsData()
+    }, [])
 
     const [updateSaplingsData, updateSaplingsLoading, updateSaplingsError, setUpdateSaplingsVariables, setUpdateSaplingsData] = useMutationApi(gql(UPDATE_SAPLINGS_MUTATION))
     useEffect(() => {
         let updateSaplings = updateSaplingsData && updateSaplingsData.data
         if (updateSaplings && !updateSaplings.updateSaplings.error && !updateSaplingsError) {
-            setRefetch(true)
-            refetchSaplingOptionsData()
+            reset(updateSaplingsData, true)
+            showToast('Updated Successfully', 'success')
+        }
+        else if ((updateSaplings && updateSaplings.updateSaplings.error) || updateSaplingsError){
+            showToast('Update Failed', 'error')
         }
     }, [updateSaplingsData, updateSaplingsError])
 
@@ -70,19 +105,14 @@ export function DonationsTable() {
 
     const [changed, setChanged] = useState(false)
 
-    const [refetch, setRefetch] = useState(false)
-    // useEffect(() => {
-    //     if (refetch) {
-    //         setRefetch(false)
-    //     }
-    // },[refetch])
-
     const update = () => {
         let { email } = contextUser || {}
         if (email) {
             let oldRows = Object.values(updatedRows)
             let rows = oldRows.map((row) => {
-                return lodash.omit(row, ['__typename'])
+                let trimmedRow = lodash.omit(row, ['__typename'])
+                trimmedRow['removeRow'] = (trimmedRow['removeRow'] == 'true') ? true: false
+                return trimmedRow
             })
             console.log(rows, email, 'newRows')
 
@@ -93,13 +123,17 @@ export function DonationsTable() {
         }
     }
 
-    const reset = () => {
-        let saplingsData = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
-        // console.log(allUsersDonated,'allUsersDonated')
-        // allUsersDonated = allUsersDonated.map((userDonated) => {
-        //     return {...userDonated, createdAt: getDonationDate(userDonated.createdAt)}
-        // })
-        saplingsData && setTableState(saplingsData)
+    const reset = (data, update) => {
+        let saplingsData
+        if (!update)
+            saplingsData = (data && data.getSaplingOptions) || []
+        else {
+            let updateSaplings = data && data.data
+            saplingsData = (updateSaplings && !updateSaplings.updateSaplings.error && !updateSaplingsError) ? updateSaplings.updateSaplings.response : []
+        }
+        if (saplingsData){
+            setTableState(saplingsData)
+        }
         setChanged(false)
     }
 
@@ -109,6 +143,7 @@ export function DonationsTable() {
                 const newRow = { ...row }
                 newRow[dataField] = newValue
                 updatedRows[rowId] = newRow
+                console.log(updatedRows,'updatedRowss')
                 setUpdatedRows(updatedRows)
                 !changed && setChanged(true)
                 return newRow;
@@ -117,11 +152,19 @@ export function DonationsTable() {
         });
         setTableState(result)
     }
+
+    const addRow = () => {
+        let newRow = { id: getNewId(), createNewRow: true}
+        let array = [...tableState, newRow]
+        setTableState(array)
+    }
+
     return (
         <>
             <ButtonContainer>
                 <Button disabled={!changed} onClick={() => update()}>Update</Button>
-                <Button disabled={!changed} onClick={() => reset()}>Reset</Button>
+                <Button disabled={!changed} onClick={() => reset(saplingOptionsData, false)}>Reset</Button>
+                <Button width={'120px'} onClick={() => addRow()}>Add new row</Button>
             </ButtonContainer>
             {tableState &&
                 <BootstrapTable

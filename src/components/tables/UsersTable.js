@@ -14,8 +14,9 @@ import useQueryApi from '../hooks/useQueryApi'
 import gql from 'graphql-tag'
 import useMutationApi from '../hooks/useMutationApi';
 import Button from '../Button';
-import { showToast, convertNullToEmptyString } from '../../utils';
+import { showToast, convertNullToEmptyString, isAdminUser } from '../../utils';
 import UserContext from '../UserContext';
+import NotFound from '../../Pages/NotFound';
 
 const { SearchBar } = Search;
 
@@ -63,19 +64,28 @@ const SearchContainer = styled.div`
 export function UsersTable() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext)
     let { email } = contextUser || {}
+    let isAdmin = isAdminUser(contextUser)
 
     const [allUsersData, isGetAllUsersLoading, isGetAllUsersError, refetchAllUsersData] = useQueryApi(gql(GET_ALL_USERS), { email })
     useEffect(() => {
         if (allUsersData && allUsersData.getAllUsers && !isGetAllUsersError) {
-            reset()
+            reset(allUsersData, false)
         }
     }, [allUsersData, isGetAllUsersError])
+
+    useEffect(() => {
+        refetchAllUsersData()
+    }, [])
 
     const [updateUsersData, updateUsersLoading, updateUsersError, setUpdateUsersVariables, setUpdateUsersData] = useMutationApi(gql(UPDATE_USERS_MUTATION))
     useEffect(() => {
         let updateUsers = updateUsersData && updateUsersData.data
-        if (updateUsers && !updateUsers.updateUsers.error && !isGetAllUsersError) {
-            refetchAllUsersData()
+        if (updateUsers && !updateUsers.updateUsers.error && !updateUsersError) {
+            reset(updateUsersData, true)
+            showToast('Updated Successfully', 'success')
+        }
+        else if ((updateUsers && updateUsers.updateUsers.error) || updateUsersError) {
+            showToast('Update failed', 'error')
         }
     }, [updateUsersData, updateUsersError])
 
@@ -85,8 +95,14 @@ export function UsersTable() {
 
     const [tableState, setTableState] = useState([])
 
-    const reset = () => {
-        let allUsers = allUsersData && allUsersData.getAllUsers
+    const reset = (data, update) => {
+        let allUsers
+        if (!update)
+            allUsers = data && data.getAllUsers
+        else {
+            let updateUsers = data && data.data
+            allUsers = (updateUsers && !updateUsers.updateUsers.error && !updateUsersError) ? updateUsers.updateUsers.response : []
+        }
         allUsers && setTableState(allUsers)
         setChanged(false)
     }
@@ -127,10 +143,7 @@ export function UsersTable() {
 
     return (
         <>
-                
-
-            {
-                tableState &&
+            {isAdmin && tableState &&
                 <ToolkitProvider
                     keyField='id'
                     data={tableState}
@@ -145,7 +158,7 @@ export function UsersTable() {
                                         <SearchBar {...props.searchProps} />
                                     </SearchContainer>
                                     <Button disabled={!changed} onClick={() => update()}>Update</Button>
-                                    <Button disabled={!changed} onClick={() => reset()}>Reset</Button>
+                                    <Button disabled={!changed} onClick={() => reset(allUsersData, false)}>Reset</Button>
                                 </ButtonContainer>
                                 <BootstrapTable
                                     {...props.baseProps}
@@ -161,6 +174,7 @@ export function UsersTable() {
                     }
                 </ToolkitProvider>
             }
+            {!isAdmin && !isGetAllUsersLoading && <NotFound statusCode={404}/>}
         </>
     )
 }
