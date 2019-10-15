@@ -6,12 +6,16 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import './index.css';
 import App from '../App';
 import { ApolloClient } from 'apollo-client';
-import { STORE_TOKEN, FINAL_ENDPOINT } from '../constants';
+import { STORE_TOKEN } from '../constants';
 import { InMemoryCache, ApolloLink } from 'apollo-boost';
 import { createHttpLink } from 'apollo-link-http';
 import Logger from '../components/Logger';
 
 const manageApolloMiddleware = () => {
+    console.log(JSON.stringify(process.env),'lets check here env')
+    const { NODE_ENV, REACT_APP_GRAPHQL_PROD_ENDPOINT, REACT_APP_GRAPHQL_TEST_ENDPOINT } = process.env
+    const isProd = NODE_ENV === 'production'
+    const FINAL_ENDPOINT = isProd ? REACT_APP_GRAPHQL_PROD_ENDPOINT : REACT_APP_GRAPHQL_TEST_ENDPOINT
     const httpLink = createHttpLink({ uri: FINAL_ENDPOINT });
     const middlewareLink = new ApolloLink((operation, forward) => {
         let item
