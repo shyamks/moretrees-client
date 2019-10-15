@@ -21,35 +21,35 @@ const Routes = [
         name: 'donatePage',
         exact: true,
         component: Donate,
-        loadData: () => loadDataFromServer('donate')
+        loadData: (env) => loadDataFromServer('donate', env)
     },
     {
         path: PAGES.VOLUNTEER,
         name: 'volunteerPage',
         exact: true,
         component: Volunteer,
-        loadData: () => loadDataFromServer('volunteer')
+        loadData: (env) => loadDataFromServer('volunteer', env)
     },
     {
         path: PAGES.MY_DONATIONS,
         name: 'myDonationsPage',
         exact: true,
         component: MyDonations,
-        loadData: () => loadDataFromServer('myDonations')
+        loadData: (env) => loadDataFromServer('myDonations', env)
     },
     {
         path: PAGES.PROFILE,
         name: 'myProfile',
         exact: true,
         component: MyProfile,
-        loadData: () => loadDataFromServer('myProfile')
+        loadData: (env) => loadDataFromServer('myProfile', env)
     },
     {
         path: PAGES.ADMIN,
         name: 'admin',
         exact: true,
         component: Admin,
-        loadData: () => loadDataFromServer('admin')
+        loadData: (env) => loadDataFromServer('admin', env)
     },
     {
         component: NotFound,

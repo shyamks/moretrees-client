@@ -2,13 +2,14 @@ import './styles/loginStyles.css';
 import { useRef, useState } from 'react'
 import React from 'react';
 
-import Recaptcha from 'react-recaptcha'
+import { Captcha } from './Recaptcha';
+import { isProd } from '../constants';
 
 function Login({ onSubmit }) {
     const emailRef = useRef(null)
     const passRef = useRef(null)
     
-    const [validCaptcha, setValidCaptcha] = useState(false)
+    const [validCaptcha, setValidCaptcha] = useState(!isProd)
     const validDetails = ({email, password}) =>{
         return email && password && email.length && password.length && validCaptcha
     }
@@ -32,11 +33,7 @@ function Login({ onSubmit }) {
                 <div className="login-form">
                     <input ref={emailRef} type="text" className="login-input" placeholder="Email" required autoFocus />
                     <input ref={passRef} type="password" className="login-input" placeholder="Password" required />
-                    <Recaptcha
-                        sitekey={process.env.REACT_APP_CAPTCHA_SITE_KEY}
-                        render="explicit"
-                        verifyCallback={verifyCallback}
-                    />
+                    <Captcha onSuccess={verifyCallback}/>
                     <button onClick={onLogin} type="submit" className="login-button">SIGN IN</button>
                 </div>
             </section>

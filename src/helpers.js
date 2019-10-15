@@ -1,20 +1,15 @@
-import { GET_MY_DONATIONS, GET_USER_QUERY, FINAL_ENDPOINT, GET_SAPLING_OPTIONS } from "./constants";
-import gql from "graphql-tag";
+import { FINAL_ENDPOINT, GET_SAPLING_OPTIONS } from "./constants";
 const { createApolloFetch } = require('apollo-fetch');
 
-const apolloFetch = createApolloFetch({
-    uri: FINAL_ENDPOINT
-});
-
-export const loadDataFromServer = (key, data) => {
+export const loadDataFromServer = (key, env) => {
+    // console.log(key, FINAL_ENDPOINT, env, 'env load from server')
+    const { NODE_ENV, REACT_APP_GRAPHQL_PROD_ENDPOINT, REACT_APP_GRAPHQL_TEST_ENDPOINT } = env
+    const isProd = NODE_ENV == 'production'
+    const FINAL_ENDPOINT = isProd ? REACT_APP_GRAPHQL_PROD_ENDPOINT : REACT_APP_GRAPHQL_TEST_ENDPOINT
+    const apolloFetch = createApolloFetch({
+        uri: FINAL_ENDPOINT
+    });
     switch (key) {
-        case 'countries':
-            return fetch(FINAL_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: GET_MY_DONATIONS }),
-            }).then(res => res.json())
-
         case 'donate':
             return apolloFetch({
                 query: (GET_SAPLING_OPTIONS),

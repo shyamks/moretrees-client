@@ -157,14 +157,30 @@ function DonateItems({ staticContext }) {
     const [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
 
     Logger(staticContext,'staticContext')
+
     const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(gql(DONATION_MUTATION))
+    useEffect(() => {
+        if (donationData && donationData.data && checkCalledStatus(DONATION)) {
+            Logger(donationData, 'wtf payment')
+            let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
+            let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
+            if (!error && referenceId) {
+                setModalStatus({ type: PAYMENT_SUCCESS, status: true, data: referenceId })
+                showToast('Donation successfull', 'success')
+            }
+            else {
+                showToast('Problem occured while donating', 'error')
+            }
+        }
+    }, [donationData, donationDataError])
+
     const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(gql(GET_SAPLING_OPTIONS), { status: "ACTIVE" })
     useEffect(()=> {
         console.log('herererere')
         refetchSaplingOptionsData()
     },[])
     
-    const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || (staticContext && staticContext.data.data.getSaplingOptions) || []
+    const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || (staticContext && staticContext.data && staticContext.data.data.getSaplingOptions) || []
     
     const [collapseMap, setCollapseMap] = useState({})
     useEffect(()=> {
@@ -187,24 +203,11 @@ function DonateItems({ staticContext }) {
         setModalStatus({ status: false, data: null, getToken: null })
     }
 
-    useEffect(() => {
-        if (donationData && donationData.data && checkCalledStatus(DONATION)) {
-            Logger(donationData, 'wtf payment')
-            let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
-            let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
-            if (!error && referenceId){
-                setModalStatus({ type: PAYMENT_SUCCESS, status: true, data: referenceId })
-                showToast('Donation successfull', 'success')
-            }
-            else {
-                showToast('Problem occured while donating', 'error')
-            }
-        }
-    }, [donationData, donationDataError])
+    
 
-    function checkoutCostChanger(count, val, item) {
+    const checkoutCostChanger = (count, val, item) => {
         itemCheckoutList[item.title] = { ...item, count }
-        Logger(count, itemCheckoutList, 'checkoutCounter');
+        // Logger(count, itemCheckoutList, 'checkoutCounter');
         setSubTotalCheckoutCost(subTotalCheckoutCost + val);
     }
 

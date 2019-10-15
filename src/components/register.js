@@ -2,6 +2,8 @@ import './styles/loginStyles.css';
 import React, { useRef, useState } from 'react'
 
 import Recaptcha from 'react-recaptcha'
+import { Captcha } from './Recaptcha';
+import { isProd } from '../constants';
 
 function Register({ onSubmit }) {
     let emailRef = useRef(null)
@@ -14,7 +16,7 @@ function Register({ onSubmit }) {
         username: { status: false, errorText: null },
         password: { status: false, errorText: null },
         mobile: { status: false, errorText: null },
-        captcha: false
+        captcha: !isProd
     })
     const validDetails = ({ email, username, password, mobile, captcha }) => {
         return captcha && validity(email, 'email').status && validity(username, 'username').status && validity(password, 'password').status && validity(mobile, 'mobile').status
@@ -133,11 +135,7 @@ function Register({ onSubmit }) {
                         onFocus={(e) => handleChange(e, 'focus', 'email')}
                         onBlur={(e) => handleChange(e, 'blur', 'email')} />
                     {/* {!validRegister.email.status && <label className="form-label" for="email">{validRegister.email.errorText}</label>} */}
-                    <Recaptcha
-                        sitekey={process.env.REACT_APP_CAPTCHA_SITE_KEY}
-                        render="explicit"
-                        verifyCallback={verifyCallback}
-                    />
+                    <Captcha onSuccess={verifyCallback}/>
                     <button onClick={onRegister} type="submit" className="login-button">Register</button>
                 </div>
             </section>
