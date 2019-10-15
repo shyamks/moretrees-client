@@ -11,7 +11,7 @@ export function Captcha({ onSuccess }) {
     }
     return (
         <>
-        { isProd ? 
+        { process.env.REACT_APP_DISABLE_CATCHA ? 
             (<Recaptcha
                 sitekey={process.env.REACT_APP_CAPTCHA_SITE_KEY}
                 render="explicit"
