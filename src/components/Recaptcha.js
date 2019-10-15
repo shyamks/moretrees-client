@@ -9,9 +9,10 @@ export function Captcha({ onSuccess }) {
             onSuccess(response)
         }
     }
+    let showCaptcha = !(Boolean(process.env.REACT_APP_DISABLE_CATCHA))
     return (
         <>
-        { process.env.REACT_APP_DISABLE_CATCHA &&
+        { showCaptcha &&
             (<Recaptcha
                 sitekey={process.env.REACT_APP_CAPTCHA_SITE_KEY}
                 render="explicit"
