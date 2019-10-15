@@ -60,7 +60,7 @@ const renderMiddleware = () => (req, res) => {
       let client = manageApolloMiddleware(FINAL_ENDPOINT)
       // let { url, baseUrl, originalUrl, _parsedUrl } = req
       // console.log({ url, baseUrl, originalUrl, _parsedUrl }, 'req pls')
-      console.log(NODE_ENV, 'env server')
+      console.log(process.env, 'env server')
       const CurrentRoute = Routes.find(route => matchPath(req.url, route))
       let promise
       if (CurrentRoute.loadData) {
