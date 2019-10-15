@@ -7,7 +7,7 @@ import { isProd } from '../constants';
 
 function Login({ onSubmit }) {
     const emailRef = useRef(null)
-    const passRef = useRef(null)
+    const passRef = useRef(null )
     
     const [validCaptcha, setValidCaptcha] = useState(Boolean(process.env.REACT_APP_DISABLE_CATCHA))
     const validDetails = ({email, password}) =>{
