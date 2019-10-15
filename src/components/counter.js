@@ -16,6 +16,12 @@ const Button = styled.button`
         height: 30px;
         border-radius: 8px;
         outline: none;
+        &: active {
+            outline: 0;
+        }
+        &: focus {
+            outline: 0;
+        }
     `
 const TotalValue = styled.div`
         display: inline-block;

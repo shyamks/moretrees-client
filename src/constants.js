@@ -1,10 +1,8 @@
 import styled from 'styled-components'
 
-export const GRAPHQL_ENDPOINT = 'http://localhost:5000/graphql'
-export const GRAPHQL_NOW_ENDPOINT = 'https://25c29412.ngrok.io/graphql'
-export const FINAL_ENDPOINT = process.env.NODE_ENV == 'production' ? GRAPHQL_NOW_ENDPOINT : GRAPHQL_ENDPOINT
-export const STRIPE_PUBLIC_KEY = 'pk_test_tixsUuAxi9ePUjNPmneQFJvy'
-export const STRIPE_SECRET_KEY = 'sk_test_uFiRW5IFP6XK1mUm1f969jU0a'
+export const isProd = process.env.NODE_ENV == 'production'
+export const FINAL_ENDPOINT = isProd ? process.env.REACT_APP_GRAPHQL_PROD_ENDPOINT : process.env.REACT_APP_GRAPHQL_TEST_ENDPOINT
+export const RAZORPAY_KEY = isProd ? process.env.REACT_APP_RAZORPAY_PROD_KEY : process.env.REACT_APP_RAZORPAY_TEST_KEY
 export const POST = 'post'
 export const GET = 'get'
 export const STORE_TOKEN = 'authToken'
@@ -16,8 +14,34 @@ export const PAGES = {
   VOLUNTEER: '/volunteer',
   MY_DONATIONS: '/myDonations',
   PROFILE: '/profile',
+  ADMIN: '/admin',
 }
 
+export const UserType = {
+  ADMIN: 'admin'
+}
+export const availableWhenOptions = [
+  { value: 'Weekdays', label: 'Weekdays' },
+  { value: 'Weekends', label: 'Weekends' },
+  { value: 'Any day', label: 'Any day' },
+]
+export const availableWhatOptions = [
+  { value: 'Plant trees with us', label: 'Plant trees with us' },
+  { value: 'Scout locations to plant trees for us', label: 'Scout locations to plant trees for us' },
+  { value: 'Help us launch your city', label: 'Help us launch your city' },
+  { value: 'Operations', label: 'Operations' },
+  { value: 'Marketing', label: 'Marketing' },
+  { value: 'Website', label: 'Website' },
+]
+export const adminOptions = [
+  { value: 'Users', label: 'Users' },
+  { value: 'Users Donated', label: 'Users Donated' },
+  { value: 'Donate Items', label: 'Donate Items' }
+]
+export const donationTypes = [
+  { value: 'RIVER', label: 'RIVER' },
+  { value: 'ROAD', label: 'ROAD' },
+]
 export const PageContent = styled.div`
     margin-top: 100px;
     width: 100%;
@@ -28,6 +52,11 @@ export const PageContent = styled.div`
 export const Page = styled.div`
   position: relative;
   min-height: 100vh;
+`
+
+export const MarkTitle = styled.h2`
+  font-weight: 700 !important;
+  margin-top: 14px;
 `
 
 export const DONATION_MUTATION = `
@@ -49,6 +78,7 @@ query getSaplingOptions($status: String){
       cost
       content
       remaining
+      status
     }
 }
 `
@@ -73,6 +103,7 @@ query loginUser($email: String!, $password: String!){
     loginUser(email: $email, password: $password) {
         username
         email
+        type
         phone
         twitterProfile
         fbProfile
@@ -97,6 +128,7 @@ mutation updateUser($userInput: UserInput!) {
   updateUser(input: $userInput){
     username
     email
+    type
     phone
     twitterProfile
     fbProfile
@@ -104,6 +136,45 @@ mutation updateUser($userInput: UserInput!) {
     availableWhen
     availableWhat
     message
+    error
+  }
+}`
+
+export const UPDATE_USERS_MUTATION = `
+mutation updateUsers($userInput: [UserInput]!, $email: String!) {
+  updateUsers(input: $userInput, email: $email){
+    response {
+      username
+      email
+      type
+      phone
+      twitterProfile
+      fbProfile
+      instaProfile
+      availableWhen
+      availableWhat
+      message
+      error
+    }
+    status
+    error
+  }
+}`
+
+export const UPDATE_SAPLINGS_MUTATION = `
+mutation updateSaplings($saplingInput: [UpdateSaplingsInput]!, $email: String!) {
+  updateSaplings(input: $saplingInput, email: $email){
+    response {
+      id
+      type
+      title
+      subtitle
+      cost
+      content
+      remaining
+      status
+    }
+    status
     error
   }
 }`
@@ -123,6 +194,35 @@ query getUser($email: String!) {
     error
   }
 }`
+
+export const GET_ALL_USERS = `
+query getAllUsers($email: String!) {
+  getAllUsers(email: $email){
+    id
+    username
+    email
+    phone
+    twitterProfile
+    fbProfile
+    instaProfile
+    availableWhen
+    availableWhat
+    message
+    error
+  }
+}`
+
+export const GET_ALL_USER_DONATIONS = `
+query getAllUserDonations($email: String!) {
+  getAllUserDonations(email: $email){
+        id
+        email
+        amount
+        items 
+        createdAt
+  }
+}`
+
 
 export const GET_MY_DONATIONS = `
 query myDonations($email: String){

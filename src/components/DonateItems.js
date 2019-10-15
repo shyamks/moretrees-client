@@ -1,25 +1,25 @@
 import styled from 'styled-components'
-import React from 'react';
+import React from 'react'
 import { useState, useContext, useEffect, useRef } from 'react'
-import { withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom"
 import lodash from 'lodash'
 import ReactMarkdown from 'react-markdown'
-import {Collapse,} from 'react-collapse';
+import { Collapse } from 'react-collapse'
 
-import Button from './Button';
+import Button from './Button'
 import Counter from './counter'
-import { DONATION_MUTATION, GET_SAPLING_OPTIONS } from '../constants';
-import gql from 'graphql-tag';
-import useMutationApi from './hooks/useMutationApi';
-import useQueryApi from './hooks/useQueryApi';
-import { showToast, apiCallbackStatus } from '../utils';
-import UserContext from './UserContext';
+import { DONATION_MUTATION, GET_SAPLING_OPTIONS, RAZORPAY_KEY, MarkTitle } from '../constants'
+import gql from 'graphql-tag'
+import useMutationApi from './hooks/useMutationApi'
+import useQueryApi from './hooks/useQueryApi'
+import { showToast, apiCallbackStatus } from '../utils'
+import UserContext from './UserContext'
 
 import donateLogoImage from '../images/moretrees-donate-logo.png'
 import projectsLogoImage from '../images/moretrees-projects-logo.png'
 import roadProjectsLogoImage from '../images/moretrees-road-projects-logo.png'
 import riverProjectsLogoImage from '../images/moretrees-river-projects-logo.png'
-import Logger from './Logger';
+import Logger from './Logger'
 
 const DONATION = 'donation'
 
@@ -59,6 +59,13 @@ const ItemDetail = styled.div`
     display: flex;
     width: 470px;
     flex-direction: column;
+`
+
+const ItemContent = styled.div`
+    margin: 20px 10px 10px 10px;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    white-space:nowrap;
+    display: flex;
 `
 
 const ItemTitle = styled.span`
@@ -150,9 +157,30 @@ function DonateItems({ staticContext }) {
     const [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
 
     Logger(staticContext,'staticContext')
+
     const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(gql(DONATION_MUTATION))
+    useEffect(() => {
+        if (donationData && donationData.data && checkCalledStatus(DONATION)) {
+            Logger(donationData, 'wtf payment')
+            let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
+            let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
+            if (!error && referenceId) {
+                setModalStatus({ type: PAYMENT_SUCCESS, status: true, data: referenceId })
+                showToast('Donation successfull', 'success')
+            }
+            else {
+                showToast('Problem occured while donating', 'error')
+            }
+        }
+    }, [donationData, donationDataError])
+
     const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(gql(GET_SAPLING_OPTIONS), { status: "ACTIVE" })
-    const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || (staticContext && staticContext.data.data.getSaplingOptions) || []
+    useEffect(()=> {
+        console.log('herererere')
+        refetchSaplingOptionsData()
+    },[])
+    
+    const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || (staticContext && staticContext.data && staticContext.data.data.getSaplingOptions) || []
     
     const [collapseMap, setCollapseMap] = useState({})
     useEffect(()=> {
@@ -175,24 +203,11 @@ function DonateItems({ staticContext }) {
         setModalStatus({ status: false, data: null, getToken: null })
     }
 
-    useEffect(() => {
-        if (donationData && donationData.data && checkCalledStatus(DONATION)) {
-            Logger(donationData, 'wtf payment')
-            let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
-            let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
-            if (!error && referenceId){
-                setModalStatus({ type: PAYMENT_SUCCESS, status: true, data: referenceId })
-                showToast('Donation successfull', 'success')
-            }
-            else {
-                showToast('Problem occured while donating', 'error')
-            }
-        }
-    }, [donationData, donationDataError])
+    
 
-    function checkoutCostChanger(count, val, item) {
+    const checkoutCostChanger = (count, val, item) => {
         itemCheckoutList[item.title] = { ...item, count }
-        Logger(count, itemCheckoutList, 'checkoutCounter');
+        // Logger(count, itemCheckoutList, 'checkoutCounter');
         setSubTotalCheckoutCost(subTotalCheckoutCost + val);
     }
 
@@ -200,8 +215,6 @@ function DonateItems({ staticContext }) {
 
     const getRazorOptions = ({ amount, name, email }) => {
         const finalPayment = (token) => {
-            // let getToken = modalStatus.getToken
-            // let token = await getToken()
             if (!token) {
                 showToast('Card info incorrect', 'error')
                 closeModal()
@@ -217,7 +230,7 @@ function DonateItems({ staticContext }) {
         }
         
         let razorOptions = {
-            key: 'rzp_test_cxpMW5qj3FfIZD', // Enter the Key ID generated from the Dashboard
+            key: RAZORPAY_KEY, // Enter the Key ID generated from the Dashboard
             amount: amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise or INR 500.
             currency: 'INR',
             name: 'Moretrees',
@@ -225,7 +238,6 @@ function DonateItems({ staticContext }) {
             // "image": "https://example.com/your_logo",
             // "order_id": "order_9A33XWu170gUtm",//This is a sample Order ID. Create an Order using Orders API. (https://razorpay.com/docs/payment-gateway/orders/integration/#step-1-create-an-order). Refer the Checkout form table given below
             handler: function (response) {
-                // alert(response.razorpay_payment_id);
                 finalPayment(response)
             },
             prefill: {
@@ -258,26 +270,25 @@ function DonateItems({ staticContext }) {
         
     }
 
-    const donateText = `## Donate\n\n We will plant trees around you. We have projects coming up across 
+    const donateText = ` We will plant trees around you. We have projects coming up across 
                             cities & one of them is bound to be around where you live.
                             \n The saplings are maintained & watered by us for the critical first year.
                          \n\n We will notify you about progress through the plants life.
                          \n You get the geolocation & photo of your sapling once it is planted.`
-
-    const projectsText = `## Projects\n\n `
 
     return (
         <Donate>
             <Section>
                 <SectionLogo src={donateLogoImage}/>
                 <Container>
+                    <MarkTitle> Donate </MarkTitle>
                     <ReactMarkdown source={donateText} />
                 </Container>
             </Section>
             <Section>
                 <ProjectsTitleLogo src={projectsLogoImage}/>
                 <Container>
-                    <ReactMarkdown source={projectsText} />
+                <MarkTitle> Projects </MarkTitle>
                     <DonateTrees>
                         <DonateItemsContainer>
                             {saplingsArray.map((item) => {
@@ -292,20 +303,9 @@ function DonateItems({ staticContext }) {
                                                 <ItemSubtitle >{subtitle}</ItemSubtitle>
                                                 
                                                 <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
-                                                    <ItemDetail>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                        <ItemSubtitle>{subtitle}</ItemSubtitle>
-                                                    </ItemDetail>
+                                                    <ItemContent>
+                                                        <ReactMarkdown source={content} />
+                                                    </ItemContent>
                                                 </Collapse>
                                             </ItemDetail>
                                             <CostContainer>

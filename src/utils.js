@@ -1,4 +1,4 @@
-import { STORE_USER } from './constants'
+import { STORE_USER, UserType } from './constants'
 import { toast } from 'react-toastify'
 
 import fetch from 'isomorphic-unfetch'
@@ -48,3 +48,20 @@ export const apiCallbackStatus = () => {
 
     return [setCalledStatus, checkCalledStatus]
 }
+
+export const convertNullToEmptyString = (value) => {
+    if (value == null || value == undefined)
+        return ''
+    return value
+}
+
+export const isAdminUser = (user) => {
+    return (user && user.type == UserType.ADMIN)
+}
+
+export  const getNewId = () => {
+    // Math.random should be unique because of its seeding algorithm.
+    // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+    // after the decimal.
+    return '_' + Math.random().toString(36).substr(2, 9);
+  };

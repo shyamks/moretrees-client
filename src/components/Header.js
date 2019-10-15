@@ -19,7 +19,7 @@ import useMutationApi from './hooks/useMutationApi';
 import UserContext from './UserContext';
 import { showToast, apiCallbackStatus } from '../utils';
 // import Link from 'next/link'
-import { REGISTER_MUTATION, LOGIN_QUERY, PAGES } from '../constants';
+import { REGISTER_MUTATION, LOGIN_QUERY, PAGES, UserType } from '../constants';
 
 import logoImage from '../images/moretrees-logo.jpg'
 import Logger from './Logger';
@@ -101,6 +101,7 @@ const Header = styled.div`
     left: 0;
     right: 0;
     width: 100%;
+    z-index: 1000;
     
     `
 
@@ -237,6 +238,7 @@ function SiteHeader({ history }) {
 
     const onLogout = () => {
         removeUserInContext()
+        navigateTo(PAGES.INDEX)
         setLoginData(null)
     }
 
@@ -299,6 +301,11 @@ function SiteHeader({ history }) {
                             <VolunteerLink onClick={() => navigateTo(PAGES.MY_DONATIONS)}> My Donations </VolunteerLink>
                             <Separator />
                             <VolunteerLink onClick={() => navigateTo(PAGES.PROFILE)}> Profile </VolunteerLink>
+                            {contextUser.type === UserType.ADMIN &&
+                                <>
+                                    <Separator />
+                                    <VolunteerLink onClick={() => navigateTo(PAGES.ADMIN)}> Admin </VolunteerLink>
+                                </>}
                         </>
                     }
                 </AppLeftHeader>
@@ -320,6 +327,10 @@ function SiteHeader({ history }) {
                                 <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.PROFILE)}>
                                      Profile 
                                 </HamburgerOption>
+                                {contextUser.type === UserType.ADMIN &&
+                                <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.ADMIN)}>
+                                     Admin 
+                                </HamburgerOption>}
                                 <HamburgerOption show={hamburgerStatus}>
                                     <a onClick={() => onLogout()}> Logout </a>
                                 </HamburgerOption>

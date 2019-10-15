@@ -6,6 +6,9 @@ import Routes from '../../Routes'
 import { ApolloLink } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 
+import fs from 'fs';
+import path from 'path';
+
 import App from '../../App'
 import { ServerStyleSheet } from 'styled-components'
 import { ApolloProvider } from '@apollo/react-hooks'
@@ -39,67 +42,74 @@ const manageApolloMiddleware = () => {
   return client
 }
 const renderMiddleware = () => (req, res) => {
-  let html = req.html
-  let routerContext = {}
-  let client = manageApolloMiddleware()
-  // let { url, baseUrl, originalUrl, _parsedUrl } = req
-  // console.log({ url, baseUrl, originalUrl, _parsedUrl }, 'req pls')
-  const CurrentRoute = Routes.find(route => matchPath(req.url, route))
-  // console.log(CurrentRoute, 'currentRoute')
-  let promise
-  if (CurrentRoute.loadData) {
-    promise = CurrentRoute.loadData()
-    // promise = Promise.resolve(null)
-  }
-  else {
-    promise = Promise.resolve(null)
-  }
-  // console.log(promise,'promise here')
-  if (routerContext.url) {
-    res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    res.header('Pragma', 'no-cache')
-    res.header('Expires', 0)
-    res.redirect(302, routerContext.url)
-  } else {
-    promise.catch(err => {
-      console.error('err promise', err);
-      return res.status(404)
-    })
-    promise.then(data => {
-      try {
-        routerContext = { data }
-        console.log(data, 'promiseData')
-        const sheet = new ServerStyleSheet()
-        const htmlContent = ReactDOMServer.renderToString(
-          <StaticRouter
-            location={req.url}
-            context={routerContext}
-          >
-            <ApolloProvider client={client}>
-              <App />
-            </ApolloProvider>
-          </StaticRouter>
-        )
-        const htmlReplacements = {
-          HTML_CONTENT: htmlContent,
-          STYLE_TAGS: sheet.getStyleTags()
-        }
 
-        Object.keys(htmlReplacements).forEach(key => {
-          const value = htmlReplacements[key]
-          html = html.replace(
-            new RegExp('__' + escapeStringRegexp(key) + '__', 'g'),
-            value
-          )
+  const publicPath = path.join(__dirname, '/public');
+
+  fs.readFile(`${publicPath}/app.html`, 'utf8', (err, html) => {
+    if (!err) {
+      req.html = html;
+      let responseHtml = req.html
+      let routerContext = {}
+      let client = manageApolloMiddleware()
+      // let { url, baseUrl, originalUrl, _parsedUrl } = req
+      // console.log({ url, baseUrl, originalUrl, _parsedUrl }, 'req pls')
+      // console.log(process.env, 'env server')
+      const CurrentRoute = Routes.find(route => matchPath(req.url, route))
+      let promise
+      if (CurrentRoute.loadData) {
+        promise = CurrentRoute.loadData(process.env)
+      }
+      else {
+        promise = Promise.resolve(null)
+      }
+      if (routerContext.url) {
+        res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        res.header('Pragma', 'no-cache')
+        res.header('Expires', 0)
+        res.redirect(302, routerContext.url)
+      } else {
+        promise.catch(err => {
+          console.error('err promise', err);
+          return res.status(500).send('Error getting server data');
         })
-        res.send(html)
+        promise.then(data => {
+          try {
+            routerContext = data ? { data } : {}
+            const sheet = new ServerStyleSheet()
+            const htmlContent = ReactDOMServer.renderToString(
+              <StaticRouter
+                location={req.url}
+                context={routerContext}
+              >
+                <ApolloProvider client={client}>
+                  <App />
+                </ApolloProvider>
+              </StaticRouter>
+            )
+            const htmlReplacements = {
+              HTML_CONTENT: htmlContent,
+              STYLE_TAGS: sheet.getStyleTags()
+            }
+
+            Object.keys(htmlReplacements).forEach(key => {
+              const value = htmlReplacements[key]
+              responseHtml = responseHtml.replace(
+                new RegExp('__' + escapeStringRegexp(key) + '__', 'g'),
+                value
+              )
+            })
+            res.send(responseHtml)
+          }
+          catch (err) {
+            console.error('err catch', err);
+            return res.status(404)
+          }
+        })
       }
-      catch (err) {
-        console.error('err catch', err);
-        return res.status(404)
-      }
-    })
-  }
+    } else {
+      res.status(500).send('Error parsing app.html');
+    }
+  });
 
 }
 

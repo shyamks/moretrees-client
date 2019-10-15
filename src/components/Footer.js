@@ -28,6 +28,7 @@ function Footer({ footerFixed }) {
 
     return (
         <Wrapper>
+            <script src='https://www.google.com/recaptcha/api.js'></script>
             <ImageContainer>
                 <Image src={footerImage} />
             </ImageContainer>

@@ -4,7 +4,7 @@ import { useContext, useEffect } from 'react'
 import React from 'react'
 import styled from 'styled-components'
 
-import Error from './NotFound'
+import NotFound from './NotFound'
 import gql from 'graphql-tag';
 import useQueryApi from '../components/hooks/useQueryApi';
 
@@ -47,7 +47,7 @@ function getDonationData(donationItems) {
     return donationItems.map(donationItem => {
         const getDonationAmount = (amount) => {
             return (<>
-                {amount > 0 && <TableRow>Saplings at Rs {amount}</TableRow>}
+                {amount > 0 && <TableRow>Trees at Rs {amount}</TableRow>}
             </>)
         }
         const getDonationDate = (createdAt) => {
@@ -139,7 +139,6 @@ function MyDonations() {
     let client = useClient()
     let { email } = contextUser || {}
     const [myDonationsData, isGetMyDonationsLoading, isGetMyDonationsError, refetchMyDonationsData] = useQueryApi(gql(GET_MY_DONATIONS), { email })
-    Logger(myDonationsData, isGetMyDonationsError, 'data')
     useEffect(() => {
         refetchMyDonationsData()
     }, [])
@@ -149,7 +148,7 @@ function MyDonations() {
             <Header />
             {client &&
             <PageContent>
-                {!contextUser && <Error statusCode={404} />}
+                {!contextUser && <NotFound statusCode={404} />}
                 {contextUser && myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length > 0 &&
                     <TableContainer>
                         <Styles>
