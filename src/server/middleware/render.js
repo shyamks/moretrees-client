@@ -54,13 +54,13 @@ const renderMiddleware = () => (req, res) => {
       let routerContext = {}
 
       const { NODE_ENV, REACT_APP_GRAPHQL_PROD_ENDPOINT, REACT_APP_GRAPHQL_TEST_ENDPOINT } = process.env
-      const isProd = NODE_ENV == 'production'
+      const isProd = NODE_ENV === 'production'
       const FINAL_ENDPOINT = isProd ? REACT_APP_GRAPHQL_PROD_ENDPOINT : REACT_APP_GRAPHQL_TEST_ENDPOINT
 
       let client = manageApolloMiddleware(FINAL_ENDPOINT)
       // let { url, baseUrl, originalUrl, _parsedUrl } = req
       // console.log({ url, baseUrl, originalUrl, _parsedUrl }, 'req pls')
-      console.log(process.env, 'env server')
+      console.log(JSON.stringify(process.env), 'env server')
       const CurrentRoute = Routes.find(route => matchPath(req.url, route))
       let promise
       if (CurrentRoute.loadData) {
