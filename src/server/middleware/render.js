@@ -70,7 +70,7 @@ const renderMiddleware = () => (req, res) => {
       } else {
         promise.catch(err => {
           console.error('err promise', err);
-          return res.status(404)
+          return res.status(500).send('Error getting server data');
         })
         promise.then(data => {
           try {
