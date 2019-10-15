@@ -4,3 +4,4 @@ old
 build
 dist
 .DS_Store
+.env
