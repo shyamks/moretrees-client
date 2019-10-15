@@ -64,7 +64,7 @@ const renderMiddleware = () => (req, res) => {
       const CurrentRoute = Routes.find(route => matchPath(req.url, route))
       let promise
       if (CurrentRoute.loadData) {
-        promise = CurrentRoute.loadData(endpoint)
+        promise = CurrentRoute.loadData(FINAL_ENDPOINT)
       }
       else {
         promise = Promise.resolve(null)
