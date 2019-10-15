@@ -16,7 +16,7 @@ function Register({ onSubmit }) {
         username: { status: false, errorText: null },
         password: { status: false, errorText: null },
         mobile: { status: false, errorText: null },
-        captcha: !isProd
+        captcha: process.env.REACT_APP_DISABLE_CATCHA
     })
     const validDetails = ({ email, username, password, mobile, captcha }) => {
         return captcha && validity(email, 'email').status && validity(username, 'username').status && validity(password, 'password').status && validity(mobile, 'mobile').status
