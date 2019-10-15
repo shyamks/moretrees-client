@@ -56,8 +56,8 @@
     "validate.js": "^0.13.1"
   },
   "scripts": {
-    "dev": "REACT_APP_RAZORPAY_TEST_KEY=rzp_test_cxpMW5qj3FfIZD REACT_APP_GRAPHQL_TEST_ENDPOINT=http://localhost:5000/graphql react-ssr-scripts start",
-    "start": "REACT_APP_CAPTCHA_SITE_KEY=6Lf6jb0UAAAAAOWsBtNyX1HjYdBuY8lVI2zSXrtV REACT_APP_RAZORPAY_TEST_KEY=rzp_test_cxpMW5qj3FfIZD REACT_APP_GRAPHQL_TEST_ENDPOINT=http://fdf00d56.ngrok.io/graphql node build",
+    "dev": "NODE_ENV=development REACT_APP_RAZORPAY_TEST_KEY=rzp_test_cxpMW5qj3FfIZD REACT_APP_GRAPHQL_TEST_ENDPOINT=http://localhost:5000/graphql react-ssr-scripts start",
+    "start": "NODE_ENV=development REACT_APP_RAZORPAY_TEST_KEY=rzp_test_cxpMW5qj3FfIZD REACT_APP_GRAPHQL_TEST_ENDPOINT=http://fdf00d56.ngrok.io/graphql node build",
     "build": "react-ssr-scripts build",
     "test": "react-ssr-scripts test",
     "eject": "react-ssr-scripts eject"

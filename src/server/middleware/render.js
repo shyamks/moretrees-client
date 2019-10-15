@@ -76,7 +76,7 @@ const renderMiddleware = () => (req, res) => {
         res.redirect(302, routerContext.url)
       } else {
         promise.catch(err => {
-          console.error('err promise', err);
+          console.error('err promise', FINAL_ENDPOINT, '<=',  err);
           return res.status(500).send('Error getting server data');
         })
         promise.then(data => {
