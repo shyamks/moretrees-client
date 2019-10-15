@@ -19,6 +19,7 @@ import Logger from '../Logger';
 
 const columns = [
     { dataField: 'createdAt', text: 'CreatedAt', sort: true, editable: false },
+    { dataField: 'id', text: 'DB id', editable: false },
     { dataField: 'email', text: 'Email', sort: true, editable: false },
     { dataField: 'amount', text: 'Amount', editable: false },
 ]
@@ -102,6 +103,7 @@ export function UsersDonatedTable(){
 
     const [tableState, setTableState] = useState([])
 
+    console.log(allUserDonationsData, 'data')
     
 
     const reset = () => {
@@ -123,7 +125,7 @@ export function UsersDonatedTable(){
                     rowStyle={rowStyle}
                     expandRow={ expandRow }
                     cellEdit={cellEditFactory(cellEdit)}
-                    pagination={paginationFactory()} />}
+                    pagination={paginationFactory()} />
         </>
     )
 }

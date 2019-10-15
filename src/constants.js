@@ -3,6 +3,7 @@ import styled from 'styled-components'
 export const GRAPHQL_ENDPOINT = 'http://localhost:5000/graphql'
 export const GRAPHQL_NOW_ENDPOINT = 'https://25c29412.ngrok.io/graphql'
 export const FINAL_ENDPOINT = process.env.NODE_ENV == 'production' ? GRAPHQL_NOW_ENDPOINT : GRAPHQL_ENDPOINT
+export const RAZORPAY_KEY = process.env.NODE_ENV == 'production' ? process.env.REACT_APP_RAZORPAY_PROD_KEY : process.env.REACT_APP_RAZORPAY_TEST_KEY
 export const STRIPE_PUBLIC_KEY = 'pk_test_tixsUuAxi9ePUjNPmneQFJvy'
 export const STRIPE_SECRET_KEY = 'sk_test_uFiRW5IFP6XK1mUm1f969jU0a'
 export const POST = 'post'

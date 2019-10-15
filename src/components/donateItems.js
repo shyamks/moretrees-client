@@ -8,7 +8,7 @@ import { Collapse } from 'react-collapse'
 
 import Button from './Button'
 import Counter from './counter'
-import { DONATION_MUTATION, GET_SAPLING_OPTIONS, MarkTitle } from '../constants'
+import { DONATION_MUTATION, GET_SAPLING_OPTIONS, RAZORPAY_KEY, MarkTitle } from '../constants'
 import gql from 'graphql-tag'
 import useMutationApi from './hooks/useMutationApi'
 import useQueryApi from './hooks/useQueryApi'
@@ -212,8 +212,6 @@ function DonateItems({ staticContext }) {
 
     const getRazorOptions = ({ amount, name, email }) => {
         const finalPayment = (token) => {
-            // let getToken = modalStatus.getToken
-            // let token = await getToken()
             if (!token) {
                 showToast('Card info incorrect', 'error')
                 closeModal()
@@ -229,7 +227,7 @@ function DonateItems({ staticContext }) {
         }
         
         let razorOptions = {
-            key: 'rzp_test_cxpMW5qj3FfIZD', // Enter the Key ID generated from the Dashboard
+            key: RAZORPAY_KEY, // Enter the Key ID generated from the Dashboard
             amount: amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise or INR 500.
             currency: 'INR',
             name: 'Moretrees',
@@ -237,7 +235,6 @@ function DonateItems({ staticContext }) {
             // "image": "https://example.com/your_logo",
             // "order_id": "order_9A33XWu170gUtm",//This is a sample Order ID. Create an Order using Orders API. (https://razorpay.com/docs/payment-gateway/orders/integration/#step-1-create-an-order). Refer the Checkout form table given below
             handler: function (response) {
-                // alert(response.razorpay_payment_id);
                 finalPayment(response)
             },
             prefill: {
@@ -275,8 +272,6 @@ function DonateItems({ staticContext }) {
                             \n The saplings are maintained & watered by us for the critical first year.
                          \n\n We will notify you about progress through the plants life.
                          \n You get the geolocation & photo of your sapling once it is planted.`
-
-    const projectsText = `## Projects\n\n `
 
     return (
         <Donate>
