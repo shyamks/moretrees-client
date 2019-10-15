@@ -17,8 +17,9 @@ import { STORE_TOKEN, FINAL_ENDPOINT } from '../../constants'
 import { InMemoryCache } from 'apollo-boost'
 // import initApollo from '../../utils'
 
-const manageApolloMiddleware = () => {
-  const httpLink = createHttpLink({ uri: FINAL_ENDPOINT });
+const manageApolloMiddleware = (endpoint) => {
+  // alert(endpoint,'cmon server')
+  const httpLink = createHttpLink({ uri: endpoint });
   const middlewareLink = new ApolloLink((operation, forward) => {
     let item
     if (window) item = window.localStorage.getItem(STORE_TOKEN)
@@ -41,6 +42,7 @@ const manageApolloMiddleware = () => {
   })
   return client
 }
+
 const renderMiddleware = () => (req, res) => {
 
   const publicPath = path.join(__dirname, '/public');
@@ -50,14 +52,19 @@ const renderMiddleware = () => (req, res) => {
       req.html = html;
       let responseHtml = req.html
       let routerContext = {}
-      let client = manageApolloMiddleware()
+
+      const { NODE_ENV, REACT_APP_GRAPHQL_PROD_ENDPOINT, REACT_APP_GRAPHQL_TEST_ENDPOINT } = process.env
+      const isProd = NODE_ENV == 'production'
+      const FINAL_ENDPOINT = isProd ? REACT_APP_GRAPHQL_PROD_ENDPOINT : REACT_APP_GRAPHQL_TEST_ENDPOINT
+
+      let client = manageApolloMiddleware(FINAL_ENDPOINT)
       // let { url, baseUrl, originalUrl, _parsedUrl } = req
       // console.log({ url, baseUrl, originalUrl, _parsedUrl }, 'req pls')
       // console.log(process.env, 'env server')
       const CurrentRoute = Routes.find(route => matchPath(req.url, route))
       let promise
       if (CurrentRoute.loadData) {
-        promise = CurrentRoute.loadData(process.env)
+        promise = CurrentRoute.loadData(endpoint)
       }
       else {
         promise = Promise.resolve(null)
