@@ -1,6 +1,6 @@
 
 
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import Modal from 'react-modal'
 import React from 'react';
 import { useState, useEffect, useContext, useRef } from 'react'
@@ -53,15 +53,17 @@ toast.configure()
 
 
 /* Hamburger Options Start */
-const HamburgerMenu = styled.div`
-    display: none;
-    @media screen and (max-width: 800px) {
-        display: flex;
-        justify-content: start;
-        flex-direction: column;
-        max-height: ${(props) => !props.show ? '20px' : '260px'};
-        transition: max-height 1s ease-in-out;
-    }
+const animateIn = keyframes`
+  0% {
+    height: 0%;
+  }
+  30% {
+    height: 40%;
+    width: 100%;
+  }
+  100% {
+    height: 100%;
+  }
 `
 
 const HamburgerOptionsList = styled.ul`
@@ -69,7 +71,9 @@ const HamburgerOptionsList = styled.ul`
     flex-direction: column;
     transition: flex 1s ease-in-out;
     overflow: hidden;
+    animation: ${animateIn} 0.4s ease;
 `
+
 const HamburgerOption = styled.li`
     display: flex;
     margin: 10px;
@@ -90,9 +94,6 @@ const MenuContainer = styled.div`
     }
 `
 
-const LoginOption = styled.div`
-
-`
 /* Hamburger Options End*/
 
 const Header = styled.div`
@@ -265,6 +266,7 @@ function SiteHeader({ history }) {
 
     const onLogout = (e) => {
         if (isClickOrEnter(e)){
+            setHamburgerStatus(false)
             removeUserInContext()
             navigateTo(PAGES.INDEX)
             setLoginData(null)
