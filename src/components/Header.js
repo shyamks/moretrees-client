@@ -17,7 +17,7 @@ import gql from 'graphql-tag';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
 import useMutationApi from './hooks/useMutationApi';
 import UserContext from './UserContext';
-import { showToast, apiCallbackStatus } from '../utils';
+import { showToast, apiCallbackStatus, isClickOrEnter } from '../utils';
 // import Link from 'next/link'
 import { REGISTER_MUTATION, LOGIN_QUERY, PAGES, UserType } from '../constants';
 
@@ -149,19 +149,14 @@ const Separator = styled.div`
 
 const LoginHeader = styled.div`
     margin-right: 20px;
+    outline: none;
     &: hover{
         cursor: pointer;
     }
 `
 
 const RegisterHeader = styled.div`
-    &: hover{
-        cursor: pointer;
-    }
-`
-
-const DonationLink = styled.div`
-    margin-right: 20px;
+    outline: none;
     &: hover{
         cursor: pointer;
     }
@@ -169,6 +164,7 @@ const DonationLink = styled.div`
 
 const VolunteerLink = styled.div`
     margin-right: 20px;
+    outline: none;
     &: hover{
         cursor: pointer;
     }
@@ -179,6 +175,7 @@ const Logo = styled.img`
     margin-top: -8px;
     height:auto;
     margin-right: 20px;
+    outline: none;
     &: hover{
         cursor: pointer;
     }
@@ -213,8 +210,10 @@ function SiteHeader({ history }) {
         modalSetter({ type, data, open: !modalStatus.open })
     }
 
-    const navigateTo = (path) => {
-        history.push(path)
+    const navigateTo = (e,path) => {
+        if (isClickOrEnter(e)){
+            history.push(path)
+        }
     }
 
     const onHamburgerClick = () => {
@@ -236,10 +235,12 @@ function SiteHeader({ history }) {
         toggleModal(modalStatus, setModalStatus, REGISTER)
     }
 
-    const onLogout = () => {
-        removeUserInContext()
-        navigateTo(PAGES.INDEX)
-        setLoginData(null)
+    const onLogout = (e) => {
+        if (isClickOrEnter(e)){
+            removeUserInContext()
+            navigateTo(PAGES.INDEX)
+            setLoginData(null)
+        }
     }
 
     const [loginData, loginLoading, loginError, setLoginVariables, setLoginData] = useLazyQueryApi(gql(LOGIN_QUERY))
@@ -289,22 +290,22 @@ function SiteHeader({ history }) {
         <Header>
             <AppHeader>
                 <AppLeftHeader>
-                    <Logo src={logoImage} onClick={() => navigateTo(PAGES.INDEX)}/>
+                    <Logo tabIndex="0" src={logoImage} onKeyPress={(e)=> navigateTo(e,PAGES.INDEX) } onClick={(e) => navigateTo(e,PAGES.INDEX)}/>
                     <Separator />
 
-                    <DonationLink onClick={() => navigateTo(PAGES.DONATE)}> Donate </DonationLink>
+                    <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.DONATE)} onClick={(e) => navigateTo(e, PAGES.DONATE)}> Donate </VolunteerLink>
                     <Separator />
-                    <VolunteerLink onClick={() => navigateTo(PAGES.VOLUNTEER)}> Volunteer </VolunteerLink>
+                    <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.VOLUNTEER)} onClick={(e) => navigateTo(e, PAGES.VOLUNTEER)}> Volunteer </VolunteerLink>
                     {(contextUser && !errorInLogin) &&
                         <>
                             <Separator />
-                            <VolunteerLink onClick={() => navigateTo(PAGES.MY_DONATIONS)}> My Donations </VolunteerLink>
+                            <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}> My Donations </VolunteerLink>
                             <Separator />
-                            <VolunteerLink onClick={() => navigateTo(PAGES.PROFILE)}> Profile </VolunteerLink>
+                            <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.PROFILE)} onClick={(e) => navigateTo(e, PAGES.PROFILE)}> Profile </VolunteerLink>
                             {contextUser.type === UserType.ADMIN &&
                                 <>
                                     <Separator />
-                                    <VolunteerLink onClick={() => navigateTo(PAGES.ADMIN)}> Admin </VolunteerLink>
+                                    <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}> Admin </VolunteerLink>
                                 </>}
                         </>
                     }
@@ -312,36 +313,36 @@ function SiteHeader({ history }) {
 
 
                 {/* for max-width 800px */}
-                <AppLogo src={logoImage} onClick={() => navigateTo(PAGES.INDEX)} />
+                <AppLogo src={logoImage} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.INDEX)} onClick={(e) => navigateTo(e, PAGES.INDEX)} />
                 <HamburgerMenu show={hamburgerStatus}>
-                    <MenuContainer onClick={() => onHamburgerClick()}><MenuIcon /></MenuContainer>
+                    <MenuContainer tabIndex="0" onKeyPress={(e) => onHamburgerClick()} onClick={(e) => onHamburgerClick()}><MenuIcon /></MenuContainer>
 
                     <HamburgerOptionsList ref={hamburgerRef} show={hamburgerStatus}>
-                        <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.DONATE)}> Donate </HamburgerOption>
-                        <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.VOLUNTEER)}> Volunteer </HamburgerOption>
+                        <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.DONATE)} onClick={(e) => navigateTo(e, PAGES.DONATE)}> Donate </HamburgerOption>
+                        <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.VOLUNTEER)} onClick={(e) => navigateTo(e, PAGES.VOLUNTEER)}> Volunteer </HamburgerOption>
                         {(contextUser && !errorInLogin) ?
                             (<>
-                                <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.MY_DONATIONS)}>
+                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}>
                                      My Donations 
                                 </HamburgerOption>
-                                <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.PROFILE)}>
+                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.PROFILE)} onClick={(e) => navigateTo(e, PAGES.PROFILE)}>
                                      Profile 
                                 </HamburgerOption>
                                 {contextUser.type === UserType.ADMIN &&
-                                <HamburgerOption show={hamburgerStatus} onClick={() => navigateTo(PAGES.ADMIN)}>
-                                     Admin 
+                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}>
+                                        Admin
                                 </HamburgerOption>}
-                                <HamburgerOption show={hamburgerStatus}>
-                                    <a onClick={() => onLogout()}> Logout </a>
+                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onLogout(e)} onClick={(e) => onLogout(e)}>
+                                    Logout
                                 </HamburgerOption>
                             </>
                             ) :
                             (<>
-                                <HamburgerOption show={hamburgerStatus}>
-                                    <a onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</a>
+                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => toggleModal(modalStatus, setModalStatus, LOGIN)} onClick={(e) => toggleModal(modalStatus, setModalStatus, LOGIN)}>
+                                    Login
                                 </HamburgerOption>
-                                <HamburgerOption show={hamburgerStatus}>
-                                    <a onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</a>
+                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => toggleModal(modalStatus, setModalStatus, REGISTER)} onClick={(e) => toggleModal(modalStatus, setModalStatus, REGISTER)}>
+                                    Register
                                 </HamburgerOption>
                             </>)
                         }
@@ -353,9 +354,9 @@ function SiteHeader({ history }) {
                         (contextUser && !errorInLogin) ?
                             (<UserAvatar userInfo={contextUser} onLogout={onLogout} />) :
                             (<>
-                                <LoginHeader onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
+                                <LoginHeader tabIndex="0" onKeyPress={(e) => toggleModal(modalStatus, setModalStatus, LOGIN)} onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
                                 <Separator />
-                                <RegisterHeader onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
+                                <RegisterHeader tabIndex="0" onKeyPress={(e) => toggleModal(modalStatus, setModalStatus, REGISTER)} onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
                             </>)
 
                     }

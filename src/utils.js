@@ -59,9 +59,17 @@ export const isAdminUser = (user) => {
     return (user && user.type == UserType.ADMIN)
 }
 
-export  const getNewId = () => {
+export const getNewId = () => {
     // Math.random should be unique because of its seeding algorithm.
     // Convert it to base 36 (numbers + letters), and grab the first 9 characters
     // after the decimal.
     return '_' + Math.random().toString(36).substr(2, 9);
-  };
+};
+
+export const isClickOrEnter = (e) => {
+    // Math.random should be unique because of its seeding algorithm.
+    // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+    // after the decimal.
+    e.persist()
+    return (e.type == 'click' || e.charCode == 13)
+};
