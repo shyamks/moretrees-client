@@ -57,7 +57,7 @@
   },
   "scripts": {
     "dev": "NODE_ENV=development REACT_APP_RAZORPAY_TEST_KEY=rzp_test_cxpMW5qj3FfIZD REACT_APP_GRAPHQL_TEST_ENDPOINT=http://localhost:5000/graphql react-ssr-scripts start",
-    "start": "REACT_APP_GRAPHQL_TEST_ENDPOINT=https://74a84ea5.ngrok.io/graphql REACT_APP_GRAPHQL_PROD_ENDPOINT=https://74a84ea5.ngrok.io/graphql node build",
+    "start": "REACT_APP_GRAPHQL_TEST_ENDPOINT=http://4739e3f6.ngrok.io/graphql REACT_APP_GRAPHQL_PROD_ENDPOINT=http://4739e3f6.ngrok.io/graphql node build",
     "build": "react-ssr-scripts build",
     "test": "react-ssr-scripts test",
     "eject": "react-ssr-scripts eject"
