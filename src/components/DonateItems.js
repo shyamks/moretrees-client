@@ -293,6 +293,41 @@ function DonateItems({ staticContext }) {
                          \n\n We will notify you about progress through the plants life.
                          \n You get the geolocation & photo of your sapling once it is planted.`
 
+    const getDonateItems = (items) => {
+        let array = []
+        for (let i = 0; i < items.length; i++) {
+            let item = items[i]
+            let { id, title, subtitle, content, remaining, type, cost } = item
+            let logoType = (type == 'ROAD') ? roadProjectsLogoImage : riverProjectsLogoImage
+            array.push(
+                <DonateItem key={id}>
+                    <ItemContainer>
+                        <ProjectsLogo src={logoType} />
+                        <ItemDetail>
+                            <ItemTitle>{title}</ItemTitle>
+                            <ItemSubtitle >{subtitle}</ItemSubtitle>
+
+                            <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
+                                <ItemContent>
+                                    <ReactMarkdown source={content} />
+                                </ItemContent>
+                            </Collapse>
+                        </ItemDetail>
+                        <CostContainer>
+                            <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
+                            <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                        </CostContainer>
+                    </ItemContainer>
+                    <Arrow onClick={() => setCollapseMap({ ...collapseMap, [id]: { collapse: !collapseMap[id].collapse } })}>
+                        <ArrowSymbol up={collapseMap[id] ? !collapseMap[id].collapse : false} />
+                    </Arrow>
+                </DonateItem>
+            )
+        }
+        return array
+    }
+    let donationItems = getDonateItems(saplingsArray)
+
     return (
         <Donate>
             <Section>
@@ -306,43 +341,16 @@ function DonateItems({ staticContext }) {
             </Section>
             <Section>
                 <Container>
-                <ProjectsTitleLogo src={projectsLogoImage} />
-                <MarkTitle> Projects </MarkTitle>
+                    <ProjectsTitleLogo src={projectsLogoImage} />
+                    <MarkTitle> Projects </MarkTitle>
                 </Container>
                 <MarkdownContainer>
                     <DonateTrees>
                         <DonateItemsContainer>
-                            {saplingsArray.map((item) => {
-                                let {id, title, subtitle, content, remaining, type, cost} = item
-                                let logoType = (type == 'ROAD') ? roadProjectsLogoImage : riverProjectsLogoImage
-                                return (
-                                    <DonateItem key={id}>
-                                        <ItemContainer>
-                                            <ProjectsLogo src={logoType}/>
-                                            <ItemDetail>
-                                                <ItemTitle>{title}</ItemTitle>
-                                                <ItemSubtitle >{subtitle}</ItemSubtitle>
-                                                
-                                                <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
-                                                    <ItemContent>
-                                                        <ReactMarkdown source={content} />
-                                                    </ItemContent>
-                                                </Collapse>
-                                            </ItemDetail>
-                                            <CostContainer>
-                                                <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
-                                                <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
-                                            </CostContainer>
-                                        </ItemContainer>
-                                        <Arrow onClick={() => setCollapseMap({ ...collapseMap, [id]: { collapse: !collapseMap[id].collapse } })}>
-                                            <ArrowSymbol up={collapseMap[id] ? !collapseMap[id].collapse : false}/>
-                                        </Arrow>
-                                    </DonateItem>
-                                )
-                            })}
+                            {donationItems}
                         </DonateItemsContainer>
                         <CheckoutContainer>
-                                <Button disabled={subTotalCheckoutCost == 0} onClick={() => makePayment()}> Checkout </Button>
+                            <Button disabled={subTotalCheckoutCost == 0} onClick={() => makePayment()}> Checkout </Button>
                         </CheckoutContainer>
                     </DonateTrees>
 
