@@ -27,7 +27,7 @@ const DonateAndVol = styled.div`
 const ImageContainer = styled.div`
     background-size: cover;
     width: 100%;
-    min-height: 200px;
+    min-height: 150px;
     @media screen and (min-width: 1000px) {
         margin-top: 30px;
     }
@@ -64,7 +64,7 @@ const Image = styled.img`
 `
 
 const Imager = styled.img`
-    min-height: 200px;
+    min-height: 150px;
     width: 100%;
 `
 

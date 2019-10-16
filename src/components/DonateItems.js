@@ -47,18 +47,20 @@ const DonateItem = styled.div`
 const ItemContainer = styled.div`
     display: flex;
     flex-direction: row;
-    @media all and (max-width: 900px) {
+    @media all and (max-width: 800px) {
         flex-direction: column;
     }
 `
 
 const ItemDetail = styled.div`
-    margin: 0px 60px 25px 20px;
+    margin: 0px 20px 25px 20px;
     font-family: "Trebuchet MS", Helvetica, sans-serif;
-    white-space:nowrap;
     display: flex;
-    width: 470px;
+    width: 50%;
     flex-direction: column;
+    @media all and (max-width: 800px) {
+        align-self: center;
+    }
 `
 
 const ItemContent = styled.div`
@@ -70,7 +72,7 @@ const ItemContent = styled.div`
 
 const ItemTitle = styled.span`
     text-align: left;
-    @media all and (max-width: 900px) {
+    @media all and (max-width: 800px) {
         text-align: center;
     }
     font-weight: bold;
@@ -80,7 +82,7 @@ const ItemTitle = styled.span`
 
 const ItemSubtitle = styled.div`
     text-align: left;
-    @media all and (max-width: 900px) {
+    @media all and (max-width: 800px) {
         text-align: center;
     }
     margin: 10px 10px 0px 10px;
@@ -94,19 +96,31 @@ const ItemCost = styled(ItemSubtitle)`
 
 const CostContainer = styled.div`
     display: flex;
-    @media all and (max-width: 900px) {
+    @media all and (max-width: 800px) {
         align-self: center;
     }
 `
 
 const Section = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 `
 
 const Container = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    @media all and (max-width: 800px) {
+        justify-content: center;
+        flex-direction: column;
+        align-items: center
+    }
+`
+
+const MarkdowContainer = styled.div`
+    margin-left: 20px;
+    @media all and (max-width: 800px) {
+        margin: 5px 0 0 5px;
+    }
 `
 
 const CheckoutContainer = styled.div`
@@ -115,8 +129,12 @@ const CheckoutContainer = styled.div`
 
 const SectionLogo = styled.img`
     width: 55px;
+    
     height: 50px;
     margin: 10px 5px 10px 10px;
+    @media all and (max-width: 800px) {
+        margin: 0px;
+    }
 `
 
 const ProjectsTitleLogo = styled.img`
@@ -128,8 +146,9 @@ const ProjectsLogo = styled.img`
     width: 50px;
     height: 45px;
     margin: 10px;
-    @media all and (max-width: 900px) {
+    @media all and (max-width: 800px) {
         align-self: center;
+        margin: 10px 0 0 -5px;
     }
 `
 
@@ -279,16 +298,20 @@ function DonateItems({ staticContext }) {
     return (
         <Donate>
             <Section>
-                <SectionLogo src={donateLogoImage}/>
                 <Container>
+                    <SectionLogo src={donateLogoImage} />
                     <MarkTitle> Donate </MarkTitle>
-                    <ReactMarkdown source={donateText} />
                 </Container>
+                <MarkdowContainer>
+                    <ReactMarkdown source={donateText} />
+                </MarkdowContainer>
             </Section>
             <Section>
-                <ProjectsTitleLogo src={projectsLogoImage}/>
                 <Container>
+                <ProjectsTitleLogo src={projectsLogoImage} />
                 <MarkTitle> Projects </MarkTitle>
+                </Container>
+                <MarkdowContainer>
                     <DonateTrees>
                         <DonateItemsContainer>
                             {saplingsArray.map((item) => {
@@ -325,7 +348,7 @@ function DonateItems({ staticContext }) {
                         </CheckoutContainer>
                     </DonateTrees>
 
-                </Container>
+                </MarkdowContainer>
             </Section>
         </Donate>)
 }

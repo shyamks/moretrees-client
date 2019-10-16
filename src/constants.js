@@ -57,6 +57,9 @@ export const Page = styled.div`
 export const MarkTitle = styled.h2`
   font-weight: 700 !important;
   margin-top: 14px;
+  @media all and (max-width: 800px) {
+    margin-top: 0px;
+  }
 `
 
 export const DONATION_MUTATION = `
