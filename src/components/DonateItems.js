@@ -72,20 +72,20 @@ const ItemContent = styled.div`
 
 const ItemTitle = styled.span`
     text-align: left;
-    @media all and (max-width: 800px) {
-        text-align: center;
-    }
     font-weight: bold;
     font-size: 22px;
     margin: 10px 10px 0px 10px;
+    @media all and (max-width: 800px) {
+        text-align: center;
+    }
 `
 
 const ItemSubtitle = styled.div`
     text-align: left;
+    margin: 10px 10px 0px 10px;
     @media all and (max-width: 800px) {
         text-align: center;
     }
-    margin: 10px 10px 0px 10px;
 `
 
 const ItemCost = styled(ItemSubtitle)`
@@ -116,7 +116,7 @@ const Container = styled.div`
     }
 `
 
-const MarkdowContainer = styled.div`
+const MarkdownContainer = styled.div`
     margin-left: 20px;
     @media all and (max-width: 800px) {
         margin: 5px 0 0 5px;
@@ -129,7 +129,6 @@ const CheckoutContainer = styled.div`
 
 const SectionLogo = styled.img`
     width: 55px;
-    
     height: 50px;
     margin: 10px 5px 10px 10px;
     @media all and (max-width: 800px) {
@@ -302,16 +301,16 @@ function DonateItems({ staticContext }) {
                     <SectionLogo src={donateLogoImage} />
                     <MarkTitle> Donate </MarkTitle>
                 </Container>
-                <MarkdowContainer>
+                <MarkdownContainer>
                     <ReactMarkdown source={donateText} />
-                </MarkdowContainer>
+                </MarkdownContainer>
             </Section>
             <Section>
                 <Container>
                 <ProjectsTitleLogo src={projectsLogoImage} />
                 <MarkTitle> Projects </MarkTitle>
                 </Container>
-                <MarkdowContainer>
+                <MarkdownContainer>
                     <DonateTrees>
                         <DonateItemsContainer>
                             {saplingsArray.map((item) => {
@@ -348,7 +347,7 @@ function DonateItems({ staticContext }) {
                         </CheckoutContainer>
                     </DonateTrees>
 
-                </MarkdowContainer>
+                </MarkdownContainer>
             </Section>
         </Donate>)
 }

@@ -21,42 +21,8 @@ import volunteerLogoImage from '../images/moretrees-volunteer-logo.png'
 import { SelectDropdown } from './SelectDropdown'
 import Logger from './Logger'
 
-const ListContainer = styled.div`
-    display: flex;
-    @media screen and (max-width: 700px) {
-        flex-direction: column;
-    }
-
-`
-
-const PriorityListContainer = styled.div`
-    @media screen and (max-width: 700px) {
-        margin: -10px -10px 0px -10px;
-        
-    }
-`
-
-const OptionList = styled.div`
-    padding: 20px;
-    @media screen and (max-width: 700px) {
-        padding: 20px 0px 20px 0px;
-    }
-`
-
-const Option = styled.div`
-    padding: 5px;
-    display: flex;
-    
-`
-
-const OptionLabel = styled.span`
-    margin: 10px;
-    display:inline-block;
-    width: 400px;
-    word-wrap: break-word;
-`
 const Wrapper = styled.div`
-    margin: 30px;
+    margin: 10px;
 `
 
 const SectionLogo = styled.img`
@@ -65,24 +31,43 @@ const SectionLogo = styled.img`
     margin: 10px 5px 10px 10px;
 `
 const ButtonContainer = styled.div`
-        text-align: center;
-        margin-left: auto;
-        margin-right: auto;
-    `
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+`
 
 const RowContainer = styled.div`
     display: flex;
     flex-direction: row;
 `
-const ColumnContainer = styled.div`
+const Section = styled.div`
     display: flex;
     flex-direction: column;
 `
-const DropdownContainer = styled(RowContainer)`
-    margin-left: 60px;
-    justify-content: space-between;
-    @media all and (max-width: 750px){
+
+const Container = styled.div`
+    display: flex;
+    flex-direction: row;
+    @media all and (max-width: 800px) {
+        justify-content: center;
         flex-direction: column;
+        align-items: center
+    }
+`
+
+const MarkdownContainer = styled.div`
+    margin-left: 20px;
+    @media all and (max-width: 800px) {
+        margin: 5px 0 0 5px;
+    }
+`
+const DropdownContainer = styled(RowContainer)`
+    margin-left: 20px;
+    justify-content: space-between;
+    @media all and (max-width: 800px){
+        margin-left: 0px;
+        flex-direction: column;
+        align-items: center
     }
 `
 
@@ -140,13 +125,15 @@ function VolunteerChoices() {
     
     return (
         <Wrapper>
-            <RowContainer>
-                <SectionLogo src={volunteerLogoImage}/>
-                <ColumnContainer>
+            <Section>
+                <Container>
+                    <SectionLogo src={volunteerLogoImage} />
                     <MarkTitle> Volunteer </MarkTitle>
+                </Container>
+                <MarkdownContainer>
                     <ReactMarkdown source={volunteerText} />
-                </ColumnContainer>
-            </RowContainer>
+                </MarkdownContainer>
+            </Section>
             {client &&
                 <>
                     <DropdownContainer>
