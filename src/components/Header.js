@@ -79,10 +79,14 @@ const HamburgerOption = styled.li`
 `
 
 const MenuContainer = styled.div`
-    display: flex;
-    flex-direction: row-reverse;
-    &: hover {
-        cursor: pointer;
+    display: none;
+    @media screen and (max-width: 800px) {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        &: hover {
+            cursor: pointer;
+        }
     }
 `
 
@@ -200,8 +204,27 @@ const isServer = () => {
 function SiteHeader({ history }) {
 
     let hamburgerRef = useRef(null)
-    let [modalStatus, setModalStatus] = useState({ type: LOGIN, data: null, open: false })
     let [hamburgerStatus, setHamburgerStatus] = useState(false)
+
+    // hack to control outside clicks on hamburger
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClick);
+    
+        return () => {
+          document.removeEventListener("mousedown", handleClick);
+        };
+      }, []);
+
+    const handleClick = e => {
+        if (hamburgerRef.current.contains(e.target)) {
+            return;
+        }
+        // outside click
+        setHamburgerStatus(false);
+    };
+
+
+    let [modalStatus, setModalStatus] = useState({ type: LOGIN, data: null, open: false })
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken, callRegisterModal, setRegisterModal } = useContext(UserContext);
 
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
@@ -210,26 +233,31 @@ function SiteHeader({ history }) {
         modalSetter({ type, data, open: !modalStatus.open })
     }
 
+    const onOpenModal = (modalStatus, modalSetter, type, data) => {
+        setHamburgerStatus(false)
+        toggleModal(modalStatus, modalSetter, type, data)
+    }
     const navigateTo = (e,path) => {
         if (isClickOrEnter(e)){
             history.push(path)
         }
     }
 
-    const onHamburgerClick = () => {
-        if (hamburgerRef.current.offsetHeight == 0 && hamburgerStatus)
-            setHamburgerStatus(false)
-        else
+    const onHamburgerClick = (e) => {
+        if (isClickOrEnter(e)){
             setHamburgerStatus(!hamburgerStatus)
+        }
     }
 
     const onLogin = ({ email, password }) => {
+        setHamburgerStatus(false)
         setLoginVariables({ email, password })
         setCalledStatus(true, LOGIN)
         toggleModal(modalStatus, setModalStatus, LOGIN)
     }
 
     const onRegister = ({ email, username, password, mobile }) => {
+        setHamburgerStatus(false)
         setRegisterVariables({ email, username, password, phone: mobile })
         setCalledStatus(true, REGISTER)
         toggleModal(modalStatus, setModalStatus, REGISTER)
@@ -314,49 +342,49 @@ function SiteHeader({ history }) {
 
                 {/* for max-width 800px */}
                 <AppLogo src={logoImage} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.INDEX)} onClick={(e) => navigateTo(e, PAGES.INDEX)} />
-                <HamburgerMenu show={hamburgerStatus}>
-                    <MenuContainer tabIndex="0" onKeyPress={(e) => onHamburgerClick()} onClick={(e) => onHamburgerClick()}><MenuIcon /></MenuContainer>
-
-                    <HamburgerOptionsList ref={hamburgerRef} show={hamburgerStatus}>
-                        <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.DONATE)} onClick={(e) => navigateTo(e, PAGES.DONATE)}> Donate </HamburgerOption>
-                        <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.VOLUNTEER)} onClick={(e) => navigateTo(e, PAGES.VOLUNTEER)}> Volunteer </HamburgerOption>
-                        {(contextUser && !errorInLogin) ?
-                            (<>
-                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}>
-                                     My Donations 
+                <MenuContainer ref={hamburgerRef}>
+                    <MenuIcon tabIndex="0" onKeyPress={(e) => onHamburgerClick(e)} onClick={(e) => onHamburgerClick(e)} />
+                    {hamburgerStatus &&
+                        <HamburgerOptionsList show={hamburgerStatus}>
+                            <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.DONATE)} onClick={(e) => navigateTo(e, PAGES.DONATE)}> Donate </HamburgerOption>
+                            <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.VOLUNTEER)} onClick={(e) => navigateTo(e, PAGES.VOLUNTEER)}> Volunteer </HamburgerOption>
+                            {(contextUser && !errorInLogin) ?
+                                (<>
+                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}>
+                                        My Donations
                                 </HamburgerOption>
-                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.PROFILE)} onClick={(e) => navigateTo(e, PAGES.PROFILE)}>
-                                     Profile 
+                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.PROFILE)} onClick={(e) => navigateTo(e, PAGES.PROFILE)}>
+                                        Profile
                                 </HamburgerOption>
-                                {contextUser.type === UserType.ADMIN &&
-                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}>
-                                        Admin
+                                    {contextUser.type === UserType.ADMIN &&
+                                        <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}>
+                                            Admin
                                 </HamburgerOption>}
-                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onLogout(e)} onClick={(e) => onLogout(e)}>
-                                    Logout
+                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onLogout(e)} onClick={(e) => onLogout(e)}>
+                                        Logout
                                 </HamburgerOption>
-                            </>
-                            ) :
-                            (<>
-                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => toggleModal(modalStatus, setModalStatus, LOGIN)} onClick={(e) => toggleModal(modalStatus, setModalStatus, LOGIN)}>
-                                    Login
+                                </>
+                                ) :
+                                (<>
+                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onOpenModal(modalStatus, setModalStatus, LOGIN)} onClick={(e) => onOpenModal(modalStatus, setModalStatus, LOGIN)}>
+                                        Login
                                 </HamburgerOption>
-                                <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => toggleModal(modalStatus, setModalStatus, REGISTER)} onClick={(e) => toggleModal(modalStatus, setModalStatus, REGISTER)}>
-                                    Register
+                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onOpenModal(modalStatus, setModalStatus, REGISTER)} onClick={(e) => onOpenModal(modalStatus, setModalStatus, REGISTER)}>
+                                        Register
                                 </HamburgerOption>
-                            </>)
-                        }
-                    </HamburgerOptionsList>
-                </HamburgerMenu>
+                                </>)
+                            }
+                        </HamburgerOptionsList>}
+                </MenuContainer>
                 {/* for max-width 800px end */}
                 <AppRightHeader>
                     {
                         (contextUser && !errorInLogin) ?
                             (<UserAvatar userInfo={contextUser} onLogout={onLogout} />) :
                             (<>
-                                <LoginHeader tabIndex="0" onKeyPress={(e) => toggleModal(modalStatus, setModalStatus, LOGIN)} onClick={() => toggleModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
+                                <LoginHeader tabIndex="0" onKeyPress={(e) => onOpenModal(modalStatus, setModalStatus, LOGIN)} onClick={() => onOpenModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
                                 <Separator />
-                                <RegisterHeader tabIndex="0" onKeyPress={(e) => toggleModal(modalStatus, setModalStatus, REGISTER)} onClick={() => toggleModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
+                                <RegisterHeader tabIndex="0" onKeyPress={(e) => onOpenModal(modalStatus, setModalStatus, REGISTER)} onClick={() => onOpenModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
                             </>)
 
                     }
