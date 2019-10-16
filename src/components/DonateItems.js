@@ -111,7 +111,6 @@ const Container = styled.div`
     flex-direction: row;
     @media all and (max-width: 800px) {
         justify-content: center;
-        flex-direction: column;
         align-items: center
     }
 `
@@ -132,7 +131,7 @@ const SectionLogo = styled.img`
     height: 50px;
     margin: 10px 5px 10px 10px;
     @media all and (max-width: 800px) {
-        margin: 0px;
+        margin: 0 5px 0 0;
     }
 `
 
