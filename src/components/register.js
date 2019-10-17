@@ -107,13 +107,13 @@ const getErrorText = (value, type) => {
         case 'username':
             if (value.length <= 4)
                 return 'More than 4 characters required'
-            return 'Can contain a-Z 0-9'
+            return 'Can contain [a-Z0-9]'
         case 'password':
             return 'More than 7 characters required'
         case 'mobile':
             if (value.length <= 9)
                 return 'More than 9 characters required'
-            return 'Error in mobile'
+            return 'Error in mobile input'
         default:
             return 'Problem with entered text'
     }
@@ -146,9 +146,9 @@ function Register({ onSubmit }) {
     }
 
     const validity = (value, type) => {
-        let statusOfValue = !getStatus(value, type)
-        let errorOfValue = statusOfValue ? getErrorText(value, type) : null
-        return { isError: statusOfValue, errorText: errorOfValue }
+        let isError = !getStatus(value, type)
+        let errorText = isError ? getErrorText(value, type) : null
+        return { isError, errorText }
     }
 
     const handleChange = (e, type) => {
