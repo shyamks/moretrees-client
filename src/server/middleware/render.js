@@ -57,7 +57,7 @@ const renderMiddleware = () => (req, res) => {
       const isProd = NODE_ENV === 'production'
       const FINAL_ENDPOINT = isProd ? REACT_APP_PROD_ENDPOINT : REACT_APP_TEST_ENDPOINT
 
-      const GRAPHQL_ENDPOINT = path.join(FINAL_ENDPOINT, '/graphql')
+      const GRAPHQL_ENDPOINT = FINAL_ENDPOINT + '/graphql'
       let client = manageApolloMiddleware(GRAPHQL_ENDPOINT)
       // let { url, baseUrl, originalUrl, _parsedUrl } = req
       // console.log({ url, baseUrl, originalUrl, _parsedUrl }, 'req pls')
