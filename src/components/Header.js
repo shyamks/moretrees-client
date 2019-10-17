@@ -230,13 +230,13 @@ function SiteHeader({ history }) {
 
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
 
-    const toggleModal = (modalStatus, modalSetter, type, data) => {
-        modalSetter({ type, data, open: !modalStatus.open })
+    const toggleModal = (modalSetter, open, type, data) => {
+        modalSetter({ type, data, open })
     }
 
-    const onOpenModal = (modalStatus, modalSetter, type, data) => {
+    const onOpenModal = (modalSetter, type, data) => {
         setHamburgerStatus(false)
-        toggleModal(modalStatus, modalSetter, type, data)
+        toggleModal(modalSetter, true, type, data)
     }
     const navigateTo = (e,path) => {
         if (isClickOrEnter(e)){
@@ -254,14 +254,14 @@ function SiteHeader({ history }) {
         setHamburgerStatus(false)
         setLoginVariables({ email, password })
         setCalledStatus(true, LOGIN)
-        toggleModal(modalStatus, setModalStatus, LOGIN)
+        toggleModal(setModalStatus, false, LOGIN)
     }
 
     const onRegister = ({ email, username, password, mobile }) => {
         setHamburgerStatus(false)
         setRegisterVariables({ email, username, password, phone: mobile })
         setCalledStatus(true, REGISTER)
-        toggleModal(modalStatus, setModalStatus, REGISTER)
+        toggleModal(setModalStatus, false , REGISTER)
     }
 
     const onLogout = (e) => {
@@ -297,7 +297,7 @@ function SiteHeader({ history }) {
             storeUserInContext(registerUser)
             if (registerUser.error || registerError) {
                 showToast("Registration failed!", 'error');
-                toggleModal(modalStatus, setModalStatus, ERROR, registerUser.error)
+                toggleModal(setModalStatus, true, ERROR, registerUser.error)
             }
             else if (registerUser && registerUser.username)
                 showToast(`${registerUser.username} is registered!`, 'success')
@@ -307,11 +307,11 @@ function SiteHeader({ history }) {
 
     useEffect(() => {
         if (callRegisterModal)
-            toggleModal(modalStatus, setModalStatus, REGISTER)
+            toggleModal(setModalStatus, true , REGISTER)
     }, [callRegisterModal])
 
     // if (callRegisterModal) {
-    //     toggleModal(modalStatus, setModalStatus, REGISTER)
+    //     toggleModal(setModalStatus, REGISTER)
     // }
     // const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
     let errorInLogin = (contextUser && contextUser.error) || loginError
@@ -368,10 +368,10 @@ function SiteHeader({ history }) {
                                 </>
                                 ) :
                                 (<>
-                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onOpenModal(modalStatus, setModalStatus, LOGIN)} onClick={(e) => onOpenModal(modalStatus, setModalStatus, LOGIN)}>
+                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, LOGIN)} onClick={(e) => onOpenModal(setModalStatus, LOGIN)}>
                                         Login
                                 </HamburgerOption>
-                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onOpenModal(modalStatus, setModalStatus, REGISTER)} onClick={(e) => onOpenModal(modalStatus, setModalStatus, REGISTER)}>
+                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, REGISTER)} onClick={(e) => onOpenModal(setModalStatus, REGISTER)}>
                                         Register
                                 </HamburgerOption>
                                 </>)
@@ -384,9 +384,9 @@ function SiteHeader({ history }) {
                         (contextUser && !errorInLogin) ?
                             (<UserAvatar userInfo={contextUser} onLogout={onLogout} />) :
                             (<>
-                                <LoginHeader tabIndex="0" onKeyPress={(e) => onOpenModal(modalStatus, setModalStatus, LOGIN)} onClick={() => onOpenModal(modalStatus, setModalStatus, LOGIN)}>Login</LoginHeader>
+                                <LoginHeader tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, LOGIN)} onClick={() => onOpenModal(setModalStatus, LOGIN)}>Login</LoginHeader>
                                 <Separator />
-                                <RegisterHeader tabIndex="0" onKeyPress={(e) => onOpenModal(modalStatus, setModalStatus, REGISTER)} onClick={() => onOpenModal(modalStatus, setModalStatus, REGISTER)}>Register</RegisterHeader>
+                                <RegisterHeader tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, REGISTER)} onClick={() => onOpenModal(setModalStatus, REGISTER)}>Register</RegisterHeader>
                             </>)
 
                     }
@@ -396,7 +396,7 @@ function SiteHeader({ history }) {
                 onAfterOpen={() => { }}
                 onRequestClose={() => {
                     setRegisterModal(false)
-                    toggleModal(modalStatus, setModalStatus, modalStatus.type)
+                    toggleModal(setModalStatus, false, modalStatus.type)
                 }}
                 style={customStyles(modalStatus.type)}
                 contentLabel={modalStatus.type}
