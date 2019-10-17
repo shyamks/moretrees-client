@@ -53,18 +53,19 @@ const renderMiddleware = () => (req, res) => {
       let responseHtml = req.html
       let routerContext = {}
 
-      const { NODE_ENV, REACT_APP_GRAPHQL_PROD_ENDPOINT, REACT_APP_GRAPHQL_TEST_ENDPOINT } = process.env
+      const { NODE_ENV, REACT_APP_PROD_ENDPOINT, REACT_APP_TEST_ENDPOINT } = process.env
       const isProd = NODE_ENV === 'production'
-      const FINAL_ENDPOINT = isProd ? REACT_APP_GRAPHQL_PROD_ENDPOINT : REACT_APP_GRAPHQL_TEST_ENDPOINT
+      const FINAL_ENDPOINT = isProd ? REACT_APP_PROD_ENDPOINT : REACT_APP_TEST_ENDPOINT
 
-      let client = manageApolloMiddleware(FINAL_ENDPOINT)
+      const GRAPHQL_ENDPOINT = path.join(FINAL_ENDPOINT, '/graphql')
+      let client = manageApolloMiddleware(GRAPHQL_ENDPOINT)
       // let { url, baseUrl, originalUrl, _parsedUrl } = req
       // console.log({ url, baseUrl, originalUrl, _parsedUrl }, 'req pls')
       // console.log(JSON.stringify(process.env), 'env server')
       const CurrentRoute = Routes.find(route => matchPath(req.url, route))
       let promise
       if (CurrentRoute.loadData) {
-        promise = CurrentRoute.loadData(FINAL_ENDPOINT)
+        promise = CurrentRoute.loadData(GRAPHQL_ENDPOINT)
       }
       else {
         promise = Promise.resolve(null)
@@ -76,7 +77,7 @@ const renderMiddleware = () => (req, res) => {
         res.redirect(302, routerContext.url)
       } else {
         promise.catch(err => {
-          console.error('err promise', FINAL_ENDPOINT, '<=',  err);
+          console.error('err promise', GRAPHQL_ENDPOINT, '<=',  err);
           return res.status(500).send('Error getting server data');
         })
         promise.then(data => {

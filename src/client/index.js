@@ -13,14 +13,14 @@ import Logger from '../components/Logger';
 
 const manageApolloMiddleware = () => {
     console.log(JSON.stringify(process.env),'lets check here env')
-    const { NODE_ENV, REACT_APP_GRAPHQL_PROD_ENDPOINT, REACT_APP_GRAPHQL_TEST_ENDPOINT } = process.env
+    const { NODE_ENV, REACT_APP_PROD_ENDPOINT, REACT_APP_TEST_ENDPOINT } = process.env
     const isProd = NODE_ENV === 'production'
-    const FINAL_ENDPOINT = isProd ? REACT_APP_GRAPHQL_PROD_ENDPOINT : REACT_APP_GRAPHQL_TEST_ENDPOINT
-    const httpLink = createHttpLink({ uri: FINAL_ENDPOINT });
+    const FINAL_ENDPOINT = isProd ? REACT_APP_PROD_ENDPOINT : REACT_APP_TEST_ENDPOINT
+    const httpLink = createHttpLink({ uri: FINAL_ENDPOINT + '/graphql' });
     const middlewareLink = new ApolloLink((operation, forward) => {
         let item
         if (window) item = window.localStorage.getItem(STORE_TOKEN)
-        Logger(item, 'manageApolloMiddleware')
+        console.log(item, 'manageApolloMiddleware')
         const token = item ? JSON.parse(item) : ""
         operation.setContext({
             headers: {

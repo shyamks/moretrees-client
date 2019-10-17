@@ -2,10 +2,10 @@
 
 import styled, { keyframes } from 'styled-components'
 import Modal from 'react-modal'
-import React from 'react';
+import React from 'react'
 import { useState, useEffect, useContext, useRef } from 'react'
-import { withRouter } from "react-router-dom";
-import 'react-toastify/dist/ReactToastify.css';
+import { withRouter } from "react-router-dom"
+import 'react-toastify/dist/ReactToastify.css'
 import { toast } from 'react-toastify'
 
 import Login from './login'
@@ -13,16 +13,16 @@ import Register from './register'
 import UserAvatar from './UserAvatar'
 import MenuIcon from './svg-icons/MenuIcon'
 
-import gql from 'graphql-tag';
-import useLazyQueryApi from './hooks/useLazyQueryApi';
-import useMutationApi from './hooks/useMutationApi';
-import UserContext from './UserContext';
-import { showToast, apiCallbackStatus, isClickOrEnter } from '../utils';
+import gql from 'graphql-tag'
+import useLazyQueryApi from './hooks/useLazyQueryApi'
+import useMutationApi from './hooks/useMutationApi'
+import UserContext from './UserContext'
+import { showToast, apiCallbackStatus, isClickOrEnter } from '../utils'
 // import Link from 'next/link'
-import { REGISTER_MUTATION, LOGIN_QUERY, PAGES, UserType } from '../constants';
+import { REGISTER_MUTATION, LOGIN_QUERY, PAGES, UserType, FINAL_ENDPOINT } from '../constants'
 
 import logoImage from '../images/moretrees-logo.jpg'
-import Logger from './Logger';
+import Logger from './Logger'
 
 const LOGIN = 'Login'
 const REGISTER = 'Register'
@@ -207,6 +207,7 @@ function SiteHeader({ history }) {
     let hamburgerRef = useRef(null)
     let [hamburgerStatus, setHamburgerStatus] = useState(false)
 
+    // let [authenticate, setAuthenticate] = useState({})
     // hack to control outside clicks on hamburger
     useEffect(() => {
         document.addEventListener("mousedown", handleClick);
@@ -224,9 +225,33 @@ function SiteHeader({ history }) {
         setHamburgerStatus(false);
     };
 
-
+    // console.log(authenticate, 'twitter user')
     let [modalStatus, setModalStatus] = useState({ type: LOGIN, data: null, open: false })
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken, callRegisterModal, setRegisterModal } = useContext(UserContext);
+
+    // social login check
+    useEffect(() => {
+        if (!contextUser) {
+            fetch(FINAL_ENDPOINT + '/auth/login/success', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true
+                }
+            }).then(response => {
+                if (response.status === 200) return response.json();
+                throw new Error('failed to authenticate user');
+            }).then(responseJson => {
+                console.log(responseJson, 'twitter user')
+                storeUserInContext(responseJson.user)
+            }).catch(error => {
+                removeUserInContext()
+            })
+        }
+
+    }, [])
 
     const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
 
@@ -267,8 +292,24 @@ function SiteHeader({ history }) {
     const onLogout = (e) => {
         if (isClickOrEnter(e)){
             setHamburgerStatus(false)
+            fetch(FINAL_ENDPOINT + '/auth/logout', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true
+                }
+            }).then(response => {
+                if (response.status === 200) return response.json()
+                throw new Error('failed to logout user')
+            }).then(responseJson => {
+                console.log('logged out', responseJson)
+            }).catch(error => {
+                console.error(JSON.stringify(error), 'error while logout')
+            })
             removeUserInContext()
-            navigateTo(PAGES.INDEX)
+            history.push(PAGES.INDEX)
             setLoginData(null)
         }
     }
@@ -283,7 +324,7 @@ function SiteHeader({ history }) {
             storeUserInContext(loginUser)
             Logger(loginData, loginError, 'wtf loginError')
             if (loginUser.error || loginError) {
-                showToast("Login failed!", 'error');
+                showToast("Login failed!", 'error')
             }
             else if (loginUser.username)
                 showToast(`Logged in ${loginUser.username} !`, 'success')
@@ -296,7 +337,7 @@ function SiteHeader({ history }) {
             let registerUser = registerData.data.registerUser
             storeUserInContext(registerUser)
             if (registerUser.error || registerError) {
-                showToast("Registration failed!", 'error');
+                showToast("Registration failed!", 'error')
                 toggleModal(setModalStatus, true, ERROR, registerUser.error)
             }
             else if (registerUser && registerUser.username)
@@ -322,7 +363,6 @@ function SiteHeader({ history }) {
                 <AppLeftHeader>
                     <Logo tabIndex="0" src={logoImage} onKeyPress={(e)=> navigateTo(e,PAGES.INDEX) } onClick={(e) => navigateTo(e,PAGES.INDEX)}/>
                     <Separator />
-
                     <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.DONATE)} onClick={(e) => navigateTo(e, PAGES.DONATE)}> Donate </VolunteerLink>
                     <Separator />
                     <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.VOLUNTEER)} onClick={(e) => navigateTo(e, PAGES.VOLUNTEER)}> Volunteer </VolunteerLink>

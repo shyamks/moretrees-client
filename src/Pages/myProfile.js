@@ -15,9 +15,16 @@ import NotFound from './NotFound'
 import useQueryApi from '../components/hooks/useQueryApi'
 const validate = require("validate.js");
 
-// const EMAIL = 'email'
-// const PASSWORD = 'email'
+const InputContainer = styled.div`
+    margin-bottom: ${props => props.isError ? '0' : '10px'}
+`
 
+const InputLabel = styled.label`
+    margin: ${props => props.isError ? '16px 0 0 22px' : '0 0 0 22px'}; 
+    font-style: italic;
+    font-size: 10px;
+    color: red;
+`
 const getError = (type, value, extraData) => {
 
     let isError = false, error = null, constraints, formPassword
@@ -26,7 +33,7 @@ const getError = (type, value, extraData) => {
             constraints = {
                 from: {
                     format: {
-                        pattern: "[a-z0-9]+",
+                        pattern: "[a-zA-Z  ,.'-0-9]+",
                         flags: "i",
                         message: "can only contain a-z and 0-9"
                     }
@@ -69,16 +76,7 @@ const getError = (type, value, extraData) => {
         case 'twitter':
         case 'insta':
         case 'fb':
-            constraints = {
-                from: {
-                    length:{
-                        minimum: 1
-                    }
-                }
-            }
-            error = validate({ from: value }, constraints)
-            error = error ? `${type} not valid` : null
-            isError = !!error
+           
             // Logger(error, isError, `${type} here`)
             break
         default:
@@ -98,30 +96,30 @@ const UpdateContainer = styled.div`
 export default function MyProfile({ history, location, staticContext, match, route }) {
 
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
-    const { email } = contextUser || {}
+    const { email, twitterId, instaId } = contextUser || {}
 
     let [state, setState] = useState({
-        name: { value: '', error: '', isError: false },
-        // email: { value: '', error: '', isError: false },
-        password: { value: '', error: '', isError: false },
-        confirmPassword: { value: '', error: '', isError: false },
-        twitter: { value: '', error: '', isError: false },
-        insta: { value: '', error: '', isError: false },
-        fb: { value: '', error: '', isError: false },
+        name: { value: '', error: null, isError: false },
+        // email: { value: '', error: null, isError: false },
+        password: { value: '', error: null, isError: false },
+        confirmPassword: { value: '', error: null, isError: false },
+        twitter: { value: '', error: null, isError: false },
+        insta: { value: '', error: null, isError: false },
+        fb: { value: '', error: null, isError: false },
     })
 
-    const [userData, isGetuserLoading, isGetUserError, refetchUserData]= useQueryApi(gql(GET_USER_QUERY), { email })
+    const [userData, isGetuserLoading, isGetUserError, refetchUserData]= useQueryApi(gql(GET_USER_QUERY), { email, twitterId, instaId })
     useEffect(() => {
         if (userData && !userData.getUser.error && !isGetUserError){
             let user = userData.getUser
             let { fbProfile, instaProfile, twitterProfile, username } = user
             let stateObject = {
-                name: { value: username, error: '', isError: false },
-                password: { value: '', error: '', isError: false },
-                confirmPassword: { value: '', error: '', isError: false },
-                twitter: { value: twitterProfile, error: '', isError: false },
-                fb: { value: fbProfile, error: '', isError: false },
-                insta: { value: instaProfile, error: '', isError: false },
+                name: { value: username, error: null, isError: false },
+                password: { value: '', error: null, isError: false },
+                confirmPassword: { value: '', error: null, isError: false },
+                twitter: { value: twitterProfile, error: null, isError: false },
+                fb: { value: fbProfile || '', error: null, isError: false },
+                insta: { value: instaProfile || '', error: null, isError: false },
             }
             setState(stateObject)
         }
@@ -155,12 +153,12 @@ export default function MyProfile({ history, location, staticContext, match, rou
                 let { fbProfile, instaProfile, twitterProfile, username } = updateUser
                 showToast('Updated', 'success')                
                 setState({
-                    name: { value: username, error: '', isError: false },
-                    password: { value: '', error: '', isError: false },
-                    confirmPassword: { value: '', error: '', isError: false },
-                    twitter: { value: twitterProfile, error: '', isError: false },
-                    fb: { value: fbProfile, error: '', isError: false },
-                    insta: { value: instaProfile, error: '', isError: false },
+                    name: { value: username, error: null, isError: false },
+                    password: { value: '', error: null, isError: false },
+                    confirmPassword: { value: '', error: null, isError: false },
+                    twitter: { value: twitterProfile, error: null, isError: false },
+                    fb: { value: fbProfile || '', error: null, isError: false },
+                    insta: { value: instaProfile || '', error: null, isError: false },
                 })
                 storeUserInContext(updateUser)
             }
@@ -169,9 +167,6 @@ export default function MyProfile({ history, location, staticContext, match, rou
             }
         }
     }, [updateUserData, updateUserError])
-
-
-    let [disable, setDisable] = useState(false)
 
     const canDisableUpdateProfile = () => {
         let bools = []
@@ -189,10 +184,6 @@ export default function MyProfile({ history, location, staticContext, match, rou
         console.log(bools, Object.keys(state), 'canDisableCreateProfile')
         return !bools.reduce((acc, ele) => !ele.isError && acc, true)
     }
-
-    useEffect(() => {
-        setDisable(canDisableUpdateProfile())
-    }, [state])
 
     const updateProfile = () => {
         if (!canDisableUpdateProfile()) {
@@ -217,6 +208,13 @@ export default function MyProfile({ history, location, staticContext, match, rou
         }
     }
 
+    let { name: { value: nameValue, isError: nameIsError, error: nameError },
+        password: { value: passValue, isError: passIsError, error: passError },
+        confirmPassword: { value: confirmPassValue, isError: confirmPassIsError, error: confirmPassError },
+        twitter: { value: twitterValue, isError: twitterIsError, error: twitterError },
+        insta: { value: instaValue, isError: instaIsError, error: instaError },
+        fb: { value: fbValue, isError: fbIsError, error: fbError } } = state
+    console.log(state, ' state')
     return (
         <Page>
             <Header />
@@ -224,14 +222,31 @@ export default function MyProfile({ history, location, staticContext, match, rou
                 <UpdateContainer>
                     {contextUser &&
                         <>
-                            <Input id={'name'} value={state.name.value} type={'text'} maxLength="10" onChange={(e) => handleChange('name', e.target.value)} placeholder={'Name'} />
-                            {/* <Input id={'email'} type={'text'} isError={state['email'].isError} onChange={(e) => handleChange('email', e.target.value)} placeholder={'Email'} /> */}
-                            <Input id={'password'} value={state.password.value} type={'password'} isError={state['password'].isError} onChange={(e) => handleChange('password', e.target.value)} placeholder={'Password'} />
-                            <Input id={'confirmPassword'} value={state.confirmPassword.value} type={'password'} isError={state['confirmPassword'].isError} onChange={(e) => handleChange('confirmPassword', e.target.value)} placeholder={'Confirm Password'} />
-                            <Input id={'twitter'} value={state.twitter.value} onChange={(e) => handleChange('twitter', e.target.value)} placeholder={'Twitter'} />
-                            <Input id={'insta'} value={state.insta.value} onChange={(e) => handleChange('insta', e.target.value)} placeholder={'Instagram'} />
-                            <Input id={'fb'} value={state.fb.value} onChange={(e) => handleChange('fb', e.target.value)} placeholder={'Facebook'} />
-                            <Button disabled={disable} onClick={() => updateProfile()} width="200px">Update</Button>
+                            <InputContainer isError={nameIsError}>
+                                <Input id={'name'} value={nameValue} isError={nameIsError} type={'text'} maxLength="20" onChange={(e) => handleChange('name', e.target.value)} placeholder={'Name'} />
+                                {nameIsError && <InputLabel isError={nameIsError}>{nameError}</InputLabel>}
+                            </InputContainer>
+                            <InputContainer isError={passIsError}r>
+                                <Input id={'password'} value={passValue} isError={passIsError} type={'password'} isError={state['password'].isError} onChange={(e) => handleChange('password', e.target.value)} placeholder={'Password'} />
+                                {passIsError && <InputLabel isError={passIsError}>{passError}</InputLabel>}
+                            </InputContainer>
+                            <InputContainer isError={confirmPassIsError}>
+                                <Input id={'confirmPassword'} value={confirmPassValue} isError={confirmPassIsError} type={'password'} isError={state['confirmPassword'].isError} onChange={(e) => handleChange('confirmPassword', e.target.value)} placeholder={'Confirm Password'} />
+                                {confirmPassIsError && <InputLabel isError={confirmPassIsError}>{confirmPassError}</InputLabel>}
+                            </InputContainer>
+                            <InputContainer isError={twitterIsError}>
+                                <Input id={'twitter'} value={twitterValue} isError={twitterIsError} onChange={(e) => handleChange('twitter', e.target.value)} placeholder={'Twitter'} />
+                                {twitterIsError && <InputLabel isError={twitterIsError}>{twitterError}</InputLabel>}
+                            </InputContainer>
+                            <InputContainer isError={instaIsError}>
+                                <Input id={'insta'} value={instaValue} isError={instaIsError} onChange={(e) => handleChange('insta', e.target.value)} placeholder={'Instagram'} />
+                                {instaIsError && <InputLabel isError={instaIsError}>{instaError}</InputLabel>}
+                            </InputContainer>
+                            <InputContainer isError={fbIsError}>
+                                <Input id={'fb'} value={fbValue} isError={fbIsError} onChange={(e) => handleChange('fb', e.target.value)} placeholder={'Facebook'} />
+                                {fbIsError && <InputLabel isError={fbIsError}>{fbError}</InputLabel>}
+                            </InputContainer>
+                            <Button disabled={canDisableUpdateProfile()} onClick={() => updateProfile()} width="200px">Update</Button>
                         </>
                     }
                 </UpdateContainer>

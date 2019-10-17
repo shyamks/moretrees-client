@@ -6,11 +6,12 @@ const Container = styled.div`
     line-height: 14px;
     margin:0 10px;
     display: flex;
+    margin-bottom: ${props => props.isError ? '-14px' : '10px'}
 `
 
 const Label = styled.label`
     left: 14px;
-    top: 30px;
+    top: 22px;
     font-size: 13px;
     color: grey;
     position: absolute;
@@ -43,7 +44,7 @@ const Input = styled.input`
     width: ${(props) => (props.numberInputWidth)};
     padding: 0 8px;
     margin-left: 5px;
-    margin-top: 20px;
+    margin-top: 12px;
     transition: border-color 0.3s ease-in-out;
     ${({ error }) => error && `border-color: red;`}
 
@@ -78,7 +79,7 @@ const DEFAULT_LENGTH = "80"
 export default function InputWithLabel({ placeholder, value, onBlur, onChange, isError, maxLength, id, ...otherProps }) {
 
     return (
-        <Container>
+        <Container isError={isError}>
             <Input id={id} onBlur={(e) => {
                 e.persist()
                 onBlur && onBlur(e)

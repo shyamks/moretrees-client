@@ -1,10 +1,12 @@
-import './styles/loginStyles.css';
 import { useRef, useState } from 'react'
 import React from 'react';
 import styled, {keyframes} from 'styled-components'
 
 import { Captcha } from './Recaptcha';
-import { isProd } from '../constants';
+import { isProd, FINAL_ENDPOINT } from '../constants';
+
+import 'font-awesome/css/font-awesome.css';
+import 'bootstrap-social/bootstrap-social.css';
 
 const input_opacity = keyframes`
     0%   {transform: translateY(-10px); opacity: 0}
@@ -53,6 +55,12 @@ const LoginButton = styled.button`
     }
 `
 
+const SocialContainer = styled.div`
+    opacity: 1;
+    animation: ${input_opacity} 0.8s cubic-bezier(.55, 0, .1, 1);
+    margin: 0 0 5px 0;
+`
+
 const LoginSection = styled.section`
     position: relative;
     width: 100%;
@@ -99,13 +107,25 @@ function Login({ onSubmit }) {
         }
     }
 
+    const _handleSignInClick = () => {
+        // Authenticate using via passport api in the backend
+        // Open Twitter login page
+        // Upon successful login, a cookie session will be stored in the client
+        window.open(FINAL_ENDPOINT + '/auth/twitter', "_self");
+    };
+
     return (
         <LoginContainer>
             <LoginSection>
                 <LoginInputContainer>
                     <Input ref={emailRef} type="text" placeholder="Email" required autoFocus />
                     <Input ref={passRef} type="password" placeholder="Password" required />
-                    <Captcha onSuccess={verifyCallback}/>
+                    <SocialContainer>
+                        <button tabindex="0" id="twitter-button" class="btn btn-block btn-social btn-twitter" onClick={_handleSignInClick}>
+                            <i class="fa fa-twitter"></i> Sign in with Twitter
+                        </button>
+                    </SocialContainer>
+                    <Captcha onSuccess={verifyCallback} />
                     <LoginButton onClick={onLogin} type="submit">SIGN IN</LoginButton>
                 </LoginInputContainer>
             </LoginSection>

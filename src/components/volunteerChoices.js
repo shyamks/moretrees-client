@@ -77,12 +77,12 @@ function VolunteerChoices() {
     const client = useClient()
 
     const onSubmit = () => {
-        let { email } = contextUser || {}
-        if (email) {
+        let { email, twitterId, instaId } = contextUser || {}
+        if (email || twitterId || instaId) {
             
             let {whenSelected, whatSelected} = getOptionsSelected()
             
-            let input = { availableWhen: whenSelected, availableWhat: whatSelected, email }
+            let input = { availableWhen: whenSelected, availableWhat: whatSelected, email, twitterId, instaId }
             setUpdateUserVariables({ userInput: input })
         }
         else {
@@ -94,7 +94,7 @@ function VolunteerChoices() {
     const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(gql(UPDATE_USER_MUTATION))
 
     useEffect(() => {
-        Logger(updateUserData, 'useEffect updateUserData')
+        console.log(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
             if (!(updateUser.error || updateUserError)) {
@@ -121,7 +121,7 @@ function VolunteerChoices() {
     let {whenSelected, whatSelected} = getOptionsSelected()
     
     let disable = !(whatSelected && whenSelected)
-    Logger(selectedOptionObject, contextUser, { whatSelected, whenSelected }, disable, 'ssr issue here')
+    console.log(selectedOptionObject, contextUser, { whatSelected, whenSelected }, disable, 'ssr issue here')
     
     return (
         <Wrapper>

@@ -137,8 +137,9 @@ const Styles = styled.div`
 function MyDonations() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
     let client = useClient()
-    let { email } = contextUser || {}
-    const [myDonationsData, isGetMyDonationsLoading, isGetMyDonationsError, refetchMyDonationsData] = useQueryApi(gql(GET_MY_DONATIONS), { email })
+    let { email, twitterId, instaId } = contextUser || {}
+    const [myDonationsData, isGetMyDonationsLoading, isGetMyDonationsError,
+         refetchMyDonationsData] = useQueryApi(gql(GET_MY_DONATIONS), { email, twitterId, instaId })
     useEffect(() => {
         refetchMyDonationsData()
     }, [])
