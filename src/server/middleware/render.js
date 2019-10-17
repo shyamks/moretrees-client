@@ -53,7 +53,7 @@ const renderMiddleware = () => (req, res) => {
       let responseHtml = req.html
       let routerContext = {}
 
-      const { NODE_ENV, REACT_APP_PROD_ENDPOINT, REACT_APP_TEST_ENDPOINT } = process.env
+      const { NODE_ENV, REACT_APP_PROD_ENDPOINT, REACT_APP_TEST_ENDPOINT} = process.env
       const isProd = NODE_ENV === 'production'
       const FINAL_ENDPOINT = isProd ? REACT_APP_PROD_ENDPOINT : REACT_APP_TEST_ENDPOINT
 
