@@ -9,6 +9,8 @@ if (typeof window === 'undefined') {
   global.fetch = fetch
 }
 
+const MAX_CHAR = 20
+
 export const getUserFromLocalStorage = () => {
     try {
         let userItem = localStorage.getItem(STORE_USER)
@@ -73,3 +75,9 @@ export const isClickOrEnter = (e) => {
     e.persist()
     return (e.type == 'click' || e.charCode == 13)
 };
+
+export const cleanInputValue = (value) => {
+    let realValue = value && value.trim()
+    realValue = (realValue.length > MAX_CHAR) ? realValue.substr(0, MAX_CHAR) : realValue
+    return realValue
+}

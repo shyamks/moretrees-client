@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components'
 
 import { Captcha } from './Recaptcha';
 import { isProd } from '../constants';
+import { cleanInputValue } from '../utils';
 
 const input_opacity = keyframes`
     0%   {transform: translateY(-10px); opacity: 0}
@@ -153,9 +154,10 @@ function Register({ onSubmit }) {
     const handleChange = (e, type) => {
         e.persist()
         let { value } = e.target
+        let realValue = cleanInputValue(value)
         let { isError, errorText } = validity(value, type)
         console.log(e, { value, isError, errorText }, 'handleChange')
-        setRegisterDetails({ ...registerDetails, [type]: { value, isError, errorText } })
+        setRegisterDetails({ ...registerDetails, [type]: { value: realValue, isError, errorText } })
     }
 
     // specifying verify callback function
