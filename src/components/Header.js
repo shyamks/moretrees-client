@@ -231,6 +231,7 @@ function SiteHeader({ history }) {
 
     // social login check
     useEffect(() => {
+        console.log('point here')
         // if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
