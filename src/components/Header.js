@@ -246,8 +246,10 @@ function SiteHeader({ history }) {
                 throw new Error('failed to authenticate user');
             }).then(responseJson => {
                 console.log(responseJson, 'twitter user')
+                showToast('Login successfull', 'success')
                 storeUserInContext(responseJson.user)
             }).catch(error => {
+                showToast('Login failed', 'error')
                 console.error('failed =>', error)
                 // removeUserInContext()
             })
