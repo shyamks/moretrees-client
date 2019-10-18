@@ -111,7 +111,7 @@ function Login({ onSubmit }) {
         // Authenticate using via passport api in the backend
         // Open Twitter login page
         // Upon successful login, a cookie session will be stored in the client
-        window.open(FINAL_ENDPOINT + '/auth/twitter', "_self");
+        window.open('http://localhost:5000' + '/auth/twitter', "_self");
     };
 
     return (
