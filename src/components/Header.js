@@ -235,15 +235,13 @@ function SiteHeader({ history }) {
         // if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
-                credentials: 'include',
-                mode: "no-cors",
+                credentials: 'same-origin',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Credentials': true
                 }
             }).then(response => {
-                console.log('then =>', response.json())
                 if (response.status === 200) return response.json();
                 throw new Error('failed to authenticate user');
             }).then(responseJson => {
