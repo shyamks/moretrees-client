@@ -243,6 +243,7 @@ function SiteHeader({ history }) {
                     'Access-Control-Allow-Credentials': true
                 }
             }).then(response => {
+                console.log('then =>', response.json())
                 if (response.status === 200) return response.json();
                 throw new Error('failed to authenticate user');
             }).then(responseJson => {
