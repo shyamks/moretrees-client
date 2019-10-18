@@ -235,7 +235,7 @@ function SiteHeader({ history }) {
         // if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
-                // credentials: 'include',
+                credentials: 'include',
                 mode: "no-cors",
                 headers: {
                     Accept: 'application/json',
