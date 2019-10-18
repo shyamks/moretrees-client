@@ -234,7 +234,7 @@ function SiteHeader({ history }) {
         if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
-                credentials: 'include',
+                credentials: 'no-cors',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
@@ -294,7 +294,7 @@ function SiteHeader({ history }) {
             setHamburgerStatus(false)
             fetch(FINAL_ENDPOINT + '/auth/logout', {
                 method: 'GET',
-                credentials: 'include',
+                credentials: 'no-cors',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
