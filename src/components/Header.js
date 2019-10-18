@@ -231,7 +231,7 @@ function SiteHeader({ history }) {
 
     // social login check
     useEffect(() => {
-        if (!contextUser) {
+        // if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
                 credentials: 'no-cors',
@@ -247,9 +247,10 @@ function SiteHeader({ history }) {
                 console.log(responseJson, 'twitter user')
                 storeUserInContext(responseJson.user)
             }).catch(error => {
-                removeUserInContext()
+                console.error('failed =>', error)
+                // removeUserInContext()
             })
-        }
+        // }
 
     }, [])
 
