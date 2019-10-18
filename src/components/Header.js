@@ -231,11 +231,11 @@ function SiteHeader({ history }) {
 
     // social login check
     useEffect(() => {
-        console.log('point here')
+        console.log(FINAL_ENDPOINT, 'point here')
         // if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
-                credentials: 'same-origin',
+                credentials: 'include',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
