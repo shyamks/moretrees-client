@@ -59,8 +59,8 @@ const renderMiddleware = () => (req, res) => {
 
       const GRAPHQL_ENDPOINT = FINAL_ENDPOINT + '/graphql'
       let client = manageApolloMiddleware(GRAPHQL_ENDPOINT)
-      // let { url, baseUrl, originalUrl, _parsedUrl } = req
-      // console.log({ url, baseUrl, originalUrl, _parsedUrl }, 'req pls')
+      let { url, baseUrl, originalUrl, _parsedUrl } = req
+      console.log({ url, baseUrl, originalUrl, _parsedUrl }, GRAPHQL_ENDPOINT, 'req pls')
       // console.log(JSON.stringify(process.env), 'env server')
       const CurrentRoute = Routes.find(route => matchPath(req.url, route))
       let promise
