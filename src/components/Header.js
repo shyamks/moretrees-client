@@ -236,10 +236,9 @@ function SiteHeader({ history }) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
                 credentials: 'include',
-                withCredentials: true,
                 headers: {
                     Accept: 'application/json',
-                    "Access-Control-Allow-Origin": "https://moretrees-client.herokuapp.com",
+                    "Access-Control-Allow-Origin": "https://18f7ab93.ngrok.io",
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Credentials': true
                 }
