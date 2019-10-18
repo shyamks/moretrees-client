@@ -121,8 +121,8 @@ function Login({ onSubmit }) {
                     <Input ref={emailRef} type="text" placeholder="Email" required autoFocus />
                     <Input ref={passRef} type="password" placeholder="Password" required />
                     <SocialContainer>
-                        <button tabindex="0" id="twitter-button" class="btn btn-block btn-social btn-twitter" onClick={_handleSignInClick}>
-                            <i class="fa fa-twitter"></i> Sign in with Twitter
+                        <button tabIndex="0" id="twitter-button" className="btn btn-block btn-social btn-twitter" onClick={_handleSignInClick}>
+                            <i className="fa fa-twitter"></i> Sign in with Twitter
                         </button>
                     </SocialContainer>
                     <Captcha onSuccess={verifyCallback} />

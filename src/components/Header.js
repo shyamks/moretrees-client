@@ -235,6 +235,7 @@ function SiteHeader({ history }) {
         if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
+                credentials: 'include',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
