@@ -238,9 +238,7 @@ function SiteHeader({ history }) {
                 credentials: 'include',
                 headers: {
                     Accept: 'application/json',
-                    "Access-Control-Allow-Origin": "https://18f7ab93.ngrok.io",
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Credentials': true
+                    'Content-Type': 'application/json'
                 }
             }).then(response => {
                 if (response.status === 200) return response.json();
