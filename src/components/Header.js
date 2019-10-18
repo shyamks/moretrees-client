@@ -235,10 +235,10 @@ function SiteHeader({ history }) {
         if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
-                credentials: 'include',
                 headers: {
                     Accept: 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true
                 }
             }).then(response => {
                 if (response.status === 200) return response.json();
