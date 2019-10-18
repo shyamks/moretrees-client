@@ -232,14 +232,15 @@ function SiteHeader({ history }) {
     // social login check
     useEffect(() => {
         console.log(FINAL_ENDPOINT, 'point here')
-        // if (!contextUser) {
+        if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Credentials': true
+                    'Access-Control-Allow-Credentials': true,
+                    'Access-Control-Allow-Origin': '*'
                 }
             }).then(response => {
                 if (response.status === 200) return response.json();
@@ -251,7 +252,7 @@ function SiteHeader({ history }) {
                 console.error('failed =>', error)
                 // removeUserInContext()
             })
-        // }
+        }
 
     }, [])
 
