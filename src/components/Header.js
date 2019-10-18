@@ -235,12 +235,13 @@ function SiteHeader({ history }) {
         if (!contextUser) {
             fetch(FINAL_ENDPOINT + '/auth/login/success', {
                 method: 'GET',
-                credentials: 'omit',
+                credentials: 'include',
+                withCredentials: true,
                 headers: {
                     Accept: 'application/json',
+                    "Access-Control-Allow-Origin": "https://moretrees-client.herokuapp.com",
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Credentials': true,
-                    'Access-Control-Allow-Origin': '*'
+                    'Access-Control-Allow-Credentials': true
                 }
             }).then(response => {
                 if (response.status === 200) return response.json();
