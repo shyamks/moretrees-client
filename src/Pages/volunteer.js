@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import Footer from '../components/Footer';
 import { PageContent, Page } from '../constants';
 
-function Volunteer() {
+export function Volunteer() {
     return (
         <>
             <Header />
@@ -18,4 +18,3 @@ function Volunteer() {
         </>
     )
 }
-export default Volunteer

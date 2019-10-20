@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { PageContent, Page } from '../constants'
 import Footer from '../components/Footer'
 
-function Donate({ staticContext }) {
+export function Donate({ staticContext }) {
     return (
         <Page>
             <Header />
@@ -15,5 +15,3 @@ function Donate({ staticContext }) {
         </Page>
     )
 }
-
-export default Donate

@@ -134,7 +134,7 @@ const Styles = styled.div`
   }
 `
 
-function MyDonations() {
+export function MyDonations() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
     let client = useClient()
     let { email, twitterId, instaId } = contextUser || {}
@@ -209,5 +209,3 @@ function Table({ columns, data }) {
         </table>
     )
 }
-
-export default MyDonations

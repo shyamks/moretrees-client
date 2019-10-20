@@ -99,7 +99,7 @@ const UpdateContainer = styled.div`
     flex-direction: column;
     align-items: center;
 `
-export default function MyProfile({ history, location, staticContext, match, route }) {
+export function MyProfile({ history, location, staticContext, match, route }) {
 
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
     const { email, twitterId, instaId } = contextUser || {}

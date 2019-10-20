@@ -14,7 +14,7 @@ import useMutationApi from './hooks/useMutationApi';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
 import useClient from './hooks/useClient';
 import UserContext from './UserContext';
-import { UPDATE_USER_MUTATION, GET_USER_QUERY, GET_VOLUNTEER_QUERY, availableWhenOptions, availableWhatOptions, MarkTitle } from '../constants'
+import { UPDATE_USER_MUTATION, availableWhenOptions, availableWhatOptions, MarkTitle } from '../constants'
 import { showToast } from '../utils'
 
 import volunteerLogoImage from '../images/moretrees-volunteer-logo.png'

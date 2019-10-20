@@ -150,15 +150,6 @@ query forgotPassword($email: String!) {
 }
 `
 
-export const GET_VOLUNTEER_QUERY = `
-query getVolunteerOptions($status: String){
-    getVolunteerOptions(status: $status) {
-        optionText
-        status
-        id
-    }
-}`
-
 export const UPDATE_USER_MUTATION = `
 mutation updateUser($userInput: UserInput!) {
   updateUser(input: $userInput){

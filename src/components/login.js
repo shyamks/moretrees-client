@@ -130,11 +130,11 @@ function Login({ onSubmit, navigateTo }) {
                 <LoginInputContainer>
                     <Input ref={emailRef} type="text" placeholder="Email" required autoFocus />
                     <Input ref={passRef} type="password" placeholder="Password" required />
-                    <SocialContainer>
+                    {/* <SocialContainer>
                         <button tabIndex="0" id="twitter-button" className="btn btn-block btn-social btn-twitter" onClick={_handleSignInClick}>
                             <i className="fa fa-twitter"></i> Sign in with Twitter
                         </button>
-                    </SocialContainer>
+                    </SocialContainer> */}
                     <Captcha onSuccess={verifyCallback} />
                     <ForgotPasssword onClick={(e) => navigateTo(e, PAGES.FORGOT_PASSWORD)}> Forgot Password? </ForgotPasssword>
                     <LoginButton onClick={onLogin} type="submit">SIGN IN</LoginButton>
