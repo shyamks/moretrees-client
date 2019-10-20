@@ -15,7 +15,22 @@ import { ApolloProvider } from '@apollo/react-hooks'
 import { ApolloClient } from 'apollo-client'
 import { STORE_TOKEN, FINAL_ENDPOINT } from '../../constants'
 import { InMemoryCache } from 'apollo-boost'
-// import initApollo from '../../utils'
+
+
+const prepareRequestUrl = (route, req) => {
+  return req.url
+}
+
+const prepareData = (route, data) => {
+  if (route.name === 'reset') {
+    if (data.data.confirmToken.error){
+      console.log(data,'prepareData')
+      throw new Error('Reset link has expired. Try again.')
+    }
+  }
+  return data ? { data } : {}
+}
+
 
 const manageApolloMiddleware = (endpoint) => {
   // alert(endpoint,'cmon server')
@@ -59,12 +74,16 @@ const renderMiddleware = () => (req, res) => {
 
       const GRAPHQL_ENDPOINT = FINAL_ENDPOINT + '/graphql'
       let client = manageApolloMiddleware(GRAPHQL_ENDPOINT)
-      let { url, baseUrl, originalUrl, _parsedUrl } = req
-      console.log({ url, baseUrl, originalUrl, _parsedUrl }, GRAPHQL_ENDPOINT, 'req pls')
+      let { url, baseUrl, originalUrl, _parsedUrl, query, params } = req
       // console.log(JSON.stringify(process.env), 'env server')
-      const CurrentRoute = Routes.find(route => matchPath(req.url, route))
+      const CurrentRoute = Routes.find(route => matchPath(req._parsedUrl.pathname, route))
+      // console.log({ url, baseUrl, originalUrl, _parsedUrl, query, params }, CurrentRoute, 'req pls')
+
       let promise
-      if (CurrentRoute.loadData) {
+      if (CurrentRoute.confirmToken) {
+        promise = CurrentRoute.confirmToken(GRAPHQL_ENDPOINT, query['token'])
+      }
+      else if (CurrentRoute.loadData) {
         promise = CurrentRoute.loadData(GRAPHQL_ENDPOINT)
       }
       else {
@@ -77,16 +96,18 @@ const renderMiddleware = () => (req, res) => {
         res.redirect(302, routerContext.url)
       } else {
         promise.catch(err => {
-          console.error('err promise', GRAPHQL_ENDPOINT, '<=',  err);
+          console.error('err promise', GRAPHQL_ENDPOINT, '<=', err);
           return res.status(500).send('Error getting server data');
         })
         promise.then(data => {
           try {
-            routerContext = data ? { data } : {}
+            let requestURL = prepareRequestUrl(CurrentRoute, req)
+            routerContext = prepareData(CurrentRoute, data)
+            // console.log(requestURL, 'requestURL')
             const sheet = new ServerStyleSheet()
             const htmlContent = ReactDOMServer.renderToString(
               <StaticRouter
-                location={req.url}
+                location={requestURL}
                 context={routerContext}
               >
                 <ApolloProvider client={client}>
@@ -110,7 +131,7 @@ const renderMiddleware = () => (req, res) => {
           }
           catch (err) {
             console.error('err catch', err);
-            return res.status(404)
+            return res.status(404).send(err)
           }
         })
       }

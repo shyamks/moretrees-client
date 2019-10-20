@@ -15,6 +15,8 @@ export const PAGES = {
   MY_DONATIONS: '/myDonations',
   PROFILE: '/profile',
   ADMIN: '/admin',
+  FORGOT_PASSWORD: '/forgotPassword',
+  RESET: '/reset'
 }
 
 export const UserType = {
@@ -103,6 +105,24 @@ mutation registerUser($username: String!, $email: String!, $password: String!) {
     }
 }`
 
+export const RESET_PASSWORD_MUTATION = `
+mutation resetPassword($password: String!, $confirmPassword: String!, $token: String!) {
+  resetPassword(password: $password, confirmPassword: $confirmPassword, token: $token) {
+    status
+    error
+  }
+}
+`
+
+export const CONFIRM_TOKEN_QUERY = `
+query confirmToken($token: String!){
+  confirmToken(token: $token){
+    status
+    error
+  }
+}
+`
+
 export const LOGIN_QUERY = `
 query loginUser($email: String!, $password: String!){
     loginUser(email: $email, password: $password) {
@@ -120,6 +140,15 @@ query loginUser($email: String!, $password: String!){
         error
     }
 }`
+
+export const FORGOT_PASSWORD_QUERY = `
+query forgotPassword($email: String!) {
+  forgotPassword(email: $email) {
+    status
+    error
+  }
+}
+`
 
 export const GET_VOLUNTEER_QUERY = `
 query getVolunteerOptions($status: String){

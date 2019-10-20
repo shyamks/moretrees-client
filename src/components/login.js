@@ -3,7 +3,7 @@ import React from 'react';
 import styled, {keyframes} from 'styled-components'
 
 import { Captcha } from './Recaptcha';
-import { isProd, FINAL_ENDPOINT } from '../constants';
+import { isProd, FINAL_ENDPOINT , PAGES} from '../constants';
 
 import 'font-awesome/css/font-awesome.css';
 import 'bootstrap-social/bootstrap-social.css';
@@ -85,7 +85,17 @@ const LoginContainer = styled.div`
     box-sizing: border-box;
 `
 
-function Login({ onSubmit }) {
+const ForgotPasssword = styled.a`
+    flex-direction: row-reverse;
+    opacity: 1;
+    animation: ${input_opacity} 0.8s cubic-bezier(.55, 0, .1, 1);
+    display: flex;
+    :hover {
+        cursor: pointer;
+    }
+`
+
+function Login({ onSubmit, navigateTo }) {
     const emailRef = useRef(null)
     const passRef = useRef(null)
     
@@ -126,6 +136,7 @@ function Login({ onSubmit }) {
                         </button>
                     </SocialContainer>
                     <Captcha onSuccess={verifyCallback} />
+                    <ForgotPasssword onClick={(e) => navigateTo(e, PAGES.FORGOT_PASSWORD)}> Forgot Password? </ForgotPasssword>
                     <LoginButton onClick={onLogin} type="submit">SIGN IN</LoginButton>
                 </LoginInputContainer>
             </LoginSection>

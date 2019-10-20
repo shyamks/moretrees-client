@@ -233,26 +233,26 @@ function SiteHeader({ history }) {
     useEffect(() => {
         console.log(FINAL_ENDPOINT, 'point here')
         if (!contextUser) {
-            fetch(FINAL_ENDPOINT + '/auth/login/success', {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Credentials': true
-                }
-            }).then(response => {
-                if (response.status === 200) return response.json();
-                throw new Error('failed to authenticate user');
-            }).then(responseJson => {
-                console.log(responseJson, 'twitter user')
-                showToast('Login successfull', 'success')
-                storeUserInContext(responseJson.user)
-            }).catch(error => {
-                showToast('Login failed', 'error')
-                console.error('failed =>', error)
-                // removeUserInContext()
-            })
+            // fetch(FINAL_ENDPOINT + '/auth/login/success', {
+            //     method: 'GET',
+            //     credentials: 'include',
+            //     headers: {
+            //         Accept: 'application/json',
+            //         'Content-Type': 'application/json',
+            //         'Access-Control-Allow-Credentials': true
+            //     }
+            // }).then(response => {
+            //     if (response.status === 200) return response.json();
+            //     throw new Error('failed to authenticate user');
+            // }).then(responseJson => {
+            //     console.log(responseJson, 'twitter user')
+            //     showToast('Login successfull', 'success')
+            //     storeUserInContext(responseJson.user)
+            // }).catch(error => {
+            //     showToast('Login failed', 'error')
+            //     console.error('failed =>', error)
+            //     // removeUserInContext()
+            // })
         }
 
     }, [])
@@ -267,7 +267,7 @@ function SiteHeader({ history }) {
         setHamburgerStatus(false)
         toggleModal(modalSetter, true, type, data)
     }
-    const navigateTo = (e,path) => {
+    const navigateTo = (e, path) => {
         if (isClickOrEnter(e)){
             history.push(path)
         }
@@ -445,7 +445,7 @@ function SiteHeader({ history }) {
                 style={customStyles(modalStatus.type)}
                 contentLabel={modalStatus.type}
             >
-                {(modalStatus.type === LOGIN) && <Login onSubmit={(data) => onLogin(data)} />}
+                {(modalStatus.type === LOGIN) && <Login navigateTo={navigateTo} onSubmit={(data) => onLogin(data)} />}
                 {(modalStatus.type === REGISTER) && <Register onSubmit={(data) => onRegister(data)} />}
                 {(modalStatus.type === ERROR) && <ShowError message={modalStatus.data} />}
             </Modal>

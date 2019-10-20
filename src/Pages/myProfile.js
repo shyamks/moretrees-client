@@ -59,19 +59,25 @@ const getError = (type, value, extraData) => {
             console.log({ password: value, confirmPassword: formPassword },(formPassword === value && value.length >=6), extraData,'password')
             if (formPassword != '' || value != ''){
                 isError = (formPassword === value && value.length >=6) ? false : true
+                if (formPassword !== value)
+                    error = "Passwords don't match"
+                else if (value.length < 6)
+                    error = "Password length > 5"
             }
-            error = isError ? 'Password not valid' : null
             break
         case 'confirmPassword':
             
             formPassword = (extraData && extraData.formPassword.value) || ''
             console.log({ password: value, confirmPassword: formPassword },(formPassword === value && value.length >=6), extraData,'confirmPassword')
             if (formPassword != '' || value != ''){
-                if (!(formPassword === value && value.length >=6)){
-                    isError = true
+                if (formPassword != '' || value != ''){
+                    isError = (formPassword === value && value.length >=6) ? false : true
+                    if (formPassword !== value)
+                        error = "Passwords don't match"
+                    else if (value.length < 6)
+                        error = "Password length > 5"
                 }
             }
-            error = isError ? 'Confirm Password not valid' : null
             break
         case 'twitter':
         case 'insta':
