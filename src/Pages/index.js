@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import SiteHeader from '../components/Header'
 import { withRouter } from "react-router-dom";
 
-import './index.css'
 import bannerImage from '../images/moretrees-back.jpg'
 import volunteerImage from '../images/volunteer.jpg'
 import donateImage from '../images/donate.jpg'
