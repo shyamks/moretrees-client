@@ -8,7 +8,6 @@ import NotFound from './NotFound'
 import gql from 'graphql-tag';
 import useQueryApi from '../components/hooks/useQueryApi';
 
-import './index.css'
 import { GET_MY_DONATIONS, PageContent, Page } from '../constants';
 import Footer from '../components/Footer';
 import { useTable } from 'react-table';

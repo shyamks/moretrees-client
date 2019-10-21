@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/react-hooks';
 
-import './index.css';
 import App from '../App';
 import { ApolloClient } from 'apollo-client';
 import { STORE_TOKEN } from '../constants';
