@@ -71,7 +71,7 @@ export const getNewId = () => {
 export const isClickOrEnter = (e) => {
     // Math.random should be unique because of its seeding algorithm.
     // Convert it to base 36 (numbers + letters), and grab the first 9 characters
-    // after the decimal.
+    // after the decimal. 
     e.persist()
     return (e.type == 'click' || e.charCode == 13)
 };
