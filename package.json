@@ -59,7 +59,7 @@
     "validate.js": "^0.13.1"
   },
   "scripts": {
-    "dev": "NODE_ENV=development REACT_APP_RAZORPAY_TEST_KEY=rzp_test_cxpMW5qj3FfIZD REACT_APP_TEST_ENDPOINT=http://localhost:5000 react-ssr-scripts start",
+    "dev": "NODE_ENV=development REACT_APP_RAZORPAY_TEST_KEY=rzp_test_cxpMW5qj3FfIZD REACT_APP_TEST_ENDPOINT=https://212051b7.ngrok.io react-ssr-scripts start",
     "start": "node build",
     "build": "react-ssr-scripts build",
     "test": "react-ssr-scripts test",
