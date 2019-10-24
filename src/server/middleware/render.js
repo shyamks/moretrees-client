@@ -23,7 +23,7 @@ const prepareRequestUrl = (route, req) => {
 
 const prepareData = (route, data) => {
   if (route.name === 'reset') {
-    if (data.data.confirmToken.error){
+    if (data && data.data.confirmToken.error){
       console.log(data,'prepareData')
       throw new Error('Reset link has expired. Try again.')
     }
@@ -77,7 +77,7 @@ const renderMiddleware = () => (req, res) => {
       let { url, baseUrl, originalUrl, _parsedUrl, query, params } = req
       // console.log(JSON.stringify(process.env), 'env server')
       const CurrentRoute = Routes.find(route => matchPath(req._parsedUrl.pathname, route))
-      // console.log({ url, baseUrl, originalUrl, _parsedUrl, query, params }, CurrentRoute, 'req pls')
+      console.log({ url, baseUrl, originalUrl, _parsedUrl, query, params }, CurrentRoute, 'req pls')
 
       let promise
       if (CurrentRoute.confirmToken) {
