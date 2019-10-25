@@ -1,13 +1,14 @@
 import MainPage from "./Pages/index";
-import Volunteer from "./Pages/volunteer";
-import Donate from "./Pages/donate";
-import MyDonations from "./Pages/myDonations";
-// import Country from "./Pages/myDonations";
 import NotFound from "./Pages/NotFound";
-import { loadDataFromServer } from "./helpers";
+import { Volunteer } from "./Pages/Volunteer";
+import { Donate } from "./Pages/Donate";
+import { MyDonations } from "./Pages/MyDonations";
+import { loadDataFromServer, getEmailFromToken } from "./helpers";
 import { PAGES } from "./constants";
-import MyProfile from "./Pages/myProfile";
-import Admin from "./Pages/admin";
+import { MyProfile } from "./Pages/MyProfile";
+import { Admin } from "./Pages/Admin";
+import { ForgotPassword } from "./Pages/ForgotPassword";
+import { Reset } from "./Pages/Reset";
 
 const Routes = [
     {
@@ -50,6 +51,19 @@ const Routes = [
         exact: true,
         component: Admin,
         loadData: (endpoint) => loadDataFromServer('admin', endpoint)
+    },
+    {
+        path: PAGES.FORGOT_PASSWORD,
+        name: 'forgotPassword',
+        exact: true,
+        component: ForgotPassword,
+        loadData: (endpoint) => loadDataFromServer('forgotPassword', endpoint)
+    },
+    {
+        path: PAGES.RESET,
+        name: 'reset',
+        component: Reset,
+        confirmToken: (endpoint, token) => getEmailFromToken(endpoint, token)
     },
     {
         component: NotFound,

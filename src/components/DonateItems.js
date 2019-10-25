@@ -47,18 +47,20 @@ const DonateItem = styled.div`
 const ItemContainer = styled.div`
     display: flex;
     flex-direction: row;
-    @media all and (max-width: 900px) {
+    @media all and (max-width: 800px) {
         flex-direction: column;
     }
 `
 
 const ItemDetail = styled.div`
-    margin: 0px 60px 25px 20px;
+    margin: 0px 20px 25px 20px;
     font-family: "Trebuchet MS", Helvetica, sans-serif;
-    white-space:nowrap;
     display: flex;
-    width: 470px;
+    width: 50%;
     flex-direction: column;
+    @media all and (max-width: 800px) {
+        align-self: center;
+    }
 `
 
 const ItemContent = styled.div`
@@ -70,20 +72,20 @@ const ItemContent = styled.div`
 
 const ItemTitle = styled.span`
     text-align: left;
-    @media all and (max-width: 900px) {
-        text-align: center;
-    }
     font-weight: bold;
     font-size: 22px;
     margin: 10px 10px 0px 10px;
+    @media all and (max-width: 800px) {
+        text-align: center;
+    }
 `
 
 const ItemSubtitle = styled.div`
     text-align: left;
-    @media all and (max-width: 900px) {
+    margin: 10px 10px 0px 10px;
+    @media all and (max-width: 800px) {
         text-align: center;
     }
-    margin: 10px 10px 0px 10px;
 `
 
 const ItemCost = styled(ItemSubtitle)`
@@ -94,19 +96,31 @@ const ItemCost = styled(ItemSubtitle)`
 
 const CostContainer = styled.div`
     display: flex;
-    @media all and (max-width: 900px) {
+    @media all and (max-width: 800px) {
         align-self: center;
     }
 `
 
 const Section = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 `
 
 const Container = styled.div`
     display: flex;
+    flex-direction: row;
+    @media all and (max-width: 800px) {
+        justify-content: center;
+        align-items: center
+    }
+`
+
+const MarkdownContainer = styled.div`
+    margin-left: 20px;
     flex-direction: column;
+    @media all and (max-width: 800px) {
+        margin: 5px 0 0 5px;
+    }
 `
 
 const CheckoutContainer = styled.div`
@@ -117,6 +131,9 @@ const SectionLogo = styled.img`
     width: 55px;
     height: 50px;
     margin: 10px 5px 10px 10px;
+    @media all and (max-width: 800px) {
+        margin: 0 5px 0 0;
+    }
 `
 
 const ProjectsTitleLogo = styled.img`
@@ -128,8 +145,9 @@ const ProjectsLogo = styled.img`
     width: 50px;
     height: 45px;
     margin: 10px;
-    @media all and (max-width: 900px) {
+    @media all and (max-width: 800px) {
         align-self: center;
+        margin: 10px 0 0 -5px;
     }
 `
 
@@ -276,56 +294,68 @@ function DonateItems({ staticContext }) {
                          \n\n We will notify you about progress through the plants life.
                          \n You get the geolocation & photo of your sapling once it is planted.`
 
+    const getDonateItems = (items) => {
+        let array = []
+        for (let i = 0; i < items.length; i++) {
+            let item = items[i]
+            let { id, title, subtitle, content, remaining, type, cost } = item
+            let logoType = (type == 'ROAD') ? roadProjectsLogoImage : riverProjectsLogoImage
+            array.push(
+                <DonateItem key={id}>
+                    <ItemContainer>
+                        <ProjectsLogo src={logoType} />
+                        <ItemDetail>
+                            <ItemTitle>{title}</ItemTitle>
+                            <ItemSubtitle >{subtitle}</ItemSubtitle>
+
+                            <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
+                                <ItemContent>
+                                    <ReactMarkdown source={content} />
+                                </ItemContent>
+                            </Collapse>
+                        </ItemDetail>
+                        <CostContainer>
+                            <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
+                            <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
+                        </CostContainer>
+                    </ItemContainer>
+                    <Arrow onClick={() => setCollapseMap({ ...collapseMap, [id]: { collapse: !collapseMap[id].collapse } })}>
+                        <ArrowSymbol up={collapseMap[id] ? !collapseMap[id].collapse : false} />
+                    </Arrow>
+                </DonateItem>
+            )
+        }
+        return array
+    }
+    let donationItems = getDonateItems(saplingsArray)
+
     return (
         <Donate>
             <Section>
-                <SectionLogo src={donateLogoImage}/>
                 <Container>
+                    <SectionLogo src={donateLogoImage} />
                     <MarkTitle> Donate </MarkTitle>
-                    <ReactMarkdown source={donateText} />
                 </Container>
+                <MarkdownContainer>
+                    <ReactMarkdown source={donateText} />
+                </MarkdownContainer>
             </Section>
             <Section>
-                <ProjectsTitleLogo src={projectsLogoImage}/>
                 <Container>
-                <MarkTitle> Projects </MarkTitle>
+                    <ProjectsTitleLogo src={projectsLogoImage} />
+                    <MarkTitle> Projects </MarkTitle>
+                </Container>
+                <MarkdownContainer>
                     <DonateTrees>
                         <DonateItemsContainer>
-                            {saplingsArray.map((item) => {
-                                let {id, title, subtitle, content, remaining, type, cost} = item
-                                let logoType = (type == 'ROAD') ? roadProjectsLogoImage : riverProjectsLogoImage
-                                return (
-                                    <DonateItem key={id}>
-                                        <ItemContainer>
-                                            <ProjectsLogo src={logoType}/>
-                                            <ItemDetail>
-                                                <ItemTitle>{title}</ItemTitle>
-                                                <ItemSubtitle >{subtitle}</ItemSubtitle>
-                                                
-                                                <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
-                                                    <ItemContent>
-                                                        <ReactMarkdown source={content} />
-                                                    </ItemContent>
-                                                </Collapse>
-                                            </ItemDetail>
-                                            <CostContainer>
-                                                <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
-                                                <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
-                                            </CostContainer>
-                                        </ItemContainer>
-                                        <Arrow onClick={() => setCollapseMap({ ...collapseMap, [id]: { collapse: !collapseMap[id].collapse } })}>
-                                            <ArrowSymbol up={collapseMap[id] ? !collapseMap[id].collapse : false}/>
-                                        </Arrow>
-                                    </DonateItem>
-                                )
-                            })}
+                            {donationItems}
                         </DonateItemsContainer>
                         <CheckoutContainer>
-                                <Button disabled={subTotalCheckoutCost == 0} onClick={() => makePayment()}> Checkout </Button>
+                            <Button disabled={subTotalCheckoutCost == 0} onClick={() => makePayment()}> Checkout </Button>
                         </CheckoutContainer>
                     </DonateTrees>
 
-                </Container>
+                </MarkdownContainer>
             </Section>
         </Donate>)
 }

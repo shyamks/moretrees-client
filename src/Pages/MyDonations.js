@@ -8,7 +8,6 @@ import NotFound from './NotFound'
 import gql from 'graphql-tag';
 import useQueryApi from '../components/hooks/useQueryApi';
 
-import './index.css'
 import { GET_MY_DONATIONS, PageContent, Page } from '../constants';
 import Footer from '../components/Footer';
 import { useTable } from 'react-table';
@@ -134,11 +133,12 @@ const Styles = styled.div`
   }
 `
 
-function MyDonations() {
+export function MyDonations() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext);
     let client = useClient()
-    let { email } = contextUser || {}
-    const [myDonationsData, isGetMyDonationsLoading, isGetMyDonationsError, refetchMyDonationsData] = useQueryApi(gql(GET_MY_DONATIONS), { email })
+    let { email, twitterId, instaId } = contextUser || {}
+    const [myDonationsData, isGetMyDonationsLoading, isGetMyDonationsError,
+         refetchMyDonationsData] = useQueryApi(gql(GET_MY_DONATIONS), { email, twitterId, instaId })
     useEffect(() => {
         refetchMyDonationsData()
     }, [])
@@ -208,5 +208,3 @@ function Table({ columns, data }) {
         </table>
     )
 }
-
-export default MyDonations

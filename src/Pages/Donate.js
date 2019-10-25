@@ -1,21 +1,17 @@
-import AdminOptions from '../components/AdminOptions'
+import DonateItems from '../components/DonateItems'
 import Header from '../components/Header'
 import React, { useEffect } from 'react'
 import { PageContent, Page } from '../constants'
 import Footer from '../components/Footer'
 
-function Donate({ staticContext }) {
+export function Donate({ staticContext }) {
     return (
-        <>
-        <Header />
         <Page>
+            <Header />
             <PageContent>
-                <AdminOptions/>
+                <DonateItems staticContext={staticContext}/>
             </PageContent>
             <Footer/>
         </Page>
-        </>
     )
 }
-
-export default Donate

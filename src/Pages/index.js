@@ -4,13 +4,13 @@ import styled from 'styled-components'
 import SiteHeader from '../components/Header'
 import { withRouter } from "react-router-dom";
 
-import './index.css'
 import bannerImage from '../images/moretrees-back.jpg'
 import volunteerImage from '../images/volunteer.jpg'
 import donateImage from '../images/donate.jpg'
 import buyPlantsImage from '../images/buy-plants.jpg'
 import Footer from '../components/Footer';
 import { Page, PageContent } from '../constants';
+import { isClickOrEnter } from '../utils';
 
 
 // const PageContent = styled.div`
@@ -27,7 +27,7 @@ const DonateAndVol = styled.div`
 const ImageContainer = styled.div`
     background-size: cover;
     width: 100%;
-    min-height: 200px;
+    min-height: 150px;
     @media screen and (min-width: 1000px) {
         margin-top: 30px;
     }
@@ -41,6 +41,7 @@ const ImageContainer = styled.div`
 
 const Donate = styled.div`
     margin: 10px;
+    outline: none;
     &: hover{
         cursor: pointer;
     }
@@ -48,6 +49,7 @@ const Donate = styled.div`
 
 const Volunteer = styled.div`
     margin: 10px;
+    outline: none;
     &: hover{
         cursor: pointer;
     }
@@ -64,7 +66,7 @@ const Image = styled.img`
 `
 
 const Imager = styled.img`
-    min-height: 200px;
+    min-height: 150px;
     width: 100%;
 `
 
@@ -73,8 +75,9 @@ const onNewUserRegistration = () => {
 }
 
 function MainPage({ history }) {
-    const navigateTo = (path) => {
-        history.push(path)
+    const navigateTo = (e, path) => {
+        if (isClickOrEnter(e))
+            history.push(path)
     }
     return (
         <Page>
@@ -85,10 +88,10 @@ function MainPage({ history }) {
                 </ImageContainer>
 
                 <DonateAndVol>
-                    <Donate onClick={() => navigateTo('donate')}>
+                    <Donate tabIndex="0" onKeyPress={(e) => navigateTo(e, 'donate')} onClick={(e) => navigateTo(e, 'donate')}>
                         <Image src={donateImage} />
                     </Donate>
-                    <Volunteer onClick={() => navigateTo('volunteer')}>
+                    <Volunteer tabIndex="0" onKeyPress={(e) => navigateTo(e, 'donate')} onClick={(e) => navigateTo(e, 'volunteer')}>
                         <Image src={volunteerImage} />
                     </Volunteer>
                 </DonateAndVol>

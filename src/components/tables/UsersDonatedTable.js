@@ -88,9 +88,9 @@ const getDonationDate = (createdAt) => {
 
 export function UsersDonatedTable(){
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext)
-    let { email } = contextUser || {}
+    let { email, twitterId, instaId } = contextUser || {}
 
-    const [allUserDonationsData, isGetAllUserDonationsLoading, isGetAllUserDonationsError, refetchAllUserDonationsData] = useQueryApi(gql(GET_ALL_USER_DONATIONS), { email })
+    const [allUserDonationsData, isGetAllUserDonationsLoading, isGetAllUserDonationsError, refetchAllUserDonationsData] = useQueryApi(gql(GET_ALL_USER_DONATIONS), { email, twitterId, instaId })
     useEffect(() => {
         if (allUserDonationsData && allUserDonationsData.getAllUserDonations && !isGetAllUserDonationsError) {
             reset()

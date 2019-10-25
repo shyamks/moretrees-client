@@ -9,6 +9,8 @@ if (typeof window === 'undefined') {
   global.fetch = fetch
 }
 
+const MAX_CHAR = 20
+
 export const getUserFromLocalStorage = () => {
     try {
         let userItem = localStorage.getItem(STORE_USER)
@@ -59,9 +61,23 @@ export const isAdminUser = (user) => {
     return (user && user.type == UserType.ADMIN)
 }
 
-export  const getNewId = () => {
+export const getNewId = () => {
     // Math.random should be unique because of its seeding algorithm.
     // Convert it to base 36 (numbers + letters), and grab the first 9 characters
     // after the decimal.
     return '_' + Math.random().toString(36).substr(2, 9);
-  };
+};
+
+export const isClickOrEnter = (e) => {
+    // Math.random should be unique because of its seeding algorithm.
+    // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+    // after the decimal. 
+    e.persist()
+    return (e.type == 'click' || e.charCode == 13)
+};
+
+export const cleanInputValue = (value) => {
+    let realValue = value && value.trim()
+    realValue = (realValue.length > MAX_CHAR) ? realValue.substr(0, MAX_CHAR) : realValue
+    return realValue
+}

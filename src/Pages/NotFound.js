@@ -4,8 +4,6 @@ import styled from 'styled-components'
 const Message = styled.div`
     text-align: center;
 `
-function NotFound() {
+export default function NotFound() {
     return <Message> Page Not Found </Message>
 }
-
-export default NotFound

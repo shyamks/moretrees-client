@@ -106,8 +106,8 @@ export function DonationsTable() {
     const [changed, setChanged] = useState(false)
 
     const update = () => {
-        let { email } = contextUser || {}
-        if (email) {
+        let { email, twitterId, instaId } = contextUser || {}
+        if (email || twitterId || instaId) {
             let oldRows = Object.values(updatedRows)
             let rows = oldRows.map((row) => {
                 let trimmedRow = lodash.omit(row, ['__typename'])
@@ -116,7 +116,7 @@ export function DonationsTable() {
             })
             console.log(rows, email, 'newRows')
 
-            rows && setUpdateSaplingsVariables({ saplingInput: rows, email })
+            rows && setUpdateSaplingsVariables({ saplingInput: rows, email, twitterId, instaId })
         }
         else {
             showToast('Not a user', 'error')

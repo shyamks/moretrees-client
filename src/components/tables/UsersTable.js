@@ -63,10 +63,10 @@ const SearchContainer = styled.div`
 
 export function UsersTable() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext)
-    let { email } = contextUser || {}
+    let { email, twitterId, instaId } = contextUser || {}
     let isAdmin = isAdminUser(contextUser)
 
-    const [allUsersData, isGetAllUsersLoading, isGetAllUsersError, refetchAllUsersData] = useQueryApi(gql(GET_ALL_USERS), { email })
+    const [allUsersData, isGetAllUsersLoading, isGetAllUsersError, refetchAllUsersData] = useQueryApi(gql(GET_ALL_USERS), { email, twitterId, instaId })
     useEffect(() => {
         if (allUsersData && allUsersData.getAllUsers && !isGetAllUsersError) {
             reset(allUsersData, false)
@@ -108,15 +108,15 @@ export function UsersTable() {
     }
 
     const update = () => {
-        let { email } = contextUser || {}
-        if (email) {
+        let { email, twitterId, instaId } = contextUser || {}
+        if (email || twitterId || instaId) {
             let oldRows = Object.values(updatedRows)
             let rows = oldRows.map((row) => {
                 return lodash.pick(row, ['username', 'email', 'availableWhen', 'availableWhat', 'fbProfile', 'twitterProfile', 'instaProfile'])
             })
             console.log(rows, email, 'newRows')
 
-            rows && setUpdateUsersVariables({ userInput: rows, email })
+            rows && setUpdateUsersVariables({ userInput: rows, email, twitterId, instaId })
         }
         else {
             showToast('Not a user', 'error')

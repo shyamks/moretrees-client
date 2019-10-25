@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
-export const isProd = process.env.NODE_ENV == 'production'
-export const FINAL_ENDPOINT = isProd ? process.env.REACT_APP_GRAPHQL_PROD_ENDPOINT : process.env.REACT_APP_GRAPHQL_TEST_ENDPOINT
-export const RAZORPAY_KEY = isProd ? process.env.REACT_APP_RAZORPAY_PROD_KEY : process.env.REACT_APP_RAZORPAY_TEST_KEY
+export const isProd = process.env.RAZZLE_RUNTIME_NODE_ENV == 'production'
+export const FINAL_ENDPOINT = isProd ? process.env.RAZZLE_RUNTIME_PROD_ENDPOINT : process.env.RAZZLE_RUNTIME_TEST_ENDPOINT
+export const RAZORPAY_KEY = isProd ? process.env.RAZZLE_RUNTIME_RAZORPAY_PROD_KEY : process.env.RAZZLE_RUNTIME_RAZORPAY_TEST_KEY
 export const POST = 'post'
 export const GET = 'get'
 export const STORE_TOKEN = 'authToken'
@@ -15,6 +15,8 @@ export const PAGES = {
   MY_DONATIONS: '/myDonations',
   PROFILE: '/profile',
   ADMIN: '/admin',
+  FORGOT_PASSWORD: '/forgotPassword',
+  RESET: '/reset'
 }
 
 export const UserType = {
@@ -57,6 +59,9 @@ export const Page = styled.div`
 export const MarkTitle = styled.h2`
   font-weight: 700 !important;
   margin-top: 14px;
+  @media all and (max-width: 800px) {
+    margin: 0 0 0 -5px;
+  }
 `
 
 export const DONATION_MUTATION = `
@@ -90,6 +95,8 @@ mutation registerUser($username: String!, $email: String!, $password: String!) {
       email
       phone
       twitterProfile
+      twitterId
+      instaId
       fbProfile
       instaProfile
       accessToken
@@ -97,6 +104,24 @@ mutation registerUser($username: String!, $email: String!, $password: String!) {
       error
     }
 }`
+
+export const RESET_PASSWORD_MUTATION = `
+mutation resetPassword($password: String!, $confirmPassword: String!, $token: String!) {
+  resetPassword(password: $password, confirmPassword: $confirmPassword, token: $token) {
+    status
+    error
+  }
+}
+`
+
+export const CONFIRM_TOKEN_QUERY = `
+query confirmToken($token: String!){
+  confirmToken(token: $token){
+    status
+    error
+  }
+}
+`
 
 export const LOGIN_QUERY = `
 query loginUser($email: String!, $password: String!){
@@ -106,6 +131,8 @@ query loginUser($email: String!, $password: String!){
         type
         phone
         twitterProfile
+        twitterId
+        instaId
         fbProfile
         instaProfile
         accessToken
@@ -114,14 +141,14 @@ query loginUser($email: String!, $password: String!){
     }
 }`
 
-export const GET_VOLUNTEER_QUERY = `
-query getVolunteerOptions($status: String){
-    getVolunteerOptions(status: $status) {
-        optionText
-        status
-        id
-    }
-}`
+export const FORGOT_PASSWORD_QUERY = `
+query forgotPassword($email: String!) {
+  forgotPassword(email: $email) {
+    status
+    error
+  }
+}
+`
 
 export const UPDATE_USER_MUTATION = `
 mutation updateUser($userInput: UserInput!) {
@@ -131,6 +158,8 @@ mutation updateUser($userInput: UserInput!) {
     type
     phone
     twitterProfile
+    twitterId
+    instaId
     fbProfile
     instaProfile
     availableWhen
@@ -141,14 +170,16 @@ mutation updateUser($userInput: UserInput!) {
 }`
 
 export const UPDATE_USERS_MUTATION = `
-mutation updateUsers($userInput: [UserInput]!, $email: String!) {
-  updateUsers(input: $userInput, email: $email){
+mutation updateUsers($userInput: [UserInput]!, $email: String, $twitterId: String, $instaId: String) {
+  updateUsers(input: $userInput, email: $email, twitterId: $twitterId, instaId: $instaId){
     response {
       username
       email
       type
       phone
       twitterProfile
+      twitterId
+      instaId
       fbProfile
       instaProfile
       availableWhen
@@ -162,8 +193,8 @@ mutation updateUsers($userInput: [UserInput]!, $email: String!) {
 }`
 
 export const UPDATE_SAPLINGS_MUTATION = `
-mutation updateSaplings($saplingInput: [UpdateSaplingsInput]!, $email: String!) {
-  updateSaplings(input: $saplingInput, email: $email){
+mutation updateSaplings($saplingInput: [UpdateSaplingsInput]!, $email: String, $twitterId: String, $instaId: String) {
+  updateSaplings(input: $saplingInput, email: $email, twitterId: $twitterId, instaId: $instaId){
     response {
       id
       type
@@ -180,12 +211,14 @@ mutation updateSaplings($saplingInput: [UpdateSaplingsInput]!, $email: String!) 
 }`
 
 export const GET_USER_QUERY = `
-query getUser($email: String!) {
-  getUser(email: $email){
+query getUser($email: String, $twitterId: String, $instaId: String) {
+  getUser(email: $email, twitterId: $twitterId, instaId: $instaId){
     username
     email
     phone
     twitterProfile
+    twitterId
+    instaId
     fbProfile
     instaProfile
     availableWhen
@@ -196,13 +229,15 @@ query getUser($email: String!) {
 }`
 
 export const GET_ALL_USERS = `
-query getAllUsers($email: String!) {
-  getAllUsers(email: $email){
+query getAllUsers($email: String, $twitterId: String, $instaId: String) {
+  getAllUsers(email: $email, twitterId: $twitterId, instaId: $instaId){
     id
     username
     email
     phone
     twitterProfile
+    twitterId
+    instaId
     fbProfile
     instaProfile
     availableWhen
@@ -213,8 +248,8 @@ query getAllUsers($email: String!) {
 }`
 
 export const GET_ALL_USER_DONATIONS = `
-query getAllUserDonations($email: String!) {
-  getAllUserDonations(email: $email){
+query getAllUserDonations($email: String, $twitterId: String, $instaId: String) {
+  getAllUserDonations(email: $email, twitterId: $twitterId, instaId: $instaId){
         id
         email
         amount
@@ -225,8 +260,8 @@ query getAllUserDonations($email: String!) {
 
 
 export const GET_MY_DONATIONS = `
-query myDonations($email: String){
-    myDonations(email: $email){
+query myDonations($email: String, $twitterId: String, $instaId: String) {
+    myDonations(email: $email, twitterId: $twitterId, instaId: $instaId){
         id
         email
         amount
