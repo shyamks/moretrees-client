@@ -6,7 +6,6 @@ import './App.css';
 import Routes from './Routes';
 import UserContext from './components/UserContext';
 import { STORE_TOKEN, STORE_USER } from './constants';
-import Logger from './components/Logger';
 
 class App extends React.Component {
   state = {
@@ -20,7 +19,7 @@ class App extends React.Component {
       localStorage.setItem(key, JSON.stringify(value))
     }
     catch (e) {
-      Logger(e, 'localStorage error')
+      console.log(e, 'localStorage error')
     }
   };
 

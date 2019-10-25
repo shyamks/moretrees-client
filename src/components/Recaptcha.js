@@ -9,12 +9,12 @@ export function Captcha({ onSuccess }) {
             onSuccess(response)
         }
     }
-    let showCaptcha = !(Boolean(process.env.REACT_APP_DISABLE_CATCHA))
+    let showCaptcha = !(Boolean(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA))
     return (
         <>
         { showCaptcha &&
             (<Recaptcha
-                sitekey={process.env.REACT_APP_CAPTCHA_SITE_KEY}
+                sitekey={process.env.RAZZLE_RUNTIME_CAPTCHA_SITE_KEY}
                 render="explicit"
                 verifyCallback={verifyCallback}
             />) 

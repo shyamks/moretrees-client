@@ -117,6 +117,7 @@ const Container = styled.div`
 
 const MarkdownContainer = styled.div`
     margin-left: 20px;
+    flex-direction: column;
     @media all and (max-width: 800px) {
         margin: 5px 0 0 5px;
     }

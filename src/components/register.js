@@ -127,7 +127,7 @@ function Register({ onSubmit }) {
         username: { value: '', isError: false, errorText: null },
         password: { value: '', isError: false, errorText: null },
         mobile: { value: '', isError: false, errorText: null },
-        captcha: Boolean(process.env.REACT_APP_DISABLE_CATCHA)
+        captcha: Boolean(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA)
     })
     const validDetails = ({ email, username, password, mobile, captcha }) => {
         return captcha && validity(email, 'email').isError && validity(username, 'username').isError && validity(password, 'password').isError && validity(mobile, 'mobile').isError

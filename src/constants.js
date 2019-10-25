@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
-export const isProd = process.env.NODE_ENV == 'production'
-export const FINAL_ENDPOINT = isProd ? process.env.REACT_APP_PROD_ENDPOINT : process.env.REACT_APP_TEST_ENDPOINT
-export const RAZORPAY_KEY = isProd ? process.env.REACT_APP_RAZORPAY_PROD_KEY : process.env.REACT_APP_RAZORPAY_TEST_KEY
+export const isProd = process.env.RAZZLE_RUNTIME_NODE_ENV == 'production'
+export const FINAL_ENDPOINT = isProd ? process.env.RAZZLE_RUNTIME_PROD_ENDPOINT : process.env.RAZZLE_RUNTIME_TEST_ENDPOINT
+export const RAZORPAY_KEY = isProd ? process.env.RAZZLE_RUNTIME_RAZORPAY_PROD_KEY : process.env.RAZZLE_RUNTIME_RAZORPAY_TEST_KEY
 export const POST = 'post'
 export const GET = 'get'
 export const STORE_TOKEN = 'authToken'
