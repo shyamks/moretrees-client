@@ -45,7 +45,7 @@ export const donationTypes = [
   { value: 'ROAD', label: 'ROAD' },
 ]
 export const PageContent = styled.div`
-    margin-top: 100px;
+    margin-top: 70px;
     width: 100%;
     height: auto;
     padding-bottom: 13rem;
@@ -56,11 +56,10 @@ export const Page = styled.div`
   min-height: 100vh;
 `
 
-export const MarkTitle = styled.h2`
+export const MarkTitle = styled.h3`
   font-weight: 700 !important;
-  margin-top: 14px;
+  margin-top: 20px;
   @media all and (max-width: 800px) {
-    margin: 0 0 0 -5px;
   }
 `
 

@@ -6,6 +6,7 @@ import lodash from 'lodash'
 import ReactMarkdown from 'react-markdown'
 import { Collapse } from 'react-collapse'
 
+import './styles.css'
 import Button from './Button'
 import Counter from './counter'
 import { DONATION_MUTATION, GET_SAPLING_OPTIONS, RAZORPAY_KEY, MarkTitle } from '../constants'
@@ -39,7 +40,6 @@ const DonateItemsContainer = styled.div`
 const DonateItem = styled.div`
     flex-direction: column;
     display: flex;
-    margin-top: 12px;
     border-bottom: 1px solid grey;
     box-shadow: 0 4px 6px -6px #222;
 `
@@ -47,28 +47,26 @@ const DonateItem = styled.div`
 const ItemContainer = styled.div`
     display: flex;
     flex-direction: row;
-    @media all and (max-width: 800px) {
-        flex-direction: column;
-    }
+    margin-top: 5px;
 `
 
 const ItemDetail = styled.div`
-    margin: 0px 20px 25px 20px;
+    margin: 0px 20px 5px 20px;
     font-family: "Trebuchet MS", Helvetica, sans-serif;
     display: flex;
     width: 50%;
     flex-direction: column;
     @media all and (max-width: 800px) {
         align-self: center;
+        margin: 0px 10px 5px 10px;
     }
 `
 
 const ItemContent = styled.div`
     margin: 20px 10px 10px 10px;
     font-family: "Trebuchet MS", Helvetica, sans-serif;
-    white-space:nowrap;
-    display: flex;
-`
+    text-align: initial;
+    `
 
 const ItemTitle = styled.span`
     text-align: left;
@@ -76,28 +74,28 @@ const ItemTitle = styled.span`
     font-size: 22px;
     margin: 10px 10px 0px 10px;
     @media all and (max-width: 800px) {
+        font-size: 14px;
         text-align: center;
     }
 `
 
-const ItemSubtitle = styled.div`
-    text-align: left;
-    margin: 10px 10px 0px 10px;
-    @media all and (max-width: 800px) {
-        text-align: center;
-    }
+const ItemSubtitle = styled.p`
+    margin: 10px 10px 10px 10px;
 `
 
 const ItemCost = styled(ItemSubtitle)`
     font-weight: bold;
-    font-size: 18px;
     width: 160px;
+    @media all and (max-width: 800px) {
+        width: 100px;
+    }
 `
 
 const CostContainer = styled.div`
     display: flex;
     @media all and (max-width: 800px) {
-        align-self: center;
+        align-items: center;
+        flex-direction: column;
     }
 `
 
@@ -109,17 +107,13 @@ const Section = styled.div`
 const Container = styled.div`
     display: flex;
     flex-direction: row;
-    @media all and (max-width: 800px) {
-        justify-content: center;
-        align-items: center
-    }
 `
 
 const MarkdownContainer = styled.div`
-    margin-left: 20px;
+    margin: -5px 0 0 20px;
     flex-direction: column;
     @media all and (max-width: 800px) {
-        margin: 5px 0 0 5px;
+        margin: 0 0 0 5px;
     }
 `
 
@@ -132,7 +126,7 @@ const SectionLogo = styled.img`
     height: 50px;
     margin: 10px 5px 10px 10px;
     @media all and (max-width: 800px) {
-        margin: 0 5px 0 0;
+        margin: 7px 5px 0 -5px;
     }
 `
 
@@ -140,13 +134,16 @@ const ProjectsTitleLogo = styled.img`
     width: 50px;
     height: 45px;
     margin: 10px;
+    @media all and (max-width: 800px) {
+        margin: 8px 8px 0 0;
+    }
 `
 const ProjectsLogo = styled.img`
     width: 50px;
     height: 45px;
     margin: 10px;
     @media all and (max-width: 800px) {
-        align-self: center;
+        // align-self: center;
         margin: 10px 0 0 -5px;
     }
 `
@@ -307,18 +304,17 @@ function DonateItems({ staticContext }) {
                         <ItemDetail>
                             <ItemTitle>{title}</ItemTitle>
                             <ItemSubtitle >{subtitle}</ItemSubtitle>
-
-                            <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
-                                <ItemContent>
-                                    <ReactMarkdown source={content} />
-                                </ItemContent>
-                            </Collapse>
                         </ItemDetail>
                         <CostContainer>
                             <ItemCost>{`Rs. ${cost} per tree`}</ItemCost>
                             <Counter maximumCount={remaining} itemCost={(count, itemChangeCost) => checkoutCostChanger(count, itemChangeCost, item)} cost={cost} />
                         </CostContainer>
                     </ItemContainer>
+                    <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
+                        <ItemContent>
+                            <ReactMarkdown source={content} />
+                        </ItemContent>
+                    </Collapse>
                     <Arrow onClick={() => setCollapseMap({ ...collapseMap, [id]: { collapse: !collapseMap[id].collapse } })}>
                         <ArrowSymbol up={collapseMap[id] ? !collapseMap[id].collapse : false} />
                     </Arrow>

@@ -72,6 +72,8 @@ const HamburgerOptionsList = styled.ul`
     transition: flex 1s ease-in-out;
     overflow: hidden;
     animation: ${animateIn} 0.4s ease;
+    margin: 0px;
+    padding: 0px;
 `
 
 const HamburgerOption = styled.li`
@@ -113,9 +115,10 @@ const Header = styled.div`
 const AppHeader = styled.div`
     display: flex;
     justify-content: space-between;
-    margin: 30px;
+    margin: 30px 30px 5px 30px;
     @media screen and (max-width: 800px) {
         display: flex;
+        margin: 30px 20px 5px 20px;
         justify-content: space-between;
     }
 `
@@ -132,9 +135,9 @@ const AppLogo = styled.img`
     @media screen and (max-width: 800px) {
         display: flex;
         justify-content: center;
-        width: 120px;
+        width: 140px;
         margin-top: -8px;
-        height: 30px;
+        height: 38px;
     }
 `
 
@@ -176,9 +179,9 @@ const VolunteerLink = styled.div`
 `
 
 const Logo = styled.img`
-    width: 120px;
+    width: 140px;
     margin-top: -8px;
-    height:auto;
+    height: 38px;
     margin-right: 20px;
     outline: none;
     &: hover{
@@ -374,8 +377,6 @@ function SiteHeader({ history }) {
                         <>
                             <Separator />
                             <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}> My Donations </VolunteerLink>
-                            <Separator />
-                            <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.PROFILE)} onClick={(e) => navigateTo(e, PAGES.PROFILE)}> Profile </VolunteerLink>
                             {contextUser.type === UserType.ADMIN &&
                                 <>
                                     <Separator />
@@ -398,9 +399,6 @@ function SiteHeader({ history }) {
                                 (<>
                                     <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}>
                                         My Donations
-                                </HamburgerOption>
-                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.PROFILE)} onClick={(e) => navigateTo(e, PAGES.PROFILE)}>
-                                        Profile
                                 </HamburgerOption>
                                     {contextUser.type === UserType.ADMIN &&
                                         <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}>
@@ -426,7 +424,7 @@ function SiteHeader({ history }) {
                 <AppRightHeader>
                     {
                         (contextUser && !errorInLogin) ?
-                            (<UserAvatar userInfo={contextUser} onLogout={onLogout} />) :
+                            (<UserAvatar onEnter={(e) => navigateTo(e, PAGES.PROFILE)} userInfo={contextUser} onLogout={onLogout} />) :
                             (<>
                                 <LoginHeader tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, LOGIN)} onClick={() => onOpenModal(setModalStatus, LOGIN)}>Login</LoginHeader>
                                 <Separator />

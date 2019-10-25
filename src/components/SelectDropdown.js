@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect, useContext } from 'react'
+import React, { useState } from 'react'
 import Select from 'react-select';
 
 const customStyles = {
     option: (provided, state) => ({
       ...provided,
       borderBottom: '1px dotted pink',
-      color: state.isSelected ? 'red' : 'green',
+      backgoundColor:  'white',
+      color: 'green',
       padding: 20,
+      fontSize: 14
     }),
     control: (provided, state) => ({
       // none of react-select's styles are passed to <Control />
@@ -22,7 +24,7 @@ const customStyles = {
       const opacity = state.isDisabled ? 0.5 : 1;
       const transition = 'opacity 300ms';
   
-      return { ...provided, opacity, transition };
+      return { ...provided, opacity, transition, fontSize: 14 };
     }
   }
 

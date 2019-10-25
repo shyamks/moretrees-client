@@ -16,16 +16,16 @@ const Button = styled.button`
         height: 30px;
         border-radius: 8px;
         outline: none;
-        &: active {
-            outline: 0;
-        }
-        &: focus {
-            outline: 0;
+        :focus {
+            outline: none;
         }
     `
 const TotalValue = styled.div`
         display: inline-block;
         width: 75px;
+        @media all and (max-width: 800px){
+            font-size: 12px;
+        }
     `
 
 const Container = styled.div`

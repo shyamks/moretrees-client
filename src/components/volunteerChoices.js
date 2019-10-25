@@ -48,11 +48,6 @@ const Section = styled.div`
 const Container = styled.div`
     display: flex;
     flex-direction: row;
-    @media all and (max-width: 800px) {
-        justify-content: center;
-        flex-direction: column;
-        align-items: center
-    }
 `
 
 const MarkdownContainer = styled.div`
