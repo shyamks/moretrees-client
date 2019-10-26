@@ -1,4 +1,4 @@
-import { FINAL_ENDPOINT, GET_SAPLING_OPTIONS, CONFIRM_TOKEN_QUERY } from "./constants";
+import { FINAL_ENDPOINT, GET_PROJECTS, CONFIRM_TOKEN_QUERY } from "./constants";
 const { createApolloFetch } = require('apollo-fetch');
 
 export const loadDataFromServer = (key, endpoint) => {
@@ -9,7 +9,7 @@ export const loadDataFromServer = (key, endpoint) => {
     switch (key) {
         case 'donate':
             return apolloFetch({
-                query: (GET_SAPLING_OPTIONS),
+                query: (GET_PROJECTS),
                 variables: { status: 'ACTIVE' }
             })
         default: 

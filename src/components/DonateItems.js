@@ -9,7 +9,7 @@ import { Collapse } from 'react-collapse'
 import './styles.css'
 import Button from './Button'
 import Counter from './counter'
-import { DONATION_MUTATION, GET_SAPLING_OPTIONS, RAZORPAY_KEY, MarkTitle } from '../constants'
+import { DONATION_MUTATION, GET_PROJECTS, RAZORPAY_KEY, MarkTitle } from '../constants'
 import gql from 'graphql-tag'
 import useMutationApi from './hooks/useMutationApi'
 import useQueryApi from './hooks/useQueryApi'
@@ -81,6 +81,7 @@ const ItemTitle = styled.span`
 
 const ItemSubtitle = styled.p`
     margin: 10px 10px 10px 10px;
+    text-align: left;
 `
 
 const ItemCost = styled(ItemSubtitle)`
@@ -189,23 +190,23 @@ function DonateItems({ staticContext }) {
         }
     }, [donationData, donationDataError])
 
-    const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(gql(GET_SAPLING_OPTIONS), { status: "ACTIVE" })
+    const [projectsData, isGetProjectsLoading, isGetProjectsError, refetchProjectsData] = useQueryApi(gql(GET_PROJECTS), { status: "ACTIVE" })
     useEffect(()=> {
         console.log('herererere')
-        refetchSaplingOptionsData()
+        refetchProjectsData()
     },[])
     
-    const saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || (staticContext && staticContext.data && staticContext.data.data.getSaplingOptions) || []
+    const saplingsArray = (projectsData && projectsData.getProjects) || (staticContext && staticContext.data && staticContext.data.data.getProjects) || []
     
     const [collapseMap, setCollapseMap] = useState({})
     useEffect(()=> {
-        let saplingsArray = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
+        let saplingsArray = (projectsData && projectsData.getProjects) || []
         let map = saplingsArray.reduce((map, sapling) => { 
             map[sapling.id] = {collapse: true}
             return map
         }, {})
         setCollapseMap(map)
-    }, [saplingOptionsData])
+    }, [projectsData])
 
     const getPaymentInfo = () => {
         let email = (contextUser && contextUser.email) || ''

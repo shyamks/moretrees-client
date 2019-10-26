@@ -21,11 +21,6 @@ const TableRow = styled.div`
 
 const columns = [
     {
-        Header: 'Reciept No',
-        accessor: 'receiptNo',
-        style: { width: '100px' }
-    },
-    {
         Header: 'Donated Saplings',
         accessor: 'donatedSaplings',
         style: { width: '200px' }
@@ -69,7 +64,7 @@ function getDonationData(donationItems) {
         let donatedOn = getDonationDate(createdAt)
         let totalAmount = getDonationAmount(amount)
         Logger(donatedSaplings, donatedOn, 'donationData')
-        const data = { receiptNo, donatedSaplings, donatedOn, totalAmount }
+        const data = { donatedSaplings, donatedOn, totalAmount }
         return data
     })
 

@@ -72,9 +72,9 @@ mutation makeDonation($donationInput : DonationPaymentInput) {
     }
 }`
 
-export const GET_SAPLING_OPTIONS = `
-query getSaplingOptions($status: String){
-    getSaplingOptions(status: $status){
+export const GET_PROJECTS = `
+query getProjects($status: String){
+  getProjects(status: $status){
       id
       type
       title
@@ -191,7 +191,7 @@ mutation updateUsers($userInput: [UserInput]!, $email: String, $twitterId: Strin
   }
 }`
 
-export const UPDATE_SAPLINGS_MUTATION = `
+export const UPDATE_PROJECTS_MUTATION = `
 mutation updateSaplings($saplingInput: [UpdateSaplingsInput]!, $email: String, $twitterId: String, $instaId: String) {
   updateSaplings(input: $saplingInput, email: $email, twitterId: $twitterId, instaId: $instaId){
     response {

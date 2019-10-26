@@ -369,21 +369,7 @@ function SiteHeader({ history }) {
             <AppHeader>
                 <AppLeftHeader>
                     <Logo tabIndex="0" src={logoImage} onKeyPress={(e)=> navigateTo(e,PAGES.INDEX) } onClick={(e) => navigateTo(e,PAGES.INDEX)}/>
-                    <Separator />
-                    <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.DONATE)} onClick={(e) => navigateTo(e, PAGES.DONATE)}> Donate </VolunteerLink>
-                    <Separator />
-                    <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.VOLUNTEER)} onClick={(e) => navigateTo(e, PAGES.VOLUNTEER)}> Volunteer </VolunteerLink>
-                    {(contextUser && !errorInLogin) &&
-                        <>
-                            <Separator />
-                            <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}> My Donations </VolunteerLink>
-                            {contextUser.type === UserType.ADMIN &&
-                                <>
-                                    <Separator />
-                                    <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}> Admin </VolunteerLink>
-                                </>}
-                        </>
-                    }
+                    
                 </AppLeftHeader>
 
 
@@ -398,7 +384,7 @@ function SiteHeader({ history }) {
                             {(contextUser && !errorInLogin) ?
                                 (<>
                                     <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}>
-                                        My Donations
+                                        Donations
                                 </HamburgerOption>
                                     {contextUser.type === UserType.ADMIN &&
                                         <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}>
@@ -422,16 +408,34 @@ function SiteHeader({ history }) {
                 </MenuContainer>
                 {/* for max-width 800px end */}
                 <AppRightHeader>
-                    {
-                        (contextUser && !errorInLogin) ?
-                            (<UserAvatar onEnter={(e) => navigateTo(e, PAGES.PROFILE)} userInfo={contextUser} onLogout={onLogout} />) :
-                            (<>
-                                <LoginHeader tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, LOGIN)} onClick={() => onOpenModal(setModalStatus, LOGIN)}>Login</LoginHeader>
+                    <>
+                        <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.DONATE)} onClick={(e) => navigateTo(e, PAGES.DONATE)}> Donate </VolunteerLink>
+                        <Separator />
+                        <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.VOLUNTEER)} onClick={(e) => navigateTo(e, PAGES.VOLUNTEER)}> Volunteer </VolunteerLink>
+                        {(contextUser && !errorInLogin) &&
+                            <>
                                 <Separator />
-                                <RegisterHeader tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, REGISTER)} onClick={() => onOpenModal(setModalStatus, REGISTER)}>Register</RegisterHeader>
-                            </>)
+                                <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}> Donations </VolunteerLink>
+                                {contextUser.type === UserType.ADMIN &&
+                                    <>
+                                        <Separator />
+                                        <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}> Admin </VolunteerLink>
+                                    </>}
+                            </>
+                        }
+                    </>
+                    {(contextUser && !errorInLogin) ?
+                        (<>
+                            <Separator />
+                            <UserAvatar onEnter={(e) => navigateTo(e, PAGES.PROFILE)} userInfo={contextUser} onLogout={onLogout} />
+                        </>) :
+                        (<>
+                            <Separator />
+                            <LoginHeader tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, LOGIN)} onClick={() => onOpenModal(setModalStatus, LOGIN)}>Login</LoginHeader>
+                            <Separator />
+                            <RegisterHeader tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, REGISTER)} onClick={() => onOpenModal(setModalStatus, REGISTER)}>Register</RegisterHeader>
+                        </>)}
 
-                    }
                 </AppRightHeader>
             </AppHeader>
             <Modal isOpen={modalStatus.open}

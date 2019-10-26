@@ -3,6 +3,9 @@ import React from 'react'
 
 const Username = styled.div`
     margin-right: 16px;
+    &: hover{
+        cursor: pointer;
+    }
 `
 
 // const Container =  styled.div`
@@ -13,9 +16,6 @@ const Separator = styled.div`
     border-right: 1px solid green;
     height: 20px;
     margin-right: 20px;
-    &: hover{
-        cursor: pointer;
-    }
 `
 
 const Logout = styled.div`

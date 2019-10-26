@@ -3,7 +3,7 @@ import React from 'react'
 import { useState, useContext, useEffect } from 'react'
 import lodash from 'lodash'
 
-import { GET_SAPLING_OPTIONS, donationTypes, UPDATE_SAPLINGS_MUTATION, } from '../../constants';
+import { GET_PROJECTS, donationTypes, UPDATE_PROJECTS_MUTATION, } from '../../constants';
 
 import BootstrapTable from 'react-bootstrap-table-next'
 import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
@@ -75,29 +75,28 @@ export function DonationsTable() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext)
     let { email } = contextUser || {}
 
-    const [saplingOptionsData, isGetSaplingOptionsLoading, isGetSaplingOptionsError, refetchSaplingOptionsData] = useQueryApi(gql(GET_SAPLING_OPTIONS))
-    const saplingsDate = (saplingOptionsData && saplingOptionsData.getSaplingOptions) || []
+    const [projectsData, isGetProjectsLoading, isGetProjectsError, refetchProjectsData] = useQueryApi(gql(GET_PROJECTS))
     useEffect(() => {
-        if (saplingOptionsData && saplingOptionsData.getSaplingOptions && !isGetSaplingOptionsError) {
-            reset(saplingOptionsData, false)
+        if (projectsData && projectsData.getProjects && !isGetProjectsError) {
+            reset(projectsData, false)
         }
-    }, [saplingOptionsData, isGetSaplingOptionsError])
+    }, [projectsData, isGetProjectsError])
 
     useEffect(() => {
-        refetchSaplingOptionsData()
+        refetchProjectsData()
     }, [])
 
-    const [updateSaplingsData, updateSaplingsLoading, updateSaplingsError, setUpdateSaplingsVariables, setUpdateSaplingsData] = useMutationApi(gql(UPDATE_SAPLINGS_MUTATION))
+    const [updateProjectsData, updateProjectsLoading, updateProjectsError, setUpdateProjectsVariables, setUpdateProjectsData] = useMutationApi(gql(UPDATE_PROJECTS_MUTATION))
     useEffect(() => {
-        let updateSaplings = updateSaplingsData && updateSaplingsData.data
-        if (updateSaplings && !updateSaplings.updateSaplings.error && !updateSaplingsError) {
-            reset(updateSaplingsData, true)
+        let updateSaplings = updateProjectsData && updateProjectsData.data
+        if (updateSaplings && !updateSaplings.updateSaplings.error && !updateProjectsError) {
+            reset(updateProjectsData, true)
             showToast('Updated Successfully', 'success')
         }
-        else if ((updateSaplings && updateSaplings.updateSaplings.error) || updateSaplingsError){
+        else if ((updateSaplings && updateSaplings.updateSaplings.error) || updateProjectsError){
             showToast('Update Failed', 'error')
         }
-    }, [updateSaplingsData, updateSaplingsError])
+    }, [updateProjectsData, updateProjectsError])
 
     const [updatedRows, setUpdatedRows] = useState({})
 
@@ -116,7 +115,7 @@ export function DonationsTable() {
             })
             console.log(rows, email, 'newRows')
 
-            rows && setUpdateSaplingsVariables({ saplingInput: rows, email, twitterId, instaId })
+            rows && setUpdateProjectsVariables({ saplingInput: rows, email, twitterId, instaId })
         }
         else {
             showToast('Not a user', 'error')
@@ -126,10 +125,10 @@ export function DonationsTable() {
     const reset = (data, update) => {
         let saplingsData
         if (!update)
-            saplingsData = (data && data.getSaplingOptions) || []
+            saplingsData = (data && data.getProjects) || []
         else {
             let updateSaplings = data && data.data
-            saplingsData = (updateSaplings && !updateSaplings.updateSaplings.error && !updateSaplingsError) ? updateSaplings.updateSaplings.response : []
+            saplingsData = (updateSaplings && !updateSaplings.updateSaplings.error && !updateProjectsError) ? updateSaplings.updateSaplings.response : []
         }
         if (saplingsData){
             setTableState(saplingsData)
@@ -163,7 +162,7 @@ export function DonationsTable() {
         <>
             <ButtonContainer>
                 <Button disabled={!changed} onClick={() => update()}>Update</Button>
-                <Button disabled={!changed} onClick={() => reset(saplingOptionsData, false)}>Reset</Button>
+                <Button disabled={!changed} onClick={() => reset(projectsData, false)}>Reset</Button>
                 <Button width={'120px'} onClick={() => addRow()}>Add new row</Button>
             </ButtonContainer>
             {tableState &&
