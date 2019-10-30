@@ -13,7 +13,7 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 import 'filepond/dist/filepond.min.css'
-import { GET_ALL_USER_DONATIONS, UPDATE_USERS_MUTATION, ADD_NEW_PHOTO_MUTATION, } from '../../constants';
+import { GET_ALL_USER_DONATIONS, ADD_NEW_PHOTO_MUTATION, IMGUR_KEY } from '../../constants';
 
 import BootstrapTable from 'react-bootstrap-table-next'
 import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
@@ -156,27 +156,22 @@ function GetPhotoTimeline({ row, updatePhotoApi, email, instaId, twitterId }) {
         setTimeline({ ...timeline, isNewPhoto: true, changePhotoOrder: null })
     }
     const addNewItem = (apiInput, file) => {
-        console.log(apiInput,'apiInput')
         var formData = new FormData()
         formData.append('type', 'file')
         formData.append('mimetype', file.mimetype)
         formData.append('image', file)
 
-        const apiUrl = 'https://api.imgur.com/3/image';
-        const apiKey = 'eb08e460c2a25d0';
-
         setTimeline(initialTimeline)
         axios({
-            url: apiUrl,
+            url: 'https://api.imgur.com/3/image',
             method: 'POST',
             headers: {
-                Authorization: 'Client-ID ' + apiKey,// imgur specific
+                Authorization: 'Client-ID ' + IMGUR_KEY,// imgur specific
             },
             data: formData
         }).then(response => {
             let link = getLinkFromResponse(response)
             apiInput = { ...apiInput, input: { ...apiInput.input, link } }
-            console.log(apiInput, 'apiInput')
             updatePhotoApi(apiInput)
             console.log(response, 'return val')
         }).catch(err => {
