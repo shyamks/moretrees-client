@@ -249,11 +249,22 @@ query getAllUsers($email: String, $twitterId: String, $instaId: String) {
 export const GET_ALL_USER_DONATIONS = `
 query getAllUserDonations($email: String, $twitterId: String, $instaId: String) {
   getAllUserDonations(email: $email, twitterId: $twitterId, instaId: $instaId){
-        id
-        email
-        amount
-        items 
-        createdAt
+    email
+    instaProfile
+    twitterProfile
+    type
+    title
+    subtitle
+    cost
+    content
+    treeId
+    status
+    photoTimeline {
+      order
+      text
+      photoUrl
+    }
+    createdAt
   }
 }`
 
@@ -261,11 +272,45 @@ query getAllUserDonations($email: String, $twitterId: String, $instaId: String) 
 export const GET_MY_DONATIONS = `
 query myDonations($email: String, $twitterId: String, $instaId: String) {
     myDonations(email: $email, twitterId: $twitterId, instaId: $instaId){
-        id
-        email
-        amount
-        items 
-        createdAt
+      email
+      instaProfile
+      twitterProfile
+      type
+      title
+      subtitle
+      cost
+      content
+      treeId
+      status
+      photoTimeline {
+        order
+        text
+        photoUrl
+      }
+      createdAt
+    }
+}
+`
+
+export const ADD_NEW_PHOTO_MUTATION = `
+mutation addPhotoToTimeline($input: PhotoTimelineInput, $email: String, $twitterId: String, $instaId: String) {
+    addPhotoToTimeline(input: $input, email: $email, twitterId: $twitterId, instaId: $instaId) {
+      email
+      instaProfile
+      twitterProfile
+      type
+      title
+      subtitle
+      cost
+      content
+      treeId
+      status
+      photoTimeline {
+        order
+        text
+        photoUrl
+      }
+      createdAt
     }
 }
 `

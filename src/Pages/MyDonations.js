@@ -138,21 +138,32 @@ export function MyDonations() {
         refetchMyDonationsData()
     }, [])
 
+    let myTrees, pendingCount = 0
+    if (myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length > 0) {
+        myTrees = myDonationsData.myDonations
+        pendingCount = 0
+        let blah = myTrees.reduce((array, tree) => {
+            if (tree.status === 'PENDING'){
+                pendingCount++
+            }
+            else{
+                array = [...array, (<div></div>)]
+            }
+            return array
+        }, [])
+        console.log('here', pendingCount)
+    }
+    console.log(myDonationsData,'pendingCount')
     return (
         <Page>
             <Header />
             {client &&
             <PageContent>
                 {!contextUser && <NotFound statusCode={404} />}
-                {contextUser && myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length > 0 &&
-                    <TableContainer>
-                        <Styles>
-                            <Table columns={columns} data={getDonationData(myDonationsData.myDonations)}/>
-                        </Styles>
-                        <Message>
-                            Thank You for the Donations.
-                        </Message>
-                    </TableContainer>
+                {contextUser && myTrees && 
+                    (pendingCount && 
+                    <Message> Thanks for your Donation. There are {pendingCount} saplings yet to be planted. We 'll let you know when they are. Cheers!</Message>
+                    )
                 }
                 {contextUser && myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length == 0 &&
                     <Message>
