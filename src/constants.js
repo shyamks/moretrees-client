@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const isProd = process.env.RAZZLE_RUNTIME_NODE_ENV == 'production'
+export const isProd = process.env.NODE_ENV == 'production'
 export const FINAL_ENDPOINT = isProd ? process.env.RAZZLE_RUNTIME_PROD_ENDPOINT : process.env.RAZZLE_RUNTIME_TEST_ENDPOINT
 export const RAZORPAY_KEY = isProd ? process.env.RAZZLE_RUNTIME_RAZORPAY_PROD_KEY : process.env.RAZZLE_RUNTIME_RAZORPAY_TEST_KEY
 export const IMGUR_KEY = process.env.RAZZLE_RUNTIME_IMGUR_CLIENT_ID
