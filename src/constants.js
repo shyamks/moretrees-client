@@ -23,6 +23,11 @@ export const PAGES = {
 export const UserType = {
   ADMIN: 'admin'
 }
+
+export const TREE_STATUS = {
+  PLANTED: 'PLANTED',
+  PENDING: 'PENDING'
+}
 export const availableWhenOptions = [
   { value: 'Weekdays', label: 'Weekdays' },
   { value: 'Weekends', label: 'Weekends' },

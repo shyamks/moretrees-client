@@ -9,7 +9,7 @@ if (typeof window === 'undefined') {
   global.fetch = fetch
 }
 
-const MAX_CHAR = 20
+const MAX_CHAR = 80
 
 export const getUserFromLocalStorage = () => {
     try {

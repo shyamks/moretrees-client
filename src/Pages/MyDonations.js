@@ -8,67 +8,17 @@ import NotFound from './NotFound'
 import gql from 'graphql-tag';
 import useQueryApi from '../components/hooks/useQueryApi';
 
-import { GET_MY_DONATIONS, PageContent, Page } from '../constants';
+import { GET_MY_DONATIONS, PageContent, Page, TREE_STATUS } from '../constants';
 import Footer from '../components/Footer';
 import { useTable } from 'react-table';
 import useClient from '../components/hooks/useClient';
 import Logger from '../components/Logger';
+import { MyTree } from '../components/MyTree';
 
 const TableRow = styled.div`
     text-align: center;
     vertical-align: middle;
 `
-
-const columns = [
-    {
-        Header: 'Donated Saplings',
-        accessor: 'donatedSaplings',
-        style: { width: '200px' }
-    },
-    {
-        Header: 'Donated on',
-        accessor: 'donatedOn',
-        style: { width: '200px' }
-    },
-    {
-        Header: 'Total Amount',
-        accessor: 'totalAmount',
-        style: { width: '200px' }
-    },
-];
-
-function getDonationData(donationItems) {
-    return donationItems.map(donationItem => {
-        const getDonationAmount = (amount) => {
-            return (<>
-                {amount > 0 && <TableRow>Trees at Rs {amount}</TableRow>}
-            </>)
-        }
-        const getDonationDate = (createdAt) => {
-            let date = new Date(parseInt(createdAt))
-            Logger(date, createdAt, 'date')
-            return (date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
-        }
-        const getDonatedSaplings = (items) => {
-            let rows = items.map(item => {
-                let { id, count, title } = item
-                let row = <TableRow> {count}x {title}</TableRow>
-                return row
-            })
-            return rows
-        }
-        Logger(donationItem, 'donationItem')
-        let { amount, createdAt, items, id } = donationItem
-        let receiptNo = id
-        let donatedSaplings = getDonatedSaplings(items)
-        let donatedOn = getDonationDate(createdAt)
-        let totalAmount = getDonationAmount(amount)
-        Logger(donatedSaplings, donatedOn, 'donationData')
-        const data = { donatedSaplings, donatedOn, totalAmount }
-        return data
-    })
-
-}
 
 const Message = styled.div`
     text-align: center;
@@ -138,13 +88,16 @@ export function MyDonations() {
         refetchMyDonationsData()
     }, [])
 
-    let myTrees, pendingCount = 0
+    let myDonations, plantedTrees = [], pendingCount = 0
     if (myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length > 0) {
-        myTrees = myDonationsData.myDonations
+        myDonations = myDonationsData.myDonations
         pendingCount = 0
-        let blah = myTrees.reduce((array, tree) => {
-            if (tree.status === 'PENDING'){
+        plantedTrees = myDonations.reduce((array, tree) => {
+            if (tree.status === TREE_STATUS.PENDING){
                 pendingCount++
+            }
+            else if (tree.status === TREE_STATUS.PLANTED){
+                array = [...array, <MyTree key={tree.treeId} myDonation={tree}/>]
             }
             else{
                 array = [...array, (<div></div>)]
@@ -160,9 +113,12 @@ export function MyDonations() {
             {client &&
             <PageContent>
                 {!contextUser && <NotFound statusCode={404} />}
-                {contextUser && myTrees && 
-                    (pendingCount && 
-                    <Message> Thanks for your Donation. There are {pendingCount} saplings yet to be planted. We 'll let you know when they are. Cheers!</Message>
+                {contextUser && myDonations &&
+                    (pendingCount &&
+                        <>
+                            <Message> Thanks for your Donation. There are {pendingCount} saplings yet to be planted. We 'll let you know when they are. Cheers!</Message>
+                            {plantedTrees}
+                        </>
                     )
                 }
                 {contextUser && myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length == 0 &&
