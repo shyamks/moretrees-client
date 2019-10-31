@@ -7,7 +7,7 @@ const server = http.createServer(app);
 let currentApp = app;
 
 let port = process.env.PORT || 3000
-server.listen(, error => {
+server.listen(port, error => {
   if (error) {
     console.log(error);
   }
