@@ -8,4 +8,4 @@ echo "After kill command, node processes => "
 ps aux | grep '[s]erver.js'
 
 npm run build
-npm run start:prod
+npm run start:prod &
