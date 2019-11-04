@@ -9,7 +9,7 @@ import { Collapse } from 'react-collapse'
 import './styles.css'
 import Button from './Button'
 import Counter from './counter'
-import { DONATION_MUTATION, GET_PROJECTS, RAZORPAY_KEY, MarkTitle } from '../constants'
+import { DONATION_MUTATION, GET_PROJECTS, RAZORPAY_KEY, MarkTitle, RESPONSE_SUCCESS } from '../constants'
 import gql from 'graphql-tag'
 import useMutationApi from './hooks/useMutationApi'
 import useQueryApi from './hooks/useQueryApi'
@@ -179,8 +179,8 @@ function DonateItems({ staticContext }) {
         if (donationData && donationData.data && checkCalledStatus(DONATION)) {
             Logger(donationData, 'wtf payment')
             let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
-            let error = lodash.get(donationData, 'data.makeDonation.error') || donationDataError
-            if (!error && referenceId) {
+            let status = lodash.get(donationData, 'data.makeDonation.responseStatus.status') || donationDataError
+            if (status === RESPONSE_SUCCESS && referenceId) {
                 setModalStatus({ type: PAYMENT_SUCCESS, status: true, data: referenceId })
                 showToast('Donation successfull', 'success')
             }
@@ -192,17 +192,16 @@ function DonateItems({ staticContext }) {
 
     const [projectsData, isGetProjectsLoading, isGetProjectsError, refetchProjectsData] = useQueryApi(gql(GET_PROJECTS), { status: "ACTIVE" })
     useEffect(()=> {
-        console.log('herererere')
         refetchProjectsData()
     },[])
     
-    const saplingsArray = (projectsData && projectsData.getProjects) || (staticContext && staticContext.data && staticContext.data.data.getProjects) || []
+    const projectsArray = lodash.get(projectsData, 'getProjects.projects') || lodash.get(staticContext, 'data.data.getProjects.projects') || []
     
     const [collapseMap, setCollapseMap] = useState({})
     useEffect(()=> {
-        let saplingsArray = (projectsData && projectsData.getProjects) || []
-        let map = saplingsArray.reduce((map, sapling) => { 
-            map[sapling.id] = {collapse: true}
+        let projectsArray = lodash.get(projectsData, 'getProjects.projects') || []
+        let map = projectsArray.reduce((map, project) => { 
+            map[project.id] = {collapse: true}
             return map
         }, {})
         setCollapseMap(map)
@@ -324,7 +323,7 @@ function DonateItems({ staticContext }) {
         }
         return array
     }
-    let donationItems = getDonateItems(saplingsArray)
+    let donationItems = getDonateItems(projectsArray)
 
     return (
         <Donate>

@@ -13,7 +13,7 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 import 'filepond/dist/filepond.min.css'
-import { GET_ALL_USER_DONATIONS, ADD_NEW_PHOTO_MUTATION, IMGUR_KEY } from '../../constants';
+import { GET_ALL_USER_DONATIONS, ADD_NEW_PHOTO_MUTATION, IMGUR_KEY, RESPONSE_SUCCESS } from '../../constants';
 
 import BootstrapTable from 'react-bootstrap-table-next'
 import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
@@ -250,15 +250,15 @@ export function UsersDonatedTable() {
 
     const [allUserDonationsData, isGetAllUserDonationsLoading, isGetAllUserDonationsError, refetchAllUserDonationsData] = useQueryApi(gql(GET_ALL_USER_DONATIONS), { email, twitterId, instaId })
     useEffect(() => {
-        if (allUserDonationsData && allUserDonationsData.getAllUserDonations && !isGetAllUserDonationsError) {
-            reset(allUserDonationsData.getAllUserDonations, true)
+        if (allUserDonationsData && allUserDonationsData.getAllUserDonations.responseStatus.status === RESPONSE_SUCCESS && !isGetAllUserDonationsError) {
+            reset(allUserDonationsData.getAllUserDonations.allDonations, true)
         }
     }, [allUserDonationsData, isGetAllUserDonationsError])
 
     const [updatedUserDonationData, updatedUserDonationLoading, updatedUserDonationError, setNewPhotoVariables, setUpdateUserDonationData] = useMutationApi(gql(ADD_NEW_PHOTO_MUTATION))
     useEffect(() => {
-        if (updatedUserDonationData && updatedUserDonationData.data.addPhotoToTimeline && !updatedUserDonationError) {
-            reset(updatedUserDonationData.data.addPhotoToTimeline, false)
+        if (updatedUserDonationData && updatedUserDonationData.data.addPhotoToTimeline.responseStatus.status === RESPONSE_SUCCESS && !updatedUserDonationError) {
+            reset(updatedUserDonationData.data.addPhotoToTimeline.myDonation, false)
         }
     }, [updatedUserDonationData, updatedUserDonationError])
 

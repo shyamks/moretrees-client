@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import gql from 'graphql-tag'
 
-import { PageContent, Page, FORGOT_PASSWORD_QUERY, PAGES } from '../constants'
+import { PageContent, Page, FORGOT_PASSWORD_QUERY, PAGES, RESPONSE_SUCCESS, RESPONSE_ERROR } from '../constants'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Button from '../components/Button'
@@ -65,11 +65,11 @@ export function ForgotPassword({ history }) {
     const [forgotPasswordData, forgotPasswordLoading, forgotPasswordError, setForgotPasswordVariables, setForgotPasswordData] = useLazyQueryApi(gql(FORGOT_PASSWORD_QUERY))
     useEffect(() => {
         let forgotPassword = forgotPasswordData && forgotPasswordData.forgotPassword
-        if (forgotPassword && !forgotPassword.error && !forgotPasswordError) {
+        if (forgotPassword && forgotPassword.responseStatus.status === RESPONSE_SUCCESS && !forgotPasswordError) {
             showToast('Reset Link sent', 'success')
             history.push(PAGES.INDEX)
         }
-        else if (forgotPasswordError || (forgotPassword && forgotPassword.error))
+        else if (forgotPasswordError || (forgotPassword && forgotPassword.responseStatus.status === RESPONSE_ERROR))
             showToast('Something went wrong', 'error')
     }, [forgotPasswordData, forgotPasswordError])
 

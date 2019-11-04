@@ -8,7 +8,7 @@ import NotFound from './NotFound'
 import gql from 'graphql-tag';
 import useQueryApi from '../components/hooks/useQueryApi';
 
-import { GET_MY_DONATIONS, PageContent, Page, TREE_STATUS } from '../constants';
+import { GET_MY_DONATIONS, PageContent, Page, TREE_STATUS, RESPONSE_SUCCESS } from '../constants';
 import Footer from '../components/Footer';
 import { useTable } from 'react-table';
 import useClient from '../components/hooks/useClient';
@@ -89,8 +89,8 @@ export function MyDonations() {
     }, [])
 
     let myDonations, plantedTrees = [], pendingCount = 0
-    if (myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length > 0) {
-        myDonations = myDonationsData.myDonations
+    if (myDonationsData && myDonationsData.myDonations.responseStatus.status === RESPONSE_SUCCESS && myDonationsData.myDonations.myDonations.length > 0) {
+        myDonations = myDonationsData.myDonations.myDonations
         pendingCount = 0
         plantedTrees = myDonations.reduce((array, tree) => {
             if (tree.status === TREE_STATUS.PENDING){
@@ -121,7 +121,7 @@ export function MyDonations() {
                         </>
                     )
                 }
-                {contextUser && myDonationsData && myDonationsData.myDonations && myDonationsData.myDonations.length == 0 &&
+                {contextUser && myDonationsData && myDonationsData.myDonations.myDonations && myDonationsData.myDonations.myDonations.length == 0 &&
                     <Message>
                         You have not made any donations yet.
                     </Message>

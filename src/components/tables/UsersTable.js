@@ -3,7 +3,7 @@ import React from 'react'
 import { useState, useContext, useEffect, useRef } from 'react'
 import lodash from 'lodash'
 
-import { GET_ALL_USERS, availableWhenOptions, availableWhatOptions, UPDATE_USERS_MUTATION, adminOptions } from '../../constants';
+import { GET_ALL_USERS, availableWhenOptions, availableWhatOptions, UPDATE_USERS_MUTATION, adminOptions, RESPONSE_SUCCESS, RESPONSE_ERROR } from '../../constants';
 
 import BootstrapTable from 'react-bootstrap-table-next'
 import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
@@ -68,7 +68,7 @@ export function UsersTable() {
 
     const [allUsersData, isGetAllUsersLoading, isGetAllUsersError, refetchAllUsersData] = useQueryApi(gql(GET_ALL_USERS), { email, twitterId, instaId })
     useEffect(() => {
-        if (allUsersData && allUsersData.getAllUsers && !isGetAllUsersError) {
+        if (allUsersData && allUsersData.getAllUsers.responseStatus.status === RESPONSE_SUCCESS && !isGetAllUsersError) {
             reset(allUsersData, false)
         }
     }, [allUsersData, isGetAllUsersError])
@@ -80,11 +80,11 @@ export function UsersTable() {
     const [updateUsersData, updateUsersLoading, updateUsersError, setUpdateUsersVariables, setUpdateUsersData] = useMutationApi(gql(UPDATE_USERS_MUTATION))
     useEffect(() => {
         let updateUsers = updateUsersData && updateUsersData.data
-        if (updateUsers && !updateUsers.updateUsers.error && !updateUsersError) {
+        if (updateUsers && updateUsers.updateUsers.responseStatus.status === RESPONSE_SUCCESS && !updateUsersError) {
             reset(updateUsersData, true)
             showToast('Updated Successfully', 'success')
         }
-        else if ((updateUsers && updateUsers.updateUsers.error) || updateUsersError) {
+        else if ((updateUsers && updateUsers.updateUsers.responseStatus.status === RESPONSE_ERROR) || updateUsersError) {
             showToast('Update failed', 'error')
         }
     }, [updateUsersData, updateUsersError])
@@ -98,10 +98,10 @@ export function UsersTable() {
     const reset = (data, update) => {
         let allUsers
         if (!update)
-            allUsers = data && data.getAllUsers
+            allUsers = data && data.getAllUsers.users
         else {
             let updateUsers = data && data.data
-            allUsers = (updateUsers && !updateUsers.updateUsers.error && !updateUsersError) ? updateUsers.updateUsers.response : []
+            allUsers = (updateUsers && updateUsers.updateUsers.responseStatus.status === RESPONSE_SUCCESS && !updateUsersError) ? updateUsers.updateUsers.response : []
         }
         allUsers && setTableState(allUsers)
         setChanged(false)

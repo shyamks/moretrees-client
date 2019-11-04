@@ -5,6 +5,7 @@ import Modal from 'react-modal'
 import React from 'react'
 import { useState, useEffect, useContext, useRef } from 'react'
 import { withRouter } from "react-router-dom"
+import lodash from 'lodash'
 import 'react-toastify/dist/ReactToastify.css'
 import { toast } from 'react-toastify'
 
@@ -19,7 +20,7 @@ import useMutationApi from './hooks/useMutationApi'
 import UserContext from './UserContext'
 import { showToast, apiCallbackStatus, isClickOrEnter } from '../utils'
 // import Link from 'next/link'
-import { REGISTER_MUTATION, LOGIN_QUERY, PAGES, UserType, FINAL_ENDPOINT } from '../constants'
+import { REGISTER_MUTATION, LOGIN_QUERY, PAGES, UserType, FINAL_ENDPOINT, RESPONSE_SUCCESS, RESPONSE_ERROR } from '../constants'
 
 import logoImage from '../images/moretrees-logo.jpg'
 import Logger from './Logger'
@@ -327,10 +328,9 @@ function SiteHeader({ history }) {
     useEffect(() => {
         if (loginData && loginData.loginUser && checkCalledStatus(LOGIN)) {
             let loginUser = loginData.loginUser
-            // const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
             storeUserInContext(loginUser)
-            Logger(loginData, loginError, 'wtf loginError')
-            if (loginUser.error || loginError) {
+            // Logger(loginData, loginError, 'wtf loginError')
+            if (loginUser.responseStatus.status === RESPONSE_ERROR || loginError) {
                 showToast("Login failed!", 'error')
             }
             else if (loginUser.username)
@@ -343,7 +343,7 @@ function SiteHeader({ history }) {
         if (registerData && registerData.data && checkCalledStatus(REGISTER)) {
             let registerUser = registerData.data.registerUser
             storeUserInContext(registerUser)
-            if (registerUser.error || registerError) {
+            if (registerUser.responseStatus.status === RESPONSE_ERROR || registerError) {
                 showToast("Registration failed!", 'error')
                 toggleModal(setModalStatus, true, ERROR, registerUser.error)
             }
@@ -362,7 +362,7 @@ function SiteHeader({ history }) {
     //     toggleModal(setModalStatus, REGISTER)
     // }
     // const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
-    let errorInLogin = (contextUser && contextUser.error) || loginError
+    let errorInLogin = (lodash.get(contextUser, 'responseStatus.status') === RESPONSE_ERROR) || loginError
     // const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
     return (
         <Header>

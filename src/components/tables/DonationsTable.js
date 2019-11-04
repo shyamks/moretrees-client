@@ -3,7 +3,7 @@ import React from 'react'
 import { useState, useContext, useEffect } from 'react'
 import lodash from 'lodash'
 
-import { GET_PROJECTS, donationTypes, UPDATE_PROJECTS_MUTATION, } from '../../constants';
+import { GET_PROJECTS, donationTypes, UPDATE_PROJECTS_MUTATION, RESPONSE_SUCCESS, RESPONSE_ERROR, } from '../../constants';
 
 import BootstrapTable from 'react-bootstrap-table-next'
 import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
@@ -77,7 +77,7 @@ export function DonationsTable() {
 
     const [projectsData, isGetProjectsLoading, isGetProjectsError, refetchProjectsData] = useQueryApi(gql(GET_PROJECTS))
     useEffect(() => {
-        if (projectsData && projectsData.getProjects && !isGetProjectsError) {
+        if (lodash.get(projectsData, 'getProjects.projects') && !isGetProjectsError) {
             reset(projectsData, false)
         }
     }, [projectsData, isGetProjectsError])
@@ -88,12 +88,12 @@ export function DonationsTable() {
 
     const [updateProjectsData, updateProjectsLoading, updateProjectsError, setUpdateProjectsVariables, setUpdateProjectsData] = useMutationApi(gql(UPDATE_PROJECTS_MUTATION))
     useEffect(() => {
-        let updateSaplings = updateProjectsData && updateProjectsData.data
-        if (updateSaplings && !updateSaplings.updateSaplings.error && !updateProjectsError) {
+        let updateProjects = updateProjectsData && updateProjectsData.data
+        if (updateProjects && updateProjects.updateProjects.responseStatus === RESPONSE_SUCCESS && !updateProjectsError) {
             reset(updateProjectsData, true)
             showToast('Updated Successfully', 'success')
         }
-        else if ((updateSaplings && updateSaplings.updateSaplings.error) || updateProjectsError){
+        else if ((updateProjects && updateProjects.updateProjects.responseStatus === RESPONSE_ERROR) || updateProjectsError){
             showToast('Update Failed', 'error')
         }
     }, [updateProjectsData, updateProjectsError])
@@ -123,15 +123,15 @@ export function DonationsTable() {
     }
 
     const reset = (data, update) => {
-        let saplingsData
+        let projectsData
         if (!update)
-            saplingsData = (data && data.getProjects) || []
+            projectsData = lodash.get(data, 'getProjects.projects') || []
         else {
-            let updateSaplings = data && data.data
-            saplingsData = (updateSaplings && !updateSaplings.updateSaplings.error && !updateProjectsError) ? updateSaplings.updateSaplings.response : []
+            let updateProjects = data && data.data
+            projectsData = (updateProjects && updateProjects.updateProjects.responseStatus.status === RESPONSE_SUCCESS && !updateProjectsError) ? updateProjects.updateProjects.response : []
         }
-        if (saplingsData){
-            setTableState(saplingsData)
+        if (projectsData){
+            setTableState(projectsData)
         }
         setChanged(false)
     }

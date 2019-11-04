@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import qs from 'qs'
 
 import Header from '../components/Header'
-import { PageContent, Page, RESET_PASSWORD_MUTATION, PAGES } from '../constants'
+import { PageContent, Page, RESET_PASSWORD_MUTATION, PAGES, RESPONSE_ERROR } from '../constants'
 import Footer from '../components/Footer'
 import Input from '../components/Input'
 import Button from '../components/Button'
@@ -103,12 +103,12 @@ export function Reset({ history, location }) {
 
     const [resetData, resetLoading, resetError, setResetVariables, setResetData] = useMutationApi(gql(RESET_PASSWORD_MUTATION))
     useEffect(() => {
-        let resetPasssword = resetData && resetData.data.resetPassword
-        if (resetPasssword && !resetPasssword.error && !resetError){
+        let resetPasssword = lodash.get(resetData, 'data.resetPassword')
+        if (resetPasssword && resetPasssword.responseStatus.status === RESPONSE_SUCCESS && !resetError){
             showToast('Reset Successfull', 'success')
             history.push(PAGES.INDEX)
         }
-        else if (resetError || (resetPasssword && resetData.error))
+        else if (resetError || (resetPasssword && resetPasssword.responseStatus.status === RESPONSE_ERROR))
             showToast('Something went wrong', 'error')
     }, [resetData, resetError])
 

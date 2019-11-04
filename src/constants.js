@@ -8,6 +8,8 @@ export const POST = 'post'
 export const GET = 'get'
 export const STORE_TOKEN = 'authToken'
 export const STORE_USER = 'loggedInUser'
+export const RESPONSE_SUCCESS = 'success'
+export const RESPONSE_ERROR = 'error'
 
 export const PAGES = {
   INDEX: '/',
@@ -75,20 +77,30 @@ mutation makeDonation($donationInput : DonationPaymentInput) {
       status
       error
       referenceId
+      responseStatus {
+        text
+        status
+      }
     }
 }`
 
 export const GET_PROJECTS = `
 query getProjects($status: String){
   getProjects(status: $status){
-      id
-      type
-      title
-      subtitle
-      cost
-      content
-      remaining
-      status
+      projects {
+        id
+        type
+        title
+        subtitle
+        cost
+        content
+        remaining
+        status
+      }  
+      responseStatus {
+        text
+        status
+      }
     }
 }
 `
@@ -107,6 +119,10 @@ mutation registerUser($username: String!, $email: String!, $password: String!) {
       accessToken
       message
       error
+      responseStatus {
+        text
+        status
+      }
     }
 }`
 
@@ -115,6 +131,10 @@ mutation resetPassword($password: String!, $confirmPassword: String!, $token: St
   resetPassword(password: $password, confirmPassword: $confirmPassword, token: $token) {
     status
     error
+    responseStatus {
+      text
+      status
+    }
   }
 }
 `
@@ -122,8 +142,11 @@ mutation resetPassword($password: String!, $confirmPassword: String!, $token: St
 export const CONFIRM_TOKEN_QUERY = `
 query confirmToken($token: String!){
   confirmToken(token: $token){
-    status
-    error
+    email
+    responseStatus {
+      text
+      status
+    }
   }
 }
 `
@@ -143,6 +166,10 @@ query loginUser($email: String!, $password: String!){
         accessToken
         message
         error
+        responseStatus {
+          text
+          status
+        }
     }
 }`
 
@@ -151,6 +178,10 @@ query forgotPassword($email: String!) {
   forgotPassword(email: $email) {
     status
     error
+    responseStatus {
+      text
+      status
+    }
   }
 }
 `
@@ -171,6 +202,10 @@ mutation updateUser($userInput: UserInput!) {
     availableWhat
     message
     error
+    responseStatus {
+      text
+      status
+    }
   }
 }`
 
@@ -192,14 +227,16 @@ mutation updateUsers($userInput: [UserInput]!, $email: String, $twitterId: Strin
       message
       error
     }
-    status
-    error
+    responseStatus {
+      text
+      status
+    }
   }
 }`
 
 export const UPDATE_PROJECTS_MUTATION = `
-mutation updateSaplings($saplingInput: [UpdateSaplingsInput]!, $email: String, $twitterId: String, $instaId: String) {
-  updateSaplings(input: $saplingInput, email: $email, twitterId: $twitterId, instaId: $instaId){
+mutation updateProjects($saplingInput: [UpdateProjectsInput]!, $email: String, $twitterId: String, $instaId: String) {
+  updateProjects(input: $saplingInput, email: $email, twitterId: $twitterId, instaId: $instaId){
     response {
       id
       type
@@ -212,6 +249,10 @@ mutation updateSaplings($saplingInput: [UpdateSaplingsInput]!, $email: String, $
     }
     status
     error
+    responseStatus {
+      text
+      status
+    }
   }
 }`
 
@@ -228,49 +269,63 @@ query getUser($email: String, $twitterId: String, $instaId: String) {
     instaProfile
     availableWhen
     availableWhat
-    message
-    error
+    responseStatus {
+      text
+      status
+    }
   }
 }`
 
 export const GET_ALL_USERS = `
 query getAllUsers($email: String, $twitterId: String, $instaId: String) {
   getAllUsers(email: $email, twitterId: $twitterId, instaId: $instaId){
-    id
-    username
-    email
-    phone
-    twitterProfile
-    twitterId
-    instaId
-    fbProfile
-    instaProfile
-    availableWhen
-    availableWhat
-    message
-    error
+    users {
+      id
+      username
+      email
+      phone
+      twitterProfile
+      twitterId
+      instaId
+      fbProfile
+      instaProfile
+      availableWhen
+      availableWhat
+      message
+      error
+    }
+    responseStatus {
+      text
+      status
+    }
   }
 }`
 
 export const GET_ALL_USER_DONATIONS = `
 query getAllUserDonations($email: String, $twitterId: String, $instaId: String) {
   getAllUserDonations(email: $email, twitterId: $twitterId, instaId: $instaId){
-    email
-    instaProfile
-    twitterProfile
-    type
-    title
-    subtitle
-    cost
-    content
-    treeId
-    status
-    photoTimeline {
-      order
-      text
-      photoUrl
+    allDonations {
+      email
+      instaProfile
+      twitterProfile
+      type
+      title
+      subtitle
+      cost
+      content
+      treeId
+      status
+      photoTimeline {
+        order
+        text
+        photoUrl
+      }
+      createdAt
     }
-    createdAt
+    responseStatus {
+      text
+      status
+    }
   }
 }`
 
@@ -278,22 +333,28 @@ query getAllUserDonations($email: String, $twitterId: String, $instaId: String) 
 export const GET_MY_DONATIONS = `
 query myDonations($email: String, $twitterId: String, $instaId: String) {
     myDonations(email: $email, twitterId: $twitterId, instaId: $instaId){
-      email
-      instaProfile
-      twitterProfile
-      type
-      title
-      subtitle
-      cost
-      content
-      treeId
-      status
-      photoTimeline {
-        order
-        text
-        photoUrl
+      myDonations {
+        email
+        instaProfile
+        twitterProfile
+        type
+        title
+        subtitle
+        cost
+        content
+        treeId
+        status
+        photoTimeline {
+          order
+          text
+          photoUrl
+        }
+        createdAt
       }
-      createdAt
+      responseStatus {
+        text
+        status
+      }
     }
 }
 `
@@ -301,22 +362,28 @@ query myDonations($email: String, $twitterId: String, $instaId: String) {
 export const ADD_NEW_PHOTO_MUTATION = `
 mutation addPhotoToTimeline($input: PhotoTimelineInput, $email: String, $twitterId: String, $instaId: String) {
     addPhotoToTimeline(input: $input, email: $email, twitterId: $twitterId, instaId: $instaId) {
-      email
-      instaProfile
-      twitterProfile
-      type
-      title
-      subtitle
-      cost
-      content
-      treeId
-      status
-      photoTimeline {
-        order
-        text
-        photoUrl
+      myDonation {
+        email
+        instaProfile
+        twitterProfile
+        type
+        title
+        subtitle
+        cost
+        content
+        treeId
+        status
+        photoTimeline {
+          order
+          text
+          photoUrl
+        }
+        createdAt
       }
-      createdAt
+      responseStatus {
+        text
+        status
+      }
     }
 }
 `

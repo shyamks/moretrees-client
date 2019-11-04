@@ -14,7 +14,7 @@ import useMutationApi from './hooks/useMutationApi';
 import useLazyQueryApi from './hooks/useLazyQueryApi';
 import useClient from './hooks/useClient';
 import UserContext from './UserContext';
-import { UPDATE_USER_MUTATION, availableWhenOptions, availableWhatOptions, MarkTitle } from '../constants'
+import { UPDATE_USER_MUTATION, availableWhenOptions, availableWhatOptions, MarkTitle, RESPONSE_SUCCESS, RESPONSE_ERROR } from '../constants'
 import { showToast } from '../utils'
 
 import volunteerLogoImage from '../images/moretrees-volunteer-logo.png'
@@ -92,7 +92,7 @@ function VolunteerChoices() {
         console.log(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
-            if (!(updateUser.error || updateUserError)) {
+            if (!(updateUser.responseStatus.status === RESPONSE_ERROR || updateUserError)) {
                 storeUserInContext(updateUser)
                 showToast('Updated', 'success')
             }

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useContext } from 'react'
 import styled from 'styled-components'
 import gql from 'graphql-tag'
 
-import { PageContent, PAGES, UPDATE_USER_MUTATION, UPDATE_USER_PROFILE_MUTATION, REGISTER_MUTATION, Page, GET_USER_QUERY } from '../constants'
+import { PageContent, PAGES, UPDATE_USER_MUTATION, UPDATE_USER_PROFILE_MUTATION, REGISTER_MUTATION, Page, GET_USER_QUERY, RESPONSE_SUCCESS } from '../constants'
 import Header from '../components/Header'
 import Error from './NotFound'
 import Footer from '../components/Footer'
@@ -115,8 +115,12 @@ export function MyProfile({ history, location, staticContext, match, route }) {
     })
 
     const [userData, isGetuserLoading, isGetUserError, refetchUserData]= useQueryApi(gql(GET_USER_QUERY), { email, twitterId, instaId })
+    useEffect(()=> {
+        refetchUserData()
+    },[])
+    
     useEffect(() => {
-        if (userData && !userData.getUser.error && !isGetUserError){
+        if (userData && userData.getUser.responseStatus.status === RESPONSE_SUCCESS && !isGetUserError){
             let user = userData.getUser
             let { fbProfile, instaProfile, twitterProfile, username } = user
             let stateObject = {
@@ -155,7 +159,7 @@ export function MyProfile({ history, location, staticContext, match, route }) {
         // Logger(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
-            if (!(updateUser.error || updateUserError)) {
+            if (!(updateUser.responseStatus.status === RESPONSE_SUCCESS || updateUserError)) {
                 let { fbProfile, instaProfile, twitterProfile, username } = updateUser
                 showToast('Updated', 'success')                
                 setState({
