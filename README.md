@@ -1,10 +1,28 @@
-This project was bootstrapped with [Create React SSR App](https://github.com/trustworktech/create-react-ssr-app).
+
 ## Moretrees
 This project is an attempt at creating a web app where awareness towards the conservation of trees is spread and a place where they can donate for the same cause.
+
+## Set up env
+
+Will require node and npm.
+
+Create a .env file in the root of the directory.
+```
+RAZZLE_TEST_ENDPOINT=http://localhost:<port of the server>
+RAZZLE_RUNTIME_TEST_ENDPOINT=http://localhost:<port of the server>
+RAZZLE_RUNTIME_RAZORPAY_TEST_KEY=rzp_test_key
+RAZZLE_RUNTIME_DISABLE_CAPTCHA=true
+```
+RAZZLE_RUNTIME_RAZORPAY_TEST_KEY is needed if checkout has to be initiated.
+
 
 ## Available Scripts
 
 In the project directory, you can run:
+
+### `npm install`
+
+Installs all projects dependencies mentioned in package.json.
 
 ### `npm start`
 
