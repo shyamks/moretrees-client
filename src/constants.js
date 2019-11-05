@@ -43,6 +43,11 @@ export const availableWhatOptions = [
   { value: 'Marketing', label: 'Marketing' },
   { value: 'Website', label: 'Website' },
 ]
+
+export const PLANT_STATUS_OPTIONS = [
+  { value: 'PLANTED', label: 'PLANTED' },
+  { value: 'PENDING', label: 'PENDING' }
+]
 export const adminOptions = [
   { value: 'Users', label: 'Users' },
   { value: 'Users Donated', label: 'Users Donated' },
@@ -363,6 +368,35 @@ export const ADD_NEW_PHOTO_MUTATION = `
 mutation addPhotoToTimeline($input: PhotoTimelineInput, $email: String, $twitterId: String, $instaId: String) {
     addPhotoToTimeline(input: $input, email: $email, twitterId: $twitterId, instaId: $instaId) {
       myDonation {
+        email
+        instaProfile
+        twitterProfile
+        type
+        title
+        subtitle
+        cost
+        content
+        treeId
+        status
+        photoTimeline {
+          order
+          text
+          photoUrl
+        }
+        createdAt
+      }
+      responseStatus {
+        text
+        status
+      }
+    }
+}
+`
+
+export const UPDATE_USER_DONATION_MUTATION = `
+mutation updateUserDonations($input: [UpdateUserDonationInput]!, $email: String, $twitterId: String, $instaId: String) {
+    updateUserDonations(input: $input, email: $email, twitterId: $twitterId, instaId: $instaId) {
+      allDonations {
         email
         instaProfile
         twitterProfile

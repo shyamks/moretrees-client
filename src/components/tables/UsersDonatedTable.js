@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import React from 'react'
+import lodash from 'lodash'
 import { useState, useContext, useEffect } from 'react'
 import Modal from 'react-modal'
 import gql from 'graphql-tag'
@@ -13,20 +14,22 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 import 'filepond/dist/filepond.min.css'
-import { GET_ALL_USER_DONATIONS, ADD_NEW_PHOTO_MUTATION, IMGUR_KEY, RESPONSE_SUCCESS } from '../../constants';
+import { GET_ALL_USER_DONATIONS, ADD_NEW_PHOTO_MUTATION, IMGUR_KEY, RESPONSE_SUCCESS, PLANT_STATUS_OPTIONS, UPDATE_USER_DONATION_MUTATION } from '../../constants';
 
 import BootstrapTable from 'react-bootstrap-table-next'
 import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 
 import useQueryApi from '../hooks/useQueryApi'
 import useMutationApi from '../hooks/useMutationApi';
 import Input from '../Input';
-import { showToast, convertNullToEmptyString } from '../../utils';
+import { showToast, convertNullToEmptyString, isAdminUser } from '../../utils';
 import UserContext from '../UserContext';
 import Logger from '../Logger';
 import Button from '../Button'
 
+const { SearchBar } = Search;
 
 // Register the plugins
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview, FilePondPluginFileValidateType, FilePondPluginFileValidateSize)
@@ -36,7 +39,12 @@ const columns = [
     { dataField: 'email', text: 'Email', sort: true, editable: false },
     { dataField: 'instaProfile', text: 'Insta', sort: true, editable: false },
     { dataField: 'twitterProfile', text: 'Twitter', sort: true, editable: false },
-    { dataField: 'status', text: 'Status' },
+    {
+        dataField: 'status', text: 'Status',
+        editor: {
+            type: Type.SELECT, options: PLANT_STATUS_OPTIONS
+        }
+    },
 
 ]
 
@@ -238,6 +246,11 @@ function GetPhotoTimeline({ row, updatePhotoApi, email, instaId, twitterId }) {
     )
 }
 
+
+const SearchContainer = styled.div`
+    align-self: center;
+`
+
 const getDonationDate = (createdAt) => {
     let date = new Date(parseInt(createdAt))
     Logger(date, createdAt, 'date')
@@ -247,6 +260,7 @@ const getDonationDate = (createdAt) => {
 export function UsersDonatedTable() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext)
     let { email, twitterId, instaId } = contextUser || {}
+    let isAdmin = isAdminUser(contextUser)
 
     const [allUserDonationsData, isGetAllUserDonationsLoading, isGetAllUserDonationsError, refetchAllUserDonationsData] = useQueryApi(gql(GET_ALL_USER_DONATIONS), { email, twitterId, instaId })
     useEffect(() => {
@@ -255,53 +269,119 @@ export function UsersDonatedTable() {
         }
     }, [allUserDonationsData, isGetAllUserDonationsError])
 
-    const [updatedUserDonationData, updatedUserDonationLoading, updatedUserDonationError, setNewPhotoVariables, setUpdateUserDonationData] = useMutationApi(gql(ADD_NEW_PHOTO_MUTATION))
+    const [updatedUserDonationPhotoData, updatedUserDonationPhotoLoading, updatedUserDonationPhotoError, setNewPhotoVariables, setUpdateUserDonationPhotoData] = useMutationApi(gql(ADD_NEW_PHOTO_MUTATION))
     useEffect(() => {
-        if (updatedUserDonationData && updatedUserDonationData.data.addPhotoToTimeline.responseStatus.status === RESPONSE_SUCCESS && !updatedUserDonationError) {
-            reset(updatedUserDonationData.data.addPhotoToTimeline.myDonation, false)
+        if (updatedUserDonationPhotoData && updatedUserDonationPhotoData.data.addPhotoToTimeline.responseStatus.status === RESPONSE_SUCCESS && !updatedUserDonationPhotoError) {
+            reset(updatedUserDonationPhotoData.data.addPhotoToTimeline.myDonation, false)
         }
-    }, [updatedUserDonationData, updatedUserDonationError])
+    }, [updatedUserDonationPhotoData, updatedUserDonationPhotoError])
+
+    const [updatedUserDonationsData, updatedUserDonationLoading, updatedUserDonationError, setUpdateUserDonationVariables, setUpdateUserDonationData] = useMutationApi(gql(UPDATE_USER_DONATION_MUTATION))
+    useEffect(() => {
+        if (updatedUserDonationsData && updatedUserDonationsData.data.updateUserDonations.responseStatus.status === RESPONSE_SUCCESS && !updatedUserDonationError) {
+            reset(updatedUserDonationsData.data.updateUserDonations.allDonations, true)
+        }
+    }, [updatedUserDonationsData, updatedUserDonationError])
 
     useEffect(() => {
         refetchAllUserDonationsData()
     }, [])
 
+    const [updatedRows, setUpdatedRows] = useState({})
+    const [changed, setChanged] = useState(false)
+
     const [tableState, setTableState] = useState([])
 
-    console.log(allUserDonationsData, 'data')
-    console.log(updatedUserDonationData, 'updatedUserDonationData')
+    console.log(updatedUserDonationPhotoData, 'updatedUserDonationPhotoData')
 
-    const reset = (data, isAllDonations) => {
-        let allUsersDonated
-        if (isAllDonations){
-            allUsersDonated = data 
+    const update = () => {
+        let { email, twitterId, instaId } = contextUser || {}
+        if (email || twitterId || instaId) {
+            let oldRows = Object.values(updatedRows)
+            let rows = oldRows.map((row) => {
+                return lodash.pick(row, ['treeId', 'status'])
+            })
+            console.log(rows, email, 'newRows')
+
+            rows && setUpdateUserDonationVariables({ input: rows, email, twitterId, instaId })
         }
         else {
+            showToast('Not a user', 'error')
+        }
+    }
+    const reset = (data, isAllDonations) => {
+        let allUsersDonated
+        if (!isAllDonations) {
             allUsersDonated = tableState
             allUsersDonated = allUsersDonated.map((userDonated) => {
                 return (data.treeId == userDonated.treeId) ? data : userDonated
             })
-            console.log(allUsersDonated,'allUsersDonatednew')
+            console.log(allUsersDonated, 'allUsersDonatednew')
         }
-        // let allUsersDonated = allUserDonationsData && allUserDonationsData.getAllUserDonations
-        // console.log(allUsersDonated, 'allUsersDonated')
-        
+        else
+            allUsersDonated = data
+        console.log(allUsersDonated, 'allUsersDonated')
+
         allUsersDonated && setTableState(allUsersDonated)
+        setChanged(false)
     }
 
+    const handleTableChange = (type, { data, cellEdit: { rowId, dataField, newValue } }) => {
+        const result = data.map((row) => {
+            if (row.treeId === rowId && !lodash.isEqual(convertNullToEmptyString(row[dataField]), newValue)) {
+                console.log(row[dataField], newValue, !lodash.isEqual(convertNullToEmptyString(row[dataField]),newValue), 'diff')
+                const newRow = { ...row }
+                newRow[dataField] = newValue
+                updatedRows[rowId] = newRow
+                setUpdatedRows(updatedRows)
+                !changed && setChanged(true)
+                return newRow;
+            }
+            return row
+        });
+        setTableState(result)
+    }
+
+    const allDonations = lodash.get(allUserDonationsData, 'getAllUserDonations.allDonations')
     let expandRow = getExpandRowObject(setNewPhotoVariables, email, twitterId, instaId)
     return (
         <>
-            <BootstrapTable
-                remote={{ cellEdit: true }}
-                keyField='treeId'
-                data={tableState}
-                columns={columns}
-                rowStyle={rowStyle}
-                expandRow={expandRow}
-                cellEdit={cellEditFactory(cellEdit)}
-                pagination={paginationFactory()} />
-            
+            {isAdmin && tableState &&
+                <ToolkitProvider
+                    keyField='id'
+                    data={tableState}
+                    columns={columns}
+                    search
+                >
+                    {
+                        props => (
+                            <div>
+                                <ButtonContainer>
+                                    <SearchContainer>
+                                        <SearchBar {...props.searchProps} />
+                                    </SearchContainer>
+                                    <Button disabled={!changed} onClick={() => update()}>Update</Button>
+                                    <Button disabled={!changed} onClick={() => reset(allDonations, false)}>Reset</Button>
+                                </ButtonContainer>
+                                <BootstrapTable
+                                    {...props.baseProps}
+                                    bootstrap4={true}
+                                    remote={{ cellEdit: true }}
+                                    keyField='treeId'
+                                    data={tableState}
+                                    columns={columns}
+                                    rowStyle={rowStyle}
+                                    expandRow={expandRow}
+                                    cellEdit={cellEditFactory(cellEdit)}
+                                    pagination={paginationFactory()}
+                                    onTableChange={handleTableChange} />
+
+                            </div>
+                        )
+                    }
+                </ToolkitProvider>
+            }
+            {!isAdmin && !isGetAllUserDonationsLoading && <NotFound statusCode={404}/>}
         </>
     )
 }

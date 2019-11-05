@@ -90,7 +90,6 @@ export function UsersTable() {
     }, [updateUsersData, updateUsersError])
 
     const [updatedRows, setUpdatedRows] = useState({})
-
     const [changed, setChanged] = useState(false)
 
     const [tableState, setTableState] = useState([])
