@@ -136,7 +136,6 @@ function Register({ onSubmit }) {
     const [emailAvailabilty, isEmailAvailabiltyLoading, emailAvailabiltyError, setEmail, setEmailAvailabiltyData] = useLazyQueryApi(gql(IS_EMAIL_AVAILABLE))
     useEffect(() => {
         const emailAvailable = lodash.get(emailAvailabilty, 'isEmailAvailable')
-        console.log(emailAvailabilty, 'emailAvailabilty')
         if (emailAvailable && emailAvailable.responseStatus.status === RESPONSE_SUCCESS && !emailAvailabiltyError) {
             // console.log(emailAvailable.email, registerDetails.email.value, emailAvailable.emailAvailable, 'email res')
             if (emailAvailable.email === registerDetails.email.value && emailAvailable.emailAvailable)
@@ -147,11 +146,11 @@ function Register({ onSubmit }) {
     }, [emailAvailabilty, emailAvailabiltyError])
 
     const validDetails = ({ email, username, password, mobile, captcha }) => {
-        let { isError: emailIsError, isLoading: emailIsLoading } = validity(email, 'email')
-        return captcha && emailIsError && emailIsLoading === false &&
-            validity(username, 'username').isError &&
-            validity(password, 'password').isError &&
-            validity(mobile, 'mobile').isError
+        let { isError: emailIsError, isLoading: emailIsLoading } = validity(email, 'email', false)
+        return captcha && !emailIsError && !emailIsLoading &&
+            !validity(username, 'username').isError &&
+            !validity(password, 'password').isError &&
+            !validity(mobile, 'mobile').isError
     }
 
     const onRegister = () => {
@@ -162,15 +161,15 @@ function Register({ onSubmit }) {
             mobile: { value: mobileValue },
             captcha } = registerDetails
 
-        if (validDetails({ emailValue, usernameValue, passwordValue, mobileValue, captcha }))
-            onSubmit({ emailValue, usernameValue, passwordValue, mobileValue })
+        if (validDetails({ email: emailValue, username: usernameValue, password: passwordValue, mobile: mobileValue, captcha }))
+            onSubmit({ email: emailValue, username: usernameValue, password: passwordValue, mobile: mobileValue })
     }
 
-    const validity = (value, type) => {
+    const validity = (value, type, dynamicValidityCheck = true) => {
         let isError = !getStatus(value, type)
         let errorText = isError ? getErrorText(value, type) : null
         let isLoading
-        if (type=== 'email' && !isError && !errorText && value.length) {
+        if (type=== 'email' && !isError && !errorText && dynamicValidityCheck && value.length) {
             isLoading = true
             setEmail({ email: value })
         }

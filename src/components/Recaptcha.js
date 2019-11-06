@@ -9,7 +9,7 @@ export function Captcha({ onSuccess }) {
             onSuccess(response)
         }
     }
-    let showCaptcha = !(Boolean(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA))
+    let showCaptcha = Boolean(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA)
     return (
         <>
         { showCaptcha &&
