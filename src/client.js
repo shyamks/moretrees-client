@@ -8,6 +8,7 @@ import { InMemoryCache, ApolloLink } from 'apollo-boost';
 import { createHttpLink } from 'apollo-link-http';
 
 import { STORE_TOKEN, isProd } from './constants';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
 
 const manageApolloMiddleware = () => {
     const FINAL_ENDPOINT = isProd ? process.env.RAZZLE_RUNTIME_PROD_ENDPOINT : process.env.RAZZLE_RUNTIME_TEST_ENDPOINT
@@ -36,7 +37,9 @@ const manageApolloMiddleware = () => {
 hydrate(
   <BrowserRouter>
     <ApolloProvider client={manageApolloMiddleware()}>
-      <App />
+      <AppErrorBoundary>
+        <App />
+      </AppErrorBoundary>
     </ApolloProvider>
   </BrowserRouter>,
   document.getElementById('root')
