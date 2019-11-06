@@ -1,6 +1,7 @@
 cd moretrees-client
 git checkout master
 git pull
+npm i
 
 for pid in `ps aux | grep [s]erver.js | awk '{print $2}'` ; do kill -9 $pid ; done
 
