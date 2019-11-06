@@ -159,7 +159,7 @@ export function MyProfile({ history, location, staticContext, match, route }) {
         // Logger(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
-            if (!(updateUser.responseStatus.status === RESPONSE_SUCCESS || updateUserError)) {
+            if (updateUser.responseStatus.status === RESPONSE_SUCCESS || updateUserError) {
                 let { fbProfile, instaProfile, twitterProfile, username } = updateUser
                 showToast('Updated', 'success')                
                 setState({

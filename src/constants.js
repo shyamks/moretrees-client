@@ -110,9 +110,22 @@ query getProjects($status: String){
 }
 `
 
+export const IS_EMAIL_AVAILABLE = `
+query isEmailAvailable($email: String){
+  isEmailAvailable(email: $email){
+    email
+    emailAvailable
+    responseStatus {
+      text
+      status
+    }
+  }
+}
+`
+
 export const REGISTER_MUTATION = `
-mutation registerUser($username: String!, $email: String!, $password: String!) {
-    registerUser(username: $username, email: $email, password: $password) {
+mutation registerUser($username: String!, $email: String!, $password: String!, $phone: String!) {
+    registerUser(username: $username, email: $email, password: $password, phone: $phone) {
       username
       email
       phone
@@ -157,7 +170,7 @@ query confirmToken($token: String!){
 `
 
 export const LOGIN_QUERY = `
-query loginUser($email: String!, $password: String!){
+query loginUser($email: String, $password: String){
     loginUser(email: $email, password: $password) {
         username
         email

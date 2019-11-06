@@ -33,24 +33,6 @@ export const showToast = (text, type) => {
     })
 }
 
-let apiCalledStatus = {
-    type: '',
-    status: false
-}
-
-export const apiCallbackStatus = () => {
-    
-    function setCalledStatus(status, type) {
-        apiCalledStatus = { type, status }
-    }
-
-    function checkCalledStatus(type) {
-        return apiCalledStatus.type == type && apiCalledStatus.status
-    }
-
-    return [setCalledStatus, checkCalledStatus]
-}
-
 export const convertNullToEmptyString = (value) => {
     if (value == null || value == undefined)
         return ''

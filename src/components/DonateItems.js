@@ -13,7 +13,7 @@ import { DONATION_MUTATION, GET_PROJECTS, RAZORPAY_KEY, MarkTitle, RESPONSE_SUCC
 import gql from 'graphql-tag'
 import useMutationApi from './hooks/useMutationApi'
 import useQueryApi from './hooks/useQueryApi'
-import { showToast, apiCallbackStatus } from '../utils'
+import { showToast } from '../utils'
 import UserContext from './UserContext'
 
 import donateLogoImage from '../images/moretrees-donate-logo.png'
@@ -21,8 +21,6 @@ import projectsLogoImage from '../images/moretrees-projects-logo.png'
 import roadProjectsLogoImage from '../images/moretrees-road-projects-logo.png'
 import riverProjectsLogoImage from '../images/moretrees-river-projects-logo.png'
 import Logger from './Logger'
-
-const DONATION = 'donation'
 
 const PAYMENT_CONFIRMATION = 'paymentConfirmation'
 const PAYMENT_SUCCESS = 'paymentSuccess'
@@ -169,14 +167,13 @@ let itemCheckoutList = {}
 
 function DonateItems({ staticContext }) {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken, setRegisterModal } = useContext(UserContext);
-    const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
     const [modalStatus, setModalStatus] = useState({ status: false, type: PAYMENT_CONFIRMATION, data: null, getToken: null })
 
     Logger(staticContext,'staticContext')
 
     const [donationData, donationDataLoading, donationDataError, setDonationDataVariables, setDonationData] = useMutationApi(gql(DONATION_MUTATION))
     useEffect(() => {
-        if (donationData && donationData.data && checkCalledStatus(DONATION)) {
+        if (donationData && donationData.data) {
             Logger(donationData, 'wtf payment')
             let referenceId = lodash.get(donationData, 'data.makeDonation.referenceId')
             let status = lodash.get(donationData, 'data.makeDonation.responseStatus.status') || donationDataError
@@ -240,7 +237,6 @@ function DonateItems({ staticContext }) {
             input = { ...input, email, token: token.razorpay_payment_id }
             Logger(input, 'input finalPayment')
             setDonationDataVariables({ donationInput: input })
-            setCalledStatus(true, DONATION)
             closeModal()
         }
         

@@ -10,14 +10,11 @@ import { createHttpLink } from 'apollo-link-http';
 import { STORE_TOKEN, isProd } from './constants';
 
 const manageApolloMiddleware = () => {
-    console.log(JSON.stringify(process.env),'lets check here env')
-    // const { NODE_ENV, RAZZLE_RUNTIME_PROD_ENDPOINT, RAZZLE_RUNTIME_TEST_ENDPOINT } = process.env
     const FINAL_ENDPOINT = isProd ? process.env.RAZZLE_RUNTIME_PROD_ENDPOINT : process.env.RAZZLE_RUNTIME_TEST_ENDPOINT
     const httpLink = createHttpLink({ uri: FINAL_ENDPOINT + '/graphql' });
     const middlewareLink = new ApolloLink((operation, forward) => {
         let item
         if (window) item = window.localStorage.getItem(STORE_TOKEN)
-        // console.log(item, 'manageApolloMiddleware')
         const token = item ? JSON.parse(item) : ""
         operation.setContext({
             headers: {

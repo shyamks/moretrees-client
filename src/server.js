@@ -26,12 +26,10 @@ const prepareData = (route, data) => {
 }
 
 const manageApolloMiddleware = (endpoint) => {
-  // alert(endpoint,'cmon server')
   const httpLink = createHttpLink({ uri: endpoint });
   const middlewareLink = new ApolloLink((operation, forward) => {
     let item
     if (window) item = window.localStorage.getItem(STORE_TOKEN)
-    // console.log(item, 'items')
     const token = item ? JSON.parse(item) : ""
     operation.setContext({
       headers: {

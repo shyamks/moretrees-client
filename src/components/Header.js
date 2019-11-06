@@ -18,7 +18,7 @@ import gql from 'graphql-tag'
 import useLazyQueryApi from './hooks/useLazyQueryApi'
 import useMutationApi from './hooks/useMutationApi'
 import UserContext from './UserContext'
-import { showToast, apiCallbackStatus, isClickOrEnter } from '../utils'
+import { showToast, isClickOrEnter } from '../utils'
 // import Link from 'next/link'
 import { REGISTER_MUTATION, LOGIN_QUERY, PAGES, UserType, FINAL_ENDPOINT, RESPONSE_SUCCESS, RESPONSE_ERROR } from '../constants'
 
@@ -209,9 +209,40 @@ const isServer = () => {
 function SiteHeader({ history }) {
 
     let hamburgerRef = useRef(null)
+
     let [hamburgerStatus, setHamburgerStatus] = useState(false)
 
-    // let [authenticate, setAuthenticate] = useState({})
+    let [modalStatus, setModalStatus] = useState({ type: LOGIN, data: null, open: false })
+
+    const { user: contextUser, storeUserInContext, removeUserInContext, authToken, callRegisterModal, setRegisterModal } = useContext(UserContext);
+
+    const [loginData, loginLoading, loginError, setLoginVariables, setLoginData] = useLazyQueryApi(gql(LOGIN_QUERY))
+    useEffect(() => {
+        if (loginData && loginData.loginUser) {
+            let loginUser = loginData.loginUser
+            storeUserInContext(loginUser)
+            if (loginUser.responseStatus.status === RESPONSE_ERROR || loginError) {
+                showToast("Login failed!", 'error')
+            }
+            else if (loginUser.username)
+                showToast(`Logged in ${loginUser.username} !`, 'success')
+        }
+    }, [loginData, loginError])
+
+    const [registerData, registerLoading, registerError, setRegisterVariables, setRegisterData] = useMutationApi(gql(REGISTER_MUTATION))
+    useEffect(() => {
+        if (registerData && registerData.data) {
+            let registerUser = registerData.data.registerUser
+            storeUserInContext(registerUser)
+            if (registerUser.responseStatus.status === RESPONSE_ERROR || registerError) {
+                showToast("Registration failed!", 'error')
+                toggleModal(setModalStatus, true, ERROR, registerUser.error)
+            }
+            else if (registerUser && registerUser.username)
+                showToast(`${registerUser.username} is registered!`, 'success')
+        }
+    }, [registerData, registerError])
+
     // hack to control outside clicks on hamburger
     useEffect(() => {
         document.addEventListener("mousedown", handleClick);
@@ -228,40 +259,6 @@ function SiteHeader({ history }) {
         // outside click
         setHamburgerStatus(false);
     };
-
-    // console.log(authenticate, 'twitter user')
-    let [modalStatus, setModalStatus] = useState({ type: LOGIN, data: null, open: false })
-    const { user: contextUser, storeUserInContext, removeUserInContext, authToken, callRegisterModal, setRegisterModal } = useContext(UserContext);
-
-    // social login check
-    useEffect(() => {
-        console.log(FINAL_ENDPOINT, 'point here')
-        if (!contextUser) {
-            // fetch(FINAL_ENDPOINT + '/auth/login/success', {
-            //     method: 'GET',
-            //     credentials: 'include',
-            //     headers: {
-            //         Accept: 'application/json',
-            //         'Content-Type': 'application/json',
-            //         'Access-Control-Allow-Credentials': true
-            //     }
-            // }).then(response => {
-            //     if (response.status === 200) return response.json();
-            //     throw new Error('failed to authenticate user');
-            // }).then(responseJson => {
-            //     console.log(responseJson, 'twitter user')
-            //     showToast('Login successfull', 'success')
-            //     storeUserInContext(responseJson.user)
-            // }).catch(error => {
-            //     showToast('Login failed', 'error')
-            //     console.error('failed =>', error)
-            //     // removeUserInContext()
-            // })
-        }
-
-    }, [])
-
-    const [setCalledStatus, checkCalledStatus] = apiCallbackStatus()
 
     const toggleModal = (modalSetter, open, type, data) => {
         modalSetter({ type, data, open })
@@ -286,84 +283,31 @@ function SiteHeader({ history }) {
     const onLogin = ({ email, password }) => {
         setHamburgerStatus(false)
         setLoginVariables({ email, password })
-        setCalledStatus(true, LOGIN)
         toggleModal(setModalStatus, false, LOGIN)
     }
 
     const onRegister = ({ email, username, password, mobile }) => {
         setHamburgerStatus(false)
         setRegisterVariables({ email, username, password, phone: mobile })
-        setCalledStatus(true, REGISTER)
         toggleModal(setModalStatus, false , REGISTER)
     }
 
     const onLogout = (e) => {
         if (isClickOrEnter(e)){
             setHamburgerStatus(false)
-            fetch(FINAL_ENDPOINT + '/auth/logout', {
-                method: 'GET',
-                credentials: 'no-cors',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Credentials': true
-                }
-            }).then(response => {
-                if (response.status === 200) return response.json()
-                throw new Error('failed to logout user')
-            }).then(responseJson => {
-                console.log('logged out', responseJson)
-            }).catch(error => {
-                console.error(JSON.stringify(error), 'error while logout')
-            })
             removeUserInContext()
             history.push(PAGES.INDEX)
             setLoginData(null)
         }
     }
 
-    const [loginData, loginLoading, loginError, setLoginVariables, setLoginData] = useLazyQueryApi(gql(LOGIN_QUERY))
-    const [registerData, registerLoading, registerError, setRegisterVariables, setRegisterData] = useMutationApi(gql(REGISTER_MUTATION))
-
-    useEffect(() => {
-        if (loginData && loginData.loginUser && checkCalledStatus(LOGIN)) {
-            let loginUser = loginData.loginUser
-            storeUserInContext(loginUser)
-            // Logger(loginData, loginError, 'wtf loginError')
-            if (loginUser.responseStatus.status === RESPONSE_ERROR || loginError) {
-                showToast("Login failed!", 'error')
-            }
-            else if (loginUser.username)
-                showToast(`Logged in ${loginUser.username} !`, 'success')
-            setCalledStatus(false)
-        }
-    }, [loginData, loginError])
-
-    useEffect(() => {
-        if (registerData && registerData.data && checkCalledStatus(REGISTER)) {
-            let registerUser = registerData.data.registerUser
-            storeUserInContext(registerUser)
-            if (registerUser.responseStatus.status === RESPONSE_ERROR || registerError) {
-                showToast("Registration failed!", 'error')
-                toggleModal(setModalStatus, true, ERROR, registerUser.error)
-            }
-            else if (registerUser && registerUser.username)
-                showToast(`${registerUser.username} is registered!`, 'success')
-            setCalledStatus(false)
-        }
-    }, [registerData, registerError])
-
     useEffect(() => {
         if (callRegisterModal)
             toggleModal(setModalStatus, true , REGISTER)
     }, [callRegisterModal])
 
-    // if (callRegisterModal) {
-    //     toggleModal(setModalStatus, REGISTER)
-    // }
-    // const { loggedInUser, errorInLoginUser } = onResponseFromLoginApi(loginData, loginError)
     let errorInLogin = (lodash.get(contextUser, 'responseStatus.status') === RESPONSE_ERROR) || loginError
-    // const { registerUser, errorInRegisterUser } = onResponseFromRegisterApi(registerData, registerError)
+
     return (
         <Header>
             <AppHeader>
@@ -447,7 +391,7 @@ function SiteHeader({ history }) {
                 style={customStyles(modalStatus.type)}
                 contentLabel={modalStatus.type}
             >
-                {(modalStatus.type === LOGIN) && <Login navigateTo={navigateTo} onSubmit={(data) => onLogin(data)} />}
+                {(modalStatus.type === LOGIN) && <Login navigateTo={navigateTo} onSubmit={(data) => {onLogin(data)}} />}
                 {(modalStatus.type === REGISTER) && <Register onSubmit={(data) => onRegister(data)} />}
                 {(modalStatus.type === ERROR) && <ShowError message={modalStatus.data} />}
             </Modal>

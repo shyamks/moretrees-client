@@ -32,14 +32,14 @@ const getError = (type, value) => {
                     }
                 }
             }
-            isError = validate({ from: value }, constraints)
+            error = validate({ from: value }, constraints)
             error = error ? 'Email not valid' : null
             break
         default:
 
     }
     // 
-    return { error, isError }
+    return { error, isError: !!error }
 
 
 }
@@ -70,7 +70,7 @@ export function ForgotPassword({ history }) {
             history.push(PAGES.INDEX)
         }
         else if (forgotPasswordError || (forgotPassword && forgotPassword.responseStatus.status === RESPONSE_ERROR))
-            showToast('Something went wrong', 'error')
+            showToast(forgotPassword.responseStatus.text, 'error')
     }, [forgotPasswordData, forgotPasswordError])
 
     const handleChange = (type, value) => {
@@ -88,7 +88,7 @@ export function ForgotPassword({ history }) {
                             value={state['email'].value} isError={state['email'].isError}
                             onChange={(e) => handleChange('email', e.target.value)} />
                     </InputContainer>
-                    <Button disable={state['email'].isError} onClick={() => sendEmail()} width="200px">Reset password</Button>
+                    <Button disabled={(state['email'].isError || forgotPasswordLoading)} onClick={() => sendEmail()} width="200px">Reset password</Button>
                 </Container>
             </PageContent>
             <Footer />

@@ -1,9 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import lodash from 'lodash'
 import styled, { keyframes } from 'styled-components'
 
 import { Captcha } from './Recaptcha';
-import { isProd } from '../constants';
+import { RESPONSE_SUCCESS, IS_EMAIL_AVAILABLE } from '../constants';
 import { cleanInputValue } from '../utils';
+import useLazyQueryApi from './hooks/useLazyQueryApi';
+import gql from 'graphql-tag';
 
 const input_opacity = keyframes`
     0%   {transform: translateY(-10px); opacity: 0}
@@ -129,8 +132,26 @@ function Register({ onSubmit }) {
         mobile: { value: '', isError: false, errorText: null },
         captcha: Boolean(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA)
     })
+
+    const [emailAvailabilty, isEmailAvailabiltyLoading, emailAvailabiltyError, setEmail, setEmailAvailabiltyData] = useLazyQueryApi(gql(IS_EMAIL_AVAILABLE))
+    useEffect(() => {
+        const emailAvailable = lodash.get(emailAvailabilty, 'isEmailAvailable')
+        console.log(emailAvailabilty, 'emailAvailabilty')
+        if (emailAvailable && emailAvailable.responseStatus.status === RESPONSE_SUCCESS && !emailAvailabiltyError) {
+            // console.log(emailAvailable.email, registerDetails.email.value, emailAvailable.emailAvailable, 'email res')
+            if (emailAvailable.email === registerDetails.email.value && emailAvailable.emailAvailable)
+                setRegisterDetails({ ...registerDetails, email: { ...registerDetails.email, isError: false , isLoading: false, errorText: null } })
+            else
+                setRegisterDetails({ ...registerDetails, email: { ...registerDetails.email, isError: true, errorText: 'User with emailId already present', isLoading: false } })
+        }
+    }, [emailAvailabilty, emailAvailabiltyError])
+
     const validDetails = ({ email, username, password, mobile, captcha }) => {
-        return captcha && validity(email, 'email').isError && validity(username, 'username').isError && validity(password, 'password').isError && validity(mobile, 'mobile').isError
+        let { isError: emailIsError, isLoading: emailIsLoading } = validity(email, 'email')
+        return captcha && emailIsError && emailIsLoading === false &&
+            validity(username, 'username').isError &&
+            validity(password, 'password').isError &&
+            validity(mobile, 'mobile').isError
     }
 
     const onRegister = () => {
@@ -148,16 +169,20 @@ function Register({ onSubmit }) {
     const validity = (value, type) => {
         let isError = !getStatus(value, type)
         let errorText = isError ? getErrorText(value, type) : null
-        return { isError, errorText }
+        let isLoading
+        if (type=== 'email' && !isError && !errorText && value.length) {
+            isLoading = true
+            setEmail({ email: value })
+        }
+        return { isError, errorText, isLoading }
     }
 
     const handleChange = (e, type) => {
         e.persist()
         let { value } = e.target
         let realValue = cleanInputValue(value)
-        let { isError, errorText } = validity(value, type)
-        console.log(e, { value, isError, errorText }, 'handleChange')
-        setRegisterDetails({ ...registerDetails, [type]: { value: realValue, isError, errorText } })
+        let { isError, errorText, isLoading } = validity(value, type)
+        setRegisterDetails({ ...registerDetails, [type]: { value: realValue, isError, errorText, isLoading } })
     }
 
     // specifying verify callback function
@@ -168,12 +193,12 @@ function Register({ onSubmit }) {
     };
 
     let {
-        email: { value: emailValue, isError: emailIsError, errorText: emailErrorText },
+        email: { value: emailValue, isError: emailIsError, errorText: emailErrorText, isLoading: emailIsLoading },
         username: { value: usernameValue, isError: usernameIsError, errorText: usernameErrorText },
         password: { value: passwordValue, isError: passwordIsError, errorText: passwordErrorText },
         mobile: { value: mobileValue, isError: mobileIsError, errorText: mobileErrorText }
     } = registerDetails
-    let isButtonError = emailIsError || usernameIsError || passwordIsError || mobileIsError
+    let isButtonError = emailIsError || emailIsLoading || usernameIsError || passwordIsError || mobileIsError
 
     return (
         <LoginContainer>
@@ -191,9 +216,9 @@ function Register({ onSubmit }) {
                         onChange={(e) => handleChange(e, 'mobile')} />
                     {mobileIsError && <ErrorInputLabel>{mobileErrorText}</ErrorInputLabel>}
 
-                    <Input value={emailValue} type="email" placeholder="Email" isError={emailIsError}
+                    <Input value={emailValue} type="email" placeholder="Email" isError={(emailIsError || emailIsLoading)}
                         onChange={(e) => handleChange(e, 'email')} />
-                    {emailIsError && <ErrorInputLabel>{emailErrorText}</ErrorInputLabel>}
+                    {(emailIsError || emailIsLoading) && <ErrorInputLabel>{emailIsLoading ? 'Loading...' : emailErrorText}</ErrorInputLabel>}
 
                     <Captcha onSuccess={verifyCallback} />
                     <LoginButton disabled={isButtonError} onClick={onRegister} type="submit">Register</LoginButton>
