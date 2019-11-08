@@ -51,7 +51,7 @@ export const PLANT_STATUS_OPTIONS = [
 export const adminOptions = [
   { value: 'Users', label: 'Users' },
   { value: 'Users Donated', label: 'Users Donated' },
-  { value: 'Donate Items', label: 'Donate Items' }
+  { value: 'Projects Table', label: 'Projects Table' }
 ]
 export const donationTypes = [
   { value: 'RIVER', label: 'RIVER' },
@@ -333,6 +333,10 @@ query getAllUserDonations($email: String, $twitterId: String, $instaId: String) 
       content
       treeId
       status
+      geoLocation {
+        latitude
+        longitude
+      }
       photoTimeline {
         order
         text
@@ -362,6 +366,10 @@ query myDonations($email: String, $twitterId: String, $instaId: String) {
         content
         treeId
         status
+        geoLocation {
+          latitude
+          longitude
+        }
         photoTimeline {
           order
           text
@@ -391,6 +399,10 @@ mutation addPhotoToTimeline($input: PhotoTimelineInput, $email: String, $twitter
         content
         treeId
         status
+        geoLocation {
+          latitude
+          longitude
+        }
         photoTimeline {
           order
           text
@@ -420,6 +432,10 @@ mutation updateUserDonations($input: [UpdateUserDonationInput]!, $email: String,
         content
         treeId
         status
+        geoLocation {
+          latitude
+          longitude
+        }
         photoTimeline {
           order
           text

@@ -22,7 +22,8 @@ const columns = [
         dataField: 'type', text: 'Type', sort: true,
         editor: {
             type: Type.SELECT, options: donationTypes
-        }
+        },
+        
     },
     {
         dataField: 'title', text: 'Title', sort: true, editable: true, editor: {
@@ -38,6 +39,11 @@ const columns = [
     {
         dataField: 'content', text: 'Content', editable: true, editor: {
             type: Type.TEXTAREA
+        },
+        style: {
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden'
         }
     },
     { dataField: 'remaining', text: 'Remaining', editable: true },
@@ -46,17 +52,7 @@ const columns = [
         editor: {
             type: Type.SELECT, options: [{value: 'ACTIVE', label: 'ACTIVE'}, {value: 'INACTIVE', label: 'INACTIVE'}]
         }
-    },
-    {
-        dataField: 'removeRow', text: 'RemoveRow', 
-        editor: {
-            type: Type.SELECT, options: [{value: true, label: 'YES'}, {value: false, label: 'NO'}]
-        },
-        formatter: (cell, row, rowIndex) => {
-            console.log(cell, row, rowIndex, 'formatter')
-            return cell == 'true' ? "YES" : "NO"
-        }
-    },
+    }
 ]
 
 const ButtonContainer = styled.div`
@@ -71,7 +67,7 @@ const cellEdit = {
     blurToSave: true,
 }
 
-export function AdminDonationsTable() {
+export function AdminProjectsTable() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext)
     let { email } = contextUser || {}
 

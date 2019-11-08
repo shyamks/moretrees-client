@@ -24,7 +24,7 @@ import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import useQueryApi from '../hooks/useQueryApi'
 import useMutationApi from '../hooks/useMutationApi';
 import Input from '../Input';
-import { showToast, convertNullToEmptyString, isAdminUser } from '../../utils';
+import { showToast, convertNullToEmptyString, isAdminUser, index } from '../../utils';
 import UserContext from '../UserContext';
 import Logger from '../Logger';
 import Button from '../Button'
@@ -39,6 +39,8 @@ const columns = [
     { dataField: 'email', text: 'Email', sort: true, editable: false },
     { dataField: 'instaProfile', text: 'Insta', sort: true, editable: false },
     { dataField: 'twitterProfile', text: 'Twitter', sort: true, editable: false },
+    { dataField: 'geoLocation.latitude', text: 'Latitude' },
+    { dataField: 'geoLocation.longitude', text: 'Longitude' },
     {
         dataField: 'status', text: 'Status',
         editor: {
@@ -299,7 +301,9 @@ export function AdminUsersDonatedTable() {
         if (email || twitterId || instaId) {
             let oldRows = Object.values(updatedRows)
             let rows = oldRows.map((row) => {
-                return lodash.pick(row, ['treeId', 'status'])
+                let newPickedRow = lodash.pick(row, ['treeId', 'status', 'geoLocation'])
+                newPickedRow.geoLocation = lodash.omit(newPickedRow.geoLocation, '__typename' )
+                return newPickedRow
             })
             console.log(rows, email, 'newRows')
 
@@ -328,11 +332,14 @@ export function AdminUsersDonatedTable() {
 
     const handleTableChange = (type, { data, cellEdit: { rowId, dataField, newValue } }) => {
         const result = data.map((row) => {
-            if (row.treeId === rowId && !lodash.isEqual(convertNullToEmptyString(row[dataField]), newValue)) {
-                console.log(row[dataField], newValue, !lodash.isEqual(convertNullToEmptyString(row[dataField]),newValue), 'diff')
-                const newRow = { ...row }
-                newRow[dataField] = newValue
+            // if index(dataField).then(val)
+            console.log(dataField, row, 'lets see')
+            if (row.treeId === rowId && !lodash.isEqual(convertNullToEmptyString(index(row, dataField)), newValue)) {
+                console.log(index(row, dataField), newValue, !lodash.isEqual(convertNullToEmptyString(index(row, dataField)),newValue), 'diff')
+                let newRow = { ...row }
+                index(newRow, dataField, newValue)
                 updatedRows[rowId] = newRow
+                console.log(updatedRows,'updatedRows')
                 setUpdatedRows(updatedRows)
                 !changed && setChanged(true)
                 return newRow;
