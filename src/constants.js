@@ -58,10 +58,13 @@ export const donationTypes = [
   { value: 'ROAD', label: 'ROAD' },
 ]
 export const PageContent = styled.div`
-    margin-top: 70px;
-    width: 100%;
+    margin: 70px 13% 0 13%;
+    // width: 100%;
     height: auto;
     padding-bottom: 13rem;
+    @media all and (max-width: 800px) {
+      margin: 70px 0 0 0;
+    }
 `
 
 export const Page = styled.div`
