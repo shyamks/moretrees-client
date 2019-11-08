@@ -9,7 +9,8 @@ export function Captcha({ onSuccess }) {
             onSuccess(response)
         }
     }
-    let showCaptcha = Boolean(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA)
+    // console.log(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA, 'disablecaptcha')
+    let showCaptcha = process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA !== 'true'
     return (
         <>
         { showCaptcha &&

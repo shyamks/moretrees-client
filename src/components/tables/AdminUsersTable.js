@@ -61,7 +61,7 @@ const SearchContainer = styled.div`
     align-self: center;
 `
 
-export function UsersTable() {
+export function AdminUsersTable() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext)
     let { email, twitterId, instaId } = contextUser || {}
     let isAdmin = isAdminUser(contextUser)

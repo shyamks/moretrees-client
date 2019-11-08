@@ -89,7 +89,6 @@ function VolunteerChoices() {
     const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(gql(UPDATE_USER_MUTATION))
 
     useEffect(() => {
-        console.log(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
             let updateUser = updateUserData.data.updateUser
             if (!(updateUser.responseStatus.status === RESPONSE_ERROR || updateUserError)) {

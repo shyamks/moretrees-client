@@ -257,7 +257,7 @@ const getDonationDate = (createdAt) => {
     return (date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
 }
 
-export function UsersDonatedTable() {
+export function AdminUsersDonatedTable() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext)
     let { email, twitterId, instaId } = contextUser || {}
     let isAdmin = isAdminUser(contextUser)

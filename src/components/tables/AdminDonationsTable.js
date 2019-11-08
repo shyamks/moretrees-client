@@ -71,7 +71,7 @@ const cellEdit = {
     blurToSave: true,
 }
 
-export function DonationsTable() {
+export function AdminDonationsTable() {
     const { user: contextUser, storeUserInContext, removeUserInContext, authToken } = useContext(UserContext)
     let { email } = contextUser || {}
 
@@ -161,8 +161,8 @@ export function DonationsTable() {
     return (
         <>
             <ButtonContainer>
-                <Button disabled={!changed} onClick={() => update()}>Update</Button>
-                <Button disabled={!changed} onClick={() => reset(projectsData, false)}>Reset</Button>
+                <Button disabled={!changed || updateProjectsLoading} onClick={() => update()}>Update</Button>
+                <Button disabled={!changed || updateProjectsLoading} onClick={() => reset(projectsData, false)}>Reset</Button>
                 <Button width={'120px'} onClick={() => addRow()}>Add new row</Button>
             </ButtonContainer>
             {tableState &&

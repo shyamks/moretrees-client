@@ -99,7 +99,7 @@ function Login({ onSubmit, navigateTo }) {
     const emailRef = useRef(null)
     const passRef = useRef(null)
     
-    const [validCaptcha, setValidCaptcha] = useState(Boolean(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA))
+    const [validCaptcha, setValidCaptcha] = useState(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA === 'true')
     const validDetails = ({email, password}) =>{
         return email && password && email.length && password.length && validCaptcha
     }

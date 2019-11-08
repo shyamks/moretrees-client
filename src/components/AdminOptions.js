@@ -7,10 +7,9 @@ import { adminOptions } from '../constants';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css'
 
 import { SelectDropdown } from './SelectDropdown'
-import { UsersTable } from './tables/UsersTable';
-import { UsersDonatedTable } from './tables/UsersDonatedTable';
-import { DonationsTable } from './tables/DonationsTable';
-import useClient from './hooks/useClient';
+import { AdminUsersTable } from './tables/AdminUsersTable';
+import { AdminUsersDonatedTable } from './tables/AdminUsersDonatedTable';
+import { AdminDonationsTable } from './tables/AdminDonationsTable';
 import { isAdminUser } from '../utils';
 import UserContext from './UserContext';
 
@@ -35,9 +34,9 @@ export default function AdminOptions({ }) {
             {isAdmin &&
                 <SelectDropdown placeholder={'Select Table'} selectedOption={selectedOption}
                     options={adminOptions} onChange={onAdminOptionChange} />}
-            {(adminOptions[0].value == selectedOption.value) && <UsersTable />}
-            {(adminOptions[1].value == selectedOption.value) && <UsersDonatedTable />}
-            {(adminOptions[2].value == selectedOption.value) && <DonationsTable />}
+            {(adminOptions[0].value == selectedOption.value) && <AdminUsersTable />}
+            {(adminOptions[1].value == selectedOption.value) && <AdminUsersDonatedTable />}
+            {(adminOptions[2].value == selectedOption.value) && <AdminDonationsTable />}
         </Container>
     )
 }

@@ -130,7 +130,7 @@ function Register({ onSubmit }) {
         username: { value: '', isError: false, errorText: null },
         password: { value: '', isError: false, errorText: null },
         mobile: { value: '', isError: false, errorText: null },
-        captcha: Boolean(process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA)
+        captcha: process.env.RAZZLE_RUNTIME_DISABLE_CAPTCHA === 'true'
     })
 
     const [emailAvailabilty, isEmailAvailabiltyLoading, emailAvailabiltyError, setEmail, setEmailAvailabiltyData] = useLazyQueryApi(gql(IS_EMAIL_AVAILABLE))
