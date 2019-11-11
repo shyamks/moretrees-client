@@ -8,28 +8,9 @@ const Username = styled.div`
     }
 `
 
-// const Container =  styled.div`
-//     display: flex;
-// `
-
-const Separator = styled.div`
-    border-right: 1px solid green;
-    height: 20px;
-    margin-right: 20px;
-`
-
-const Logout = styled.div`
-    &: hover{
-        cursor: pointer;
-    }
-`
-function UserAvatar({ userInfo, onEnter, onLogout }) {
+function UserAvatar({ userInfo, onEnter }) {
     return (
-        <>
             <Username onKeyPress={(e) => onEnter(e)} onClick={(e) => onEnter(e)}>{userInfo.username || userInfo.email}</Username>
-            <Separator/>
-            <Logout onClick={onLogout}>Logout</Logout>
-        </>
     )
 }
 

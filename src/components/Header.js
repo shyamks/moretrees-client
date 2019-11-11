@@ -117,7 +117,7 @@ const Header = styled.div`
 const AppHeader = styled.div`
     display: flex;
     justify-content: space-between;
-    margin: 30px 30px 5px 30px;
+    margin: 30px 13% 5px 13%;
     @media screen and (max-width: 800px) {
         display: flex;
         margin: 30px 20px 5px 20px;
@@ -203,7 +203,7 @@ const isServer = () => {
     try {
         return !window
     }
-    catch(e) {
+    catch (e) {
         return true
     }
 }
@@ -247,11 +247,11 @@ function SiteHeader({ history }) {
     // hack to control outside clicks on hamburger
     useEffect(() => {
         document.addEventListener("mousedown", handleClick);
-    
+
         return () => {
-          document.removeEventListener("mousedown", handleClick);
+            document.removeEventListener("mousedown", handleClick);
         };
-      }, []);
+    }, []);
 
     const handleClick = e => {
         if (hamburgerRef.current.contains(e.target)) {
@@ -270,13 +270,13 @@ function SiteHeader({ history }) {
         toggleModal(modalSetter, true, type, data)
     }
     const navigateTo = (e, path) => {
-        if (isClickOrEnter(e)){
+        if (isClickOrEnter(e)) {
             history.push(path)
         }
     }
 
     const onHamburgerClick = (e) => {
-        if (isClickOrEnter(e)){
+        if (isClickOrEnter(e)) {
             setHamburgerStatus(!hamburgerStatus)
         }
     }
@@ -290,21 +290,12 @@ function SiteHeader({ history }) {
     const onRegister = ({ email, username, password, mobile }) => {
         setHamburgerStatus(false)
         setRegisterVariables({ email, username, password, phone: mobile })
-        toggleModal(setModalStatus, false , REGISTER)
-    }
-
-    const onLogout = (e) => {
-        if (isClickOrEnter(e)){
-            setHamburgerStatus(false)
-            removeUserInContext()
-            history.push(PAGES.INDEX)
-            setLoginData(null)
-        }
+        toggleModal(setModalStatus, false, REGISTER)
     }
 
     useEffect(() => {
         if (callRegisterModal)
-            toggleModal(setModalStatus, true , REGISTER)
+            toggleModal(setModalStatus, true, REGISTER)
     }, [callRegisterModal])
 
     let errorInLogin = (lodash.get(contextUser, 'responseStatus.status') === RESPONSE_ERROR) || loginError
@@ -313,8 +304,8 @@ function SiteHeader({ history }) {
         <Header>
             <AppHeader>
                 <AppLeftHeader>
-                    <Logo tabIndex="0" src={logoImage} onKeyPress={(e)=> navigateTo(e,PAGES.INDEX) } onClick={(e) => navigateTo(e,PAGES.INDEX)}/>
-                    
+                    <Logo tabIndex="0" src={logoImage} onKeyPress={(e) => navigateTo(e, PAGES.INDEX)} onClick={(e) => navigateTo(e, PAGES.INDEX)} />
+
                 </AppLeftHeader>
 
 
@@ -335,8 +326,8 @@ function SiteHeader({ history }) {
                                         <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}>
                                             Admin
                                 </HamburgerOption>}
-                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onLogout(e)} onClick={(e) => onLogout(e)}>
-                                        Logout
+                                <HamburgerOption>
+                                    <UserAvatar onEnter={(e) => navigateTo(e, PAGES.PROFILE)} userInfo={contextUser} />
                                 </HamburgerOption>
                                 </>
                                 ) :
@@ -372,7 +363,7 @@ function SiteHeader({ history }) {
                     {(contextUser && !errorInLogin) ?
                         (<>
                             <Separator />
-                            <UserAvatar onEnter={(e) => navigateTo(e, PAGES.PROFILE)} userInfo={contextUser} onLogout={onLogout} />
+                            <UserAvatar onEnter={(e) => navigateTo(e, PAGES.PROFILE)} userInfo={contextUser} />
                         </>) :
                         (<>
                             <Separator />
@@ -392,7 +383,7 @@ function SiteHeader({ history }) {
                 style={customStyles(modalStatus.type)}
                 contentLabel={modalStatus.type}
             >
-                {(modalStatus.type === LOGIN) && <Login navigateTo={navigateTo} onSubmit={(data) => {onLogin(data)}} />}
+                {(modalStatus.type === LOGIN) && <Login navigateTo={navigateTo} onSubmit={(data) => { onLogin(data) }} />}
                 {(modalStatus.type === REGISTER) && <Register onSubmit={(data) => onRegister(data)} />}
                 {(modalStatus.type === ERROR) && <ShowError message={modalStatus.data} />}
             </Modal>

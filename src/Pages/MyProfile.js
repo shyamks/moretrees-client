@@ -10,7 +10,7 @@ import Input from '../components/Input'
 import Button from '../components/Button'
 import UserContext from '../components/UserContext'
 import useMutationApi from '../components/hooks/useMutationApi'
-import { showToast } from '../utils'
+import { showToast, isClickOrEnter } from '../utils'
 import NotFound from './NotFound'
 import useQueryApi from '../components/hooks/useQueryApi'
 const validate = require("validate.js");
@@ -41,7 +41,7 @@ const getError = (type, value, extraData) => {
             }
             isError = validate({ from: value }, constraints)
             error = isError ? 'Name not valid' : null
-            // Logger('ehre', value, type, error)
+            console.log(isError, error,'what now')
             break
         case 'email':
             constraints = {
@@ -88,10 +88,7 @@ const getError = (type, value, extraData) => {
         default:
 
     }
-    // 
-    return { error, isError }
-
-
+    return { error, isError: !!isError }
 }
 
 const UpdateContainer = styled.div`
@@ -119,21 +116,25 @@ export function MyProfile({ history, location, staticContext, match, route }) {
         refetchUserData()
     },[])
     
+    const getState = (getUser) => {
+        const { fbProfile, instaProfile, twitterProfile, username } = getUser
+        return {
+            name: { value: username, error: null, isError: false },
+            password: { value: '', error: null, isError: false },
+            confirmPassword: { value: '', error: null, isError: false },
+            twitter: { value: twitterProfile, error: null, isError: false },
+            fb: { value: fbProfile || '', error: null, isError: false },
+            insta: { value: instaProfile || '', error: null, isError: false },
+        }
+    }
     useEffect(() => {
         if (userData && userData.getUser.responseStatus.status === RESPONSE_SUCCESS && !isGetUserError){
-            let user = userData.getUser
-            let { fbProfile, instaProfile, twitterProfile, username } = user
-            let stateObject = {
-                name: { value: username, error: null, isError: false },
-                password: { value: '', error: null, isError: false },
-                confirmPassword: { value: '', error: null, isError: false },
-                twitter: { value: twitterProfile, error: null, isError: false },
-                fb: { value: fbProfile || '', error: null, isError: false },
-                insta: { value: instaProfile || '', error: null, isError: false },
-            }
+            const stateObject = getState(userData.getUser)
             setState(stateObject)
         }
     }, [userData, isGetUserError])
+
+    const initialState = userData && getState(userData.getUser)
 
     const onSubmit = () => {
         let {
@@ -156,21 +157,13 @@ export function MyProfile({ history, location, staticContext, match, route }) {
 
     const [updateUserData, updateUserLoading, updateUserError, setUpdateUserVariables, setUpdateUserData] = useMutationApi(gql(UPDATE_USER_MUTATION))
     useEffect(() => {
-        // Logger(updateUserData, 'useEffect updateUserData')
         if (updateUserData) {
-            let updateUser = updateUserData.data.updateUser
+            const updateUser = updateUserData.data.updateUser
             if (updateUser.responseStatus.status === RESPONSE_SUCCESS || updateUserError) {
-                let { fbProfile, instaProfile, twitterProfile, username } = updateUser
-                showToast('Updated', 'success')                
-                setState({
-                    name: { value: username, error: null, isError: false },
-                    password: { value: '', error: null, isError: false },
-                    confirmPassword: { value: '', error: null, isError: false },
-                    twitter: { value: twitterProfile, error: null, isError: false },
-                    fb: { value: fbProfile || '', error: null, isError: false },
-                    insta: { value: instaProfile || '', error: null, isError: false },
-                })
+                const updatedState = getState(updateUser)
+                setState(updatedState)
                 storeUserInContext(updateUser)
+                showToast('Updated', 'success')                
             }
             else{
                 showToast('Update failed', 'error')
@@ -178,14 +171,21 @@ export function MyProfile({ history, location, staticContext, match, route }) {
         }
     }, [updateUserData, updateUserError])
 
+    const onLogout = (e) => {
+        if (isClickOrEnter(e)){
+            removeUserInContext()
+            history.push(PAGES.INDEX)
+        }
+    }
+
     const canDisableUpdateProfile = () => {
         let bools = []
         for (let key of Object.keys(state)) {
             if (key == 'confirmPassword' || key == 'password') {
-                let otherKey = (key == 'confirmPassword') ? 'password' : 'confirmPassword'
-                let extraData = { formPassword: state[otherKey] }
-                let { error, isError } = getError(key, state[key] ? state[key].value : '', extraData)
-                let { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey] ? state[otherKey].value : '', extraData)
+                const otherKey = (key == 'confirmPassword') ? 'password' : 'confirmPassword'
+                const extraData = { formPassword: state[otherKey] }
+                const { error, isError } = getError(key, state[key] ? state[key].value : '', extraData)
+                const { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey] ? state[otherKey].value : '', extraData)
                 bools.push({ error: error || errorPassword, isError: isError || isErrorPassword })
             }
             else
@@ -202,18 +202,19 @@ export function MyProfile({ history, location, staticContext, match, route }) {
     }
 
     const handleChange = (type, value) => {
-        let otherKey = (type == 'confirmPassword') ? 'password' : 'confirmPassword'
+        const otherKey = (type == 'confirmPassword') ? 'password' : 'confirmPassword'
         if (type == 'confirmPassword' || type == 'password') {
-            let extraData = { formPassword: state[otherKey] }
-            let { error, isError } = getError(type, value, extraData)
-            let { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey].value, extraData)
-            setState({
+            const extraData = { formPassword: state[otherKey] }
+            const { error, isError } = getError(type, value, extraData)
+            const { error: errorPassword, isError: isErrorPassword } = getError(otherKey, state[otherKey].value, extraData)
+            const changedState = {
                 ...state, [type]: { value, error: error || errorPassword, isError: isError || isErrorPassword },
                 [otherKey]: { value: state[otherKey].value, error: error || errorPassword, isError: isError || isErrorPassword }
-            })
+            }
+            setState(changedState)
         }
         else {
-            let { error, isError } = getError(type, value)
+            const { error, isError } = getError(type, value)
             setState({ ...state, [type]: { value, error, isError } })
         }
     }
@@ -224,6 +225,7 @@ export function MyProfile({ history, location, staticContext, match, route }) {
         twitter: { value: twitterValue, isError: twitterIsError, error: twitterError },
         insta: { value: instaValue, isError: instaIsError, error: instaError },
         fb: { value: fbValue, isError: fbIsError, error: fbError } } = state
+    const didProfileInfoChange = JSON.stringify(state) !== JSON.stringify(initialState)
     console.log(state, ' state')
     return (
         <Page>
@@ -256,7 +258,8 @@ export function MyProfile({ history, location, staticContext, match, route }) {
                                 <Input id={'fb'} value={fbValue} isError={fbIsError} onChange={(e) => handleChange('fb', e.target.value)} placeholder={'Facebook'} />
                                 {fbIsError && <InputLabel isError={fbIsError}>{fbError}</InputLabel>}
                             </InputContainer>
-                            <Button disabled={canDisableUpdateProfile()} onClick={() => updateProfile()} width="200px">Update</Button>
+                            <Button disabled={canDisableUpdateProfile() || !didProfileInfoChange} onClick={() => updateProfile()} width="200px">Update</Button>
+                            <Button onClick={(e) => onLogout(e)} width="200px">Logout</Button>
                         </>
                     }
                 </UpdateContainer>
