@@ -320,7 +320,7 @@ function SiteHeader({ history }) {
                             {(contextUser && !errorInLogin) ?
                                 (<>
                                     <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}>
-                                        Donations
+                                        My Trees
                                 </HamburgerOption>
                                     {contextUser.type === UserType.ADMIN &&
                                         <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}>
@@ -351,7 +351,7 @@ function SiteHeader({ history }) {
                         {(contextUser && !errorInLogin) &&
                             <>
                                 <Separator />
-                                <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}> Donations </VolunteerLink>
+                                <VolunteerLink tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.MY_DONATIONS)} onClick={(e) => navigateTo(e, PAGES.MY_DONATIONS)}> My Trees </VolunteerLink>
                                 {contextUser.type === UserType.ADMIN &&
                                     <>
                                         <Separator />
