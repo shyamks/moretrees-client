@@ -7,17 +7,14 @@ import { withRouter } from "react-router-dom";
 import bannerImage from '../images/moretrees-back.jpg'
 import volunteerImage from '../images/volunteer.jpg'
 import donateImage from '../images/donate.jpg'
+import donateIcon from '../images/donate_icon.png'
+import volunteerIcon from '../images/volunteer_icon_2.png'
 import buyPlantsImage from '../images/buy-plants.jpg'
 import Footer from '../components/Footer';
 import { Page, PageContent } from '../constants';
 import { isClickOrEnter } from '../utils';
 
 
-// const PageContent = styled.div`
-//     margin-top: 90px;
-//     width: 100%;
-//     height: auto;
-// `
 const DonateAndVol = styled.div`
     display: flex;
     justify-content: space-around;
@@ -39,9 +36,11 @@ const ImageContainer = styled.div`
     }
 `
 
-const Donate = styled.div`
+const BigButton = styled.div`
     margin: 10px;
     outline: none;
+    display: flex;
+    flex-direction: row;
     &: hover{
         cursor: pointer;
     }
@@ -55,20 +54,45 @@ const Volunteer = styled.div`
     }
 `
 
-
-
-const Image = styled.img`
-    width: 200px;
-    height: auto;
+const DonateImage = styled.img`
+    width: 60px;
+    height: 60px;
     @media screen and (max-width: 450px) {
-        width: 150px;
+        width: 30px;
     }
 `
 
-const Imager = styled.img`
+const VolunteerImage = styled.img`
+    width: 50px;
+    height: 45px;
+    @media screen and (max-width: 450px) {
+        width: 30px;
+    }
+`
+
+const ImageContent = styled.div`
+    margin: 0 0 0 8px;
+    width: 100px;
+`
+const ImageHeaderText = styled.p`
+    font-weight: bold;
+    font-size: 22px;
+    margin: 0;
+`
+const ImageText = styled.p`
+    font-size: 16px;
+    margin: 0;
+`
+
+const BannerImage = styled.img`
     min-height: 150px;
     width: 100%;
 `
+const DonateHeaderText = 'Donate'
+const DonateText = 'we will plant trees around you'
+
+const VolunteerHeaderText = 'Volunteer'
+const VolunteerText = 'help us plant more trees'
 
 const onNewUserRegistration = () => {
     // NotificationManager.success('Success message', 'New User Registered');
@@ -84,16 +108,24 @@ function MainPage({ history }) {
             <SiteHeader onRegistered={onNewUserRegistration} />
             <PageContent>
                 <ImageContainer>
-                    <Imager src={bannerImage} />
+                    <BannerImage src={bannerImage} />
                 </ImageContainer>
 
                 <DonateAndVol>
-                    <Donate tabIndex="0" onKeyPress={(e) => navigateTo(e, 'donate')} onClick={(e) => navigateTo(e, 'donate')}>
-                        <Image src={donateImage} />
-                    </Donate>
-                    <Volunteer tabIndex="0" onKeyPress={(e) => navigateTo(e, 'donate')} onClick={(e) => navigateTo(e, 'volunteer')}>
-                        <Image src={volunteerImage} />
-                    </Volunteer>
+                    <BigButton tabIndex="0" onKeyPress={(e) => navigateTo(e, 'donate')} onClick={(e) => navigateTo(e, 'donate')}>
+                        <DonateImage src={donateIcon} />
+                        <ImageContent>
+                            <ImageHeaderText>{DonateHeaderText}</ImageHeaderText>
+                            <ImageText>{DonateText}</ImageText>
+                        </ImageContent>
+                    </BigButton>
+                    <BigButton tabIndex="0" onKeyPress={(e) => navigateTo(e, 'donate')} onClick={(e) => navigateTo(e, 'volunteer')}>
+                        <VolunteerImage src={volunteerIcon} />
+                        <ImageContent>
+                            <ImageHeaderText>{VolunteerHeaderText}</ImageHeaderText>
+                            <ImageText>{VolunteerText}</ImageText>
+                        </ImageContent>
+                    </BigButton>
                 </DonateAndVol>
             </PageContent>
             <Footer/>

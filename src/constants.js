@@ -30,6 +30,7 @@ export const TREE_STATUS = {
   PLANTED: 'PLANTED',
   PENDING: 'PENDING'
 }
+
 export const availableWhenOptions = [
   { value: 'Weekdays', label: 'Weekdays' },
   { value: 'Weekends', label: 'Weekends' },
@@ -43,7 +44,6 @@ export const availableWhatOptions = [
   { value: 'Marketing', label: 'Marketing' },
   { value: 'Website', label: 'Website' },
 ]
-
 export const PLANT_STATUS_OPTIONS = [
   { value: 'PLANTED', label: 'PLANTED' },
   { value: 'PENDING', label: 'PENDING' }
@@ -57,9 +57,9 @@ export const donationTypes = [
   { value: 'RIVER', label: 'RIVER' },
   { value: 'ROAD', label: 'ROAD' },
 ]
+
 export const PageContent = styled.div`
     margin: 70px 13% 0 13%;
-    // width: 100%;
     height: auto;
     padding-bottom: 13rem;
     @media all and (max-width: 800px) {
@@ -73,7 +73,7 @@ export const Page = styled.div`
 `
 
 export const MarkTitle = styled.h3`
-  font-weight: 700 !important;
+  font-weight: bold !important;
   margin-top: 20px;
   @media all and (max-width: 800px) {
   }

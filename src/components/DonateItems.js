@@ -6,7 +6,6 @@ import lodash from 'lodash'
 import ReactMarkdown from 'react-markdown'
 import { Collapse } from 'react-collapse'
 
-import './styles.css'
 import Button from './Button'
 import Counter from './counter'
 import { DONATION_MUTATION, GET_PROJECTS, RAZORPAY_KEY, MarkTitle, RESPONSE_SUCCESS } from '../constants'
