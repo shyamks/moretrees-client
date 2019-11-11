@@ -181,9 +181,9 @@ const VolunteerLink = styled.div`
 `
 
 const Logo = styled.img`
-    width: 140px;
+    width: 200px;
     margin-top: -8px;
-    height: 38px;
+    height: 48px;
     margin-right: 20px;
     outline: none;
     &: hover{

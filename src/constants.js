@@ -59,7 +59,7 @@ export const donationTypes = [
 ]
 
 export const PageContent = styled.div`
-    margin: 70px 13% 0 13%;
+    margin: 90px 13% 0 13%;
     height: auto;
     padding-bottom: 13rem;
     @media all and (max-width: 800px) {
