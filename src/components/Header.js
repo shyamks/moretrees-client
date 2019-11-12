@@ -191,22 +191,6 @@ const Logo = styled.img`
     }
 `
 
-export const GET_LOGGEDIN_USER = gql`
-  query GetCartItems {
-    user @client
-  }
-`;
-
-const noop = () => { }
-
-const isServer = () => {
-    try {
-        return !window
-    }
-    catch (e) {
-        return true
-    }
-}
 function SiteHeader({ history }) {
 
     let hamburgerRef = useRef(null)
