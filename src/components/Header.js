@@ -293,6 +293,14 @@ function SiteHeader({ history }) {
         toggleModal(setModalStatus, false, REGISTER)
     }
 
+    const login = () => {
+        onOpenModal(setModalStatus, LOGIN)
+    }
+
+    const register = () => {
+        onOpenModal(setModalStatus, REGISTER)
+    }
+
     useEffect(() => {
         if (callRegisterModal)
             toggleModal(setModalStatus, true, REGISTER)
@@ -326,18 +334,15 @@ function SiteHeader({ history }) {
                                         <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => navigateTo(e, PAGES.ADMIN)} onClick={(e) => navigateTo(e, PAGES.ADMIN)}>
                                             Admin
                                 </HamburgerOption>}
-                                <HamburgerOption>
-                                    <UserAvatar onEnter={(e) => navigateTo(e, PAGES.PROFILE)} userInfo={contextUser} />
-                                </HamburgerOption>
+                                    <HamburgerOption>
+                                        <UserAvatar onEnter={(e) => navigateTo(e, PAGES.PROFILE)} userInfo={contextUser} />
+                                    </HamburgerOption>
                                 </>
                                 ) :
                                 (<>
                                     <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, LOGIN)} onClick={(e) => onOpenModal(setModalStatus, LOGIN)}>
                                         Login
-                                </HamburgerOption>
-                                    <HamburgerOption show={hamburgerStatus} tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, REGISTER)} onClick={(e) => onOpenModal(setModalStatus, REGISTER)}>
-                                        Register
-                                </HamburgerOption>
+                                    </HamburgerOption>
                                 </>)
                             }
                         </HamburgerOptionsList>}
@@ -368,8 +373,6 @@ function SiteHeader({ history }) {
                         (<>
                             <Separator />
                             <LoginHeader tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, LOGIN)} onClick={() => onOpenModal(setModalStatus, LOGIN)}>Login</LoginHeader>
-                            <Separator />
-                            <RegisterHeader tabIndex="0" onKeyPress={(e) => onOpenModal(setModalStatus, REGISTER)} onClick={() => onOpenModal(setModalStatus, REGISTER)}>Register</RegisterHeader>
                         </>)}
 
                 </AppRightHeader>
@@ -383,8 +386,8 @@ function SiteHeader({ history }) {
                 style={customStyles(modalStatus.type)}
                 contentLabel={modalStatus.type}
             >
-                {(modalStatus.type === LOGIN) && <Login navigateTo={navigateTo} onSubmit={(data) => { onLogin(data) }} />}
-                {(modalStatus.type === REGISTER) && <Register onSubmit={(data) => onRegister(data)} />}
+                {(modalStatus.type === LOGIN) && <Login register={register} navigateTo={navigateTo} onSubmit={(data) => { onLogin(data) }} />}
+                {(modalStatus.type === REGISTER) && <Register login={login} onSubmit={(data) => onRegister(data)} />}
                 {(modalStatus.type === ERROR) && <ShowError message={modalStatus.data} />}
             </Modal>
         </Header>

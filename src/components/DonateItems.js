@@ -5,6 +5,8 @@ import { withRouter } from "react-router-dom"
 import lodash from 'lodash'
 import ReactMarkdown from 'react-markdown'
 import { Collapse } from 'react-collapse'
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 import Button from './Button'
 import Counter from './counter'
@@ -306,9 +308,22 @@ function DonateItems({ staticContext }) {
                         </CostContainer>
                     </ItemContainer>
                     <Collapse isOpened={!(collapseMap[id] && collapseMap[id].collapse)}>
-                        <ItemContent>
+                        <Tabs style={{ textAlign: 'left'}}>
+                            <TabList>
+                                <Tab>Title 1</Tab>
+                                <Tab>Title 2</Tab>
+                            </TabList>
+
+                            <TabPanel>
+                                <h2>Any content 1</h2>
+                            </TabPanel>
+                            <TabPanel>
+                                <h2>Any content 2</h2>
+                            </TabPanel>
+                        </Tabs>
+                        {/* <ItemContent>
                             <ReactMarkdown source={content} />
-                        </ItemContent>
+                        </ItemContent> */}
                     </Collapse>
                     <Arrow onClick={() => setCollapseMap({ ...collapseMap, [id]: { collapse: !collapseMap[id].collapse } })}>
                         <ArrowSymbol up={collapseMap[id] ? !collapseMap[id].collapse : false} />

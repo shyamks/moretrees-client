@@ -95,7 +95,17 @@ const ForgotPasssword = styled.a`
     }
 `
 
-function Login({ onSubmit, navigateTo }) {
+const RegisterOption = styled.a`
+    flex-direction: row-reverse;
+    opacity: 1;
+    animation: ${input_opacity} 0.8s cubic-bezier(.55, 0, .1, 1);
+    display: flex;
+    :hover {
+        cursor: pointer;
+    }
+`
+
+function Login({ onSubmit, navigateTo, register }) {
     const emailRef = useRef(null)
     const passRef = useRef(null)
     
@@ -137,6 +147,7 @@ function Login({ onSubmit, navigateTo }) {
                     </SocialContainer> */}
                     <Captcha onSuccess={verifyCallback} />
                     <ForgotPasssword onClick={(e) => navigateTo(e, PAGES.FORGOT_PASSWORD)}> Forgot Password? </ForgotPasssword>
+                    <RegisterOption onClick={(e) => register()}> Register? </RegisterOption>
                     <LoginButton onClick={onLogin} type="submit">SIGN IN</LoginButton>
                 </LoginInputContainer>
             </LoginSection>

@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components'
+import { withRouter } from "react-router-dom";
+import Carousel, { Dots } from '@brainhubeu/react-carousel';
+import '@brainhubeu/react-carousel/lib/style.css';
 
 import SiteHeader from '../components/Header'
-import { withRouter } from "react-router-dom";
-
 import bannerImage from '../images/moretrees-back.jpg'
 import volunteerImage from '../images/volunteer.jpg'
 import donateImage from '../images/donate.jpg'
@@ -80,13 +81,18 @@ const ImageHeaderText = styled.p`
     margin: 0;
 `
 const ImageText = styled.p`
-    font-size: 16px;
+    font-size: 12px;
     margin: 0;
 `
 
 const BannerImage = styled.img`
     min-height: 150px;
     width: 100%;
+`
+const CarouselHeader = styled.p`
+    font-size: 14px;
+    text-align: center;
+    margin: 20px 0 20px 0;
 `
 const DonateHeaderText = 'Donate'
 const DonateText = 'we will plant trees around you'
@@ -127,6 +133,17 @@ function MainPage({ history }) {
                         </ImageContent>
                     </BigButton>
                 </DonateAndVol>
+                <CarouselHeader>{'Some bery bery bery bery bery bery bery big text here man'}</CarouselHeader>
+                <Carousel
+                    slidesPerPage={3}
+                    autoPlay={3000}
+                    animationSpeed={1000}
+                    infinite
+                >
+                    <img height={100} src={buyPlantsImage} />
+                    <img height={100} src={buyPlantsImage} />
+                    <img height={100} src={buyPlantsImage} />
+                </Carousel>
             </PageContent>
             <Footer/>
         </Page>

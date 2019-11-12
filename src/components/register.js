@@ -86,6 +86,16 @@ const LoginContainer = styled.div`
     box-sizing: border-box;
 `
 
+const LoginOption = styled.a`
+    flex-direction: row-reverse;
+    opacity: 1;
+    animation: ${input_opacity} 0.8s cubic-bezier(.55, 0, .1, 1);
+    display: flex;
+    :hover {
+        cursor: pointer;
+    }
+`
+
 const getStatus = (value, type) => {
     let usernameRegex = /^[a-zA-Z0-9]+$/
     let emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
@@ -124,7 +134,7 @@ const getErrorText = (value, type) => {
 
 
 
-function Register({ onSubmit }) {
+function Register({ onSubmit, login }) {
     const [registerDetails, setRegisterDetails] = useState({
         email: { value: '', isError: false, errorText: null },
         username: { value: '', isError: false, errorText: null },
@@ -220,6 +230,7 @@ function Register({ onSubmit }) {
                     {(emailIsError || emailIsLoading) && <ErrorInputLabel>{emailIsLoading ? 'Loading...' : emailErrorText}</ErrorInputLabel>}
 
                     <Captcha onSuccess={verifyCallback} />
+                    <LoginOption onClick={(e) => login()}> Login? </LoginOption>
                     <LoginButton disabled={isButtonError} onClick={onRegister} type="submit">Register</LoginButton>
                 </LoginInputContainer>
             </LoginSection>
