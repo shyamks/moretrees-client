@@ -36,7 +36,7 @@
     "ignore-styles": "^5.0.1",
     "isomorphic-unfetch": "^3.0.0",
     "js-cookie": "^2.2.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "node-fetch": "^2.6.0",
     "qs": "^6.9.0",
     "razzle": "^3.0.0",
